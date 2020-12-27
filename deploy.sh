@@ -10,6 +10,7 @@ set -xeuo pipefail
 REV=$(git rev-parse HEAD)
 
 # Step 3
+git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin gh-pages
 git checkout --force gh-pages
 git pull --quiet --ff-only origin gh-pages > /dev/null
 
