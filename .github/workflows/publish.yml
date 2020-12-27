@@ -18,11 +18,10 @@ jobs:
         architecture: x64
     - name: Configure git user
       run: |
-        git config user.email "github-actions@users.noreply.github.com"
-        git config user.name "github-actions"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git config user.name "${{ github.actor }}"
         git config user.password ${{ github.token }}
     - name: Build
       run: ./build.sh
     - name: Deploy
       run: ./deploy.sh
-
