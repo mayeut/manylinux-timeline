@@ -1,0 +1,22 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * 3'
+
+jobs:
+  build-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      name: Install Python 3.9
+      with:
+        python-version: 3.9
+        architecture: x64
+    - name: Build
+      run: ./build.sh
+    - name: Deploy
+      run: exit 0
