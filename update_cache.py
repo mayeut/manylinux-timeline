@@ -30,6 +30,7 @@ _WheelMetadata = NamedTuple('_WheelMetadata', [
 ])
 
 RELEASE_FEED_PATH = utils.CACHE_PATH / 'release_feed.json'
+RELEASE_INFO_PATH = utils.CACHE_PATH / 'info'
 
 
 def _filter_versions(package, info, start, end):
@@ -142,12 +143,16 @@ def _has_new_release(package, start, end, to_remove, release_feed):
     return any([start <= p < end for p in published])
 
 
-def _package_update(package, start, end, to_remove, release_feed):
-    _LOGGER.info(f'"{package}": begin update')
-    if not _has_new_release(package, start, end, to_remove, release_feed):
-        _LOGGER.info(f'"{package}": no new release')
-        return []
-    response = requests.get(f'https://pypi.org/pypi/{package}/json')
+def _get_release_info(package, to_remove):
+    info = None
+    headers = {}
+    cache_file = RELEASE_INFO_PATH / f'{package}.json'
+    if cache_file.exists():
+        with open(cache_file) as f:
+            info = json.load(f)
+            headers['If-None-Match'] = info['etag']
+    response = requests.get(f'https://pypi.org/pypi/{package}/json',
+                            headers=headers)
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
@@ -157,7 +162,22 @@ def _package_update(package, start, end, to_remove, release_feed):
         else:
             _LOGGER.error(f'"{package}": error "{e}" when retrieving info')
         return []
-    info = response.json()
+    if response.status_code != 304:
+        info = response.json()
+        info['etag'] = response.headers['etag']
+        with open(cache_file, 'w') as f:
+            json.dump(info, f)
+    return info
+
+
+def _package_update(package, start, end, to_remove, release_feed):
+    _LOGGER.info(f'"{package}": begin update')
+    if not _has_new_release(package, start, end, to_remove, release_feed):
+        _LOGGER.info(f'"{package}": no new release')
+        return []
+    info = _get_release_info(package, to_remove)
+    if info is None:
+        return []
     versions = _filter_versions(package, info, start, end)
     _LOGGER.debug(f'"{package}": using "{versions}"')
     rows = []
@@ -211,6 +231,7 @@ def _save_release_feed(release_feed):
 
 
 def update(start_asked, end, use_top_packages):
+    RELEASE_INFO_PATH.mkdir(exist_ok=True)
     rows, start_cache, end_cache = _load_rows()
     # _save_rows(rows)
     # exit(0)
@@ -249,7 +270,8 @@ def update(start_asked, end, use_top_packages):
     to_remove = set()
     release_feed = _load_release_feed()
     for package in packages + top_packages:
-        rows.extend(_package_update(package, start, end, to_remove, release_feed))
+        rows.extend(_package_update(package, start, end, to_remove,
+                                    release_feed))
     _save_release_feed(release_feed)
     packages.extend(set(top_packages) & set(r.package for r in rows))
     _save_rows(rows)

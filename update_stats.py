@@ -73,9 +73,8 @@ def update(start, end):
     package_count = df[['package']].drop_duplicates().agg('count')['package']
     while date >= start_date:
         window_start = date - utils.WINDOW_SIZE
-        df_window = \
-            df[(df['week'] >= window_start) & (df['week'] < date)].drop_duplicates(['package'])
-        print(f'{date}: {len(df_window.index)}')
+        df_window = df[(df['week'] >= window_start) & (df['week'] < date)].\
+            drop_duplicates(['package'])
         index.append(date)
         date -= utils.WEEK_DELTA
         stats_policy = df_window[df_window['x86_64']].value_counts(
