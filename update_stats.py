@@ -3,7 +3,6 @@ import json
 import logging
 
 from datetime import datetime, timezone
-from io import StringIO
 
 import pandas as pd
 import utils
@@ -31,7 +30,7 @@ IMPLEMENTATIONS = tuple(itertools.chain(
 ))
 
 
-def _get_full_dataframe():
+def _get_full_dataframe(start, end):
     df = pd.read_csv(utils.ROWS_PATH, names=utils.Row._fields, converters={
         'week': lambda x: pd.to_datetime(utils.from_week_str(x))})
     for policy in POLICIES:
@@ -50,7 +49,8 @@ def _get_full_dataframe():
         | df.python.str.contains('pp2')
     df['any3'] = df.python.str.contains('py3') | df.python.str.contains('cp3') \
         | df.python.str.contains('pp3')
-    return df
+    df_r = df[(df['week'] >= (start - utils.WINDOW_SIZE)) & (df['week'] < end)]
+    return df_r.sort_values('week', ascending=False).copy(deep=True)
 
 
 def _get_stat(stats, key, level):
@@ -60,42 +60,22 @@ def _get_stat(stats, key, level):
         return 0.0
 
 
-def _get_graph(dataframe, kind):
-    fig = dataframe.plot(kind=kind)
-    fig.update_layout(xaxis_title=None, yaxis_title=None)
-    fig.update_layout(yaxis_tickformat=',.1%')
-    fig.update_layout(xaxis_tickangle=45)
-    fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 80})
-    fig.update_layout(hovermode='x unified')
-    fig.update_traces(hovertemplate=None)
-    fig.update_layout(legend_orientation='h', legend_title_text=None,
-                      legend_xanchor='center', legend_x=0.5,
-                      legend_yanchor='bottom', legend_y=1.0)
-    with StringIO() as html:
-        fig.write_html(html, config={'displayModeBar': False},
-                       include_plotlyjs=False, include_mathjax=False,
-                       full_html=False)
-        return html.getvalue()
-
-
 def update(start, end):
     pd.set_option('display.max_columns', None)
-    df = _get_full_dataframe()
     date = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
+    df = _get_full_dataframe(start_date, date)
     rows_highest_policy = []
     rows_lowest_policy = []
     rows_impl = []
     rows_arch = []
     index = []
-    package_count = df[
-        (df['week'] >= (start_date -utils.WINDOW_SIZE)) & (df['week'] < date)
-    ][['package']].drop_duplicates().agg('count')['package']
+    package_count = df[['package']].drop_duplicates().agg('count')['package']
     while date >= start_date:
         window_start = date - utils.WINDOW_SIZE
         df_window = \
-            df[(df['week'] >= window_start) & (df['week'] < date)].sort_values(
-                'week', ascending=False).drop_duplicates(['package'])
+            df[(df['week'] >= window_start) & (df['week'] < date)].drop_duplicates(['package'])
+        print(f'{date}: {len(df_window.index)}')
         index.append(date)
         date -= utils.WEEK_DELTA
         stats_policy = df_window[df_window['x86_64']].value_counts(
