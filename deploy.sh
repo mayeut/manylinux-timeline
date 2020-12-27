@@ -9,13 +9,15 @@ set -xeuo pipefail
 # Gets commit hash as message
 REV=$(git rev-parse HEAD)
 
-git checkout --force gh-pages # Step 3
+# Step 3
+git checkout --force gh-pages
+git pull --quiet --ff-only origin gh-pages > /dev/null
 
 git rm -rf . # Step 4
 
 git checkout gh-pages -- .gitignore # Step 5
 
-cp -R build/* . && rm -rf build # Step 6
+cp -R build/* . # Step 6
 
 git add . # Step 7
 
