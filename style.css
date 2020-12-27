@@ -1,0 +1,26 @@
+body {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+p {
+    text-align: justify;
+}
+
+h1, h2, p.footer {
+    text-align: center;
+}
+
+.github-fork-ribbon:before {
+    background-color: #090;
+}
+
+.github-fork-ribbon.no-box-sizing:before,
+.github-fork-ribbon.no-box-sizing:after {
+    box-sizing: content-box;
+}
+
+.plotly-graph-div {
+    height:100%;
+    width:100%;
+}
