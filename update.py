@@ -53,6 +53,7 @@ if __name__ == "__main__":
     if utils.BUILD_PATH.exists():
         rmtree(utils.BUILD_PATH)
     utils.BUILD_PATH.mkdir()
+    utils.CACHE_PATH.mkdir(exist_ok=True)
     update_cache.update(start, end, args.top_packages)
     update_stats.update(start, end)
     copy(utils.ROOT_PATH / 'index.html', utils.BUILD_PATH)

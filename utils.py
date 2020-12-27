@@ -4,7 +4,8 @@ from typing import NamedTuple
 
 ROOT_PATH = Path(__file__).resolve().parent
 BUILD_PATH = ROOT_PATH / 'build'
-CACHE_PATH = ROOT_PATH / 'rows.csv.xz'
+CACHE_PATH = ROOT_PATH / 'cache'
+ROWS_PATH = ROOT_PATH / 'rows.csv.xz'
 DATA_PATH = BUILD_PATH / 'data.json'
 WEEK_DELTA = timedelta(days=7)
 WINDOW_SIZE = WEEK_DELTA * 26

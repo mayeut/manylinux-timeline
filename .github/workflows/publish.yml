@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      name: Install Python 3.9
+    - name: Install Python 3.9
+      uses: actions/setup-python@v2
       with:
         python-version: 3.9
         architecture: x64
@@ -21,6 +21,11 @@ jobs:
         git config user.email "${{ github.actor }}@users.noreply.github.com"
         git config user.name "${{ github.actor }}"
         git config user.password ${{ github.token }}
+    - name: Setup cache
+      uses: actions/cache@v2
+      with:
+        path: cache/*
+        key: PyPI cache
     - name: Build
       run: ./build.sh
     - name: Deploy

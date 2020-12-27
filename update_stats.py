@@ -32,11 +32,8 @@ IMPLEMENTATIONS = tuple(itertools.chain(
 
 
 def _get_full_dataframe():
-    df = pd.read_csv(
-        utils.CACHE_PATH,
-        names=utils.Row._fields,
-        converters={'week': lambda x: pd.to_datetime(utils.from_week_str(x))}
-    )
+    df = pd.read_csv(utils.ROWS_PATH, names=utils.Row._fields, converters={
+        'week': lambda x: pd.to_datetime(utils.from_week_str(x))})
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f'{policy}_x86_64')
     for arch in ARCHITECTURES:

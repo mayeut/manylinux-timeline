@@ -3,7 +3,7 @@ import lzma
 import json
 import re
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import NamedTuple, Optional
 
 import feedparser
@@ -20,7 +20,7 @@ _WHEEL_INFO_RE = re.compile(
      -(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl$""",
     re.VERBOSE)
 
-_WheelMetadata = NamedTuple('WheelMetadata', [
+_WheelMetadata = NamedTuple('_WheelMetadata', [
     ('name', str),
     ('version', str),
     ('build_tag', Optional[str]),
@@ -28,6 +28,8 @@ _WheelMetadata = NamedTuple('WheelMetadata', [
     ('abi', str),
     ('platform', str)
 ])
+
+RELEASE_FEED_PATH = utils.CACHE_PATH / 'release_feed.json'
 
 
 def _filter_versions(package, info, start, end):
@@ -98,48 +100,67 @@ def _parse_version(files):
     return utils.to_week_str(upload_date), python_str, manylinux_str
 
 
-def _has_new_release(package, start, end, to_remove):
+def _get_release_feed(package, to_remove, release_feed):
     url = f'https://pypi.org/rss/project/{package}/releases.xml'
-    feed = feedparser.parse(url)
+    etag = None
+    if package in release_feed.keys():
+        etag = release_feed[package]['etag']
+    feed = feedparser.parse(url, etag=etag)
     if feed.status == 404:
-        _LOGGER.warning(f'"{package}" is not available on PyPI anymore')
+        _LOGGER.warning(f'"{package}": not available on PyPI anymore')
         to_remove.add(package)
-        return False
+        return None
     elif feed.bozo:
-        _LOGGER.error(f'error "{e}" when retrieving "{package}" release feed')
+        _LOGGER.error(f'"{package}": error when retrieving release feed')
+        return None
+    if etag is None or feed.etag != etag:
+        _LOGGER.debug(f'"{package}": update release feed cache')
+        release_feed[package] = {
+            'etag': feed.etag,
+            'published': [date(*entry['published_parsed'][:3]).isoformat()
+                          for entry in feed['entries']]
+        }
+    else:
+        _LOGGER.debug(f'"{package}": use release feed cache')
+    return release_feed[package]
+
+
+def _has_new_release(package, start, end, to_remove, release_feed):
+    feed = _get_release_feed(package, to_remove, release_feed)
+    if feed is None:
         return False
-    if len(feed['entries']) == 0:
+    if len(feed['published']) == 0:
         return False
-    published = [date(*entry['published_parsed'][:3])
-                 for entry in feed['entries']]
+    published = [date.fromisoformat(entry) for entry in feed['published']]
     published_min = min(published)
     published_max = max(published)
     if published_max < start:
         return False
     if published_min > start:
-        _LOGGER.debug(f'assuming new release for "{package}"')
+        _LOGGER.debug(f'"{package}": assuming new release')
         return True
     return any([start <= p < end for p in published])
 
 
-def _package_update(package, start, end, to_remove):
-    _LOGGER.info(f'retrieving "{package}" info')
-    if not _has_new_release(package, start, end, to_remove):
-        _LOGGER.info(f'No new release for "{package}" between {start} & {end}')
+def _package_update(package, start, end, to_remove, release_feed):
+    _LOGGER.info(f'"{package}": begin update')
+    if not _has_new_release(package, start, end, to_remove, release_feed):
+        _LOGGER.info(f'"{package}": no new release')
         return []
+    return []
     response = requests.get(f'https://pypi.org/pypi/{package}/json')
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if response.status_code == 404:
-            _LOGGER.warning(f'"{package}" is not available on PyPI anymore')
+            _LOGGER.warning(f'"{package}": not available on PyPI anymore')
             to_remove.add(package)
         else:
-            _LOGGER.error(f'error "{e}" when retrieving "{package}" info')
+            _LOGGER.error(f'"{package}": error "{e}" when retrieving info')
         return []
     info = response.json()
     versions = _filter_versions(package, info, start, end)
-    _LOGGER.debug(f'using "{versions}" for "{package}"')
+    _LOGGER.debug(f'"{package}": using "{versions}"')
     rows = []
     for version in versions[::-1]:
         week, python, manylinux = _parse_version(info['releases'][version])
@@ -148,9 +169,8 @@ def _package_update(package, start, end, to_remove):
         rows.append(utils.Row(week, package, version, python, manylinux))
     if len(versions) and not len(rows):
         # to_remove.add(package)
-        _LOGGER.warning(f'"{package} has no manylinux wheel in "{versions}"')
-    else:
-        _LOGGER.info(f'info for "{package}" retrieved')
+        _LOGGER.warning(f'"{package}": no manylinux wheel in "{versions}"')
+    _LOGGER.debug(f'"{package}": end update')
     return rows
 
 
@@ -158,8 +178,8 @@ def _load_rows():
     rows = []
     start = date.max
     end = date.min
-    if utils.CACHE_PATH.exists():
-        with lzma.open(utils.CACHE_PATH, 'rt') as f:
+    if utils.ROWS_PATH.exists():
+        with lzma.open(utils.ROWS_PATH, 'rt') as f:
             for line in f:
                 row = utils.Row(*line.strip().split(','))
                 upload_date = utils.from_week_str(row.week)
@@ -173,9 +193,22 @@ def _load_rows():
 def _save_rows(rows):
     rows.sort(key=lambda x: (x.python, x.manylinux, x.package, x.week))
     # rows.sort(key=lambda x: (x[1], x[2]))
-    with lzma.open(utils.CACHE_PATH, 'wt') as f:
+    with lzma.open(utils.ROWS_PATH, 'wt') as f:
         for row in rows:
             f.write(f'{",".join(row)}\n')
+
+
+def _load_release_feed():
+    release_feed = {}
+    if RELEASE_FEED_PATH.exists():
+        with open(RELEASE_FEED_PATH) as f:
+            release_feed = json.load(f)
+    return release_feed
+
+
+def _save_release_feed(release_feed):
+    with open(RELEASE_FEED_PATH, 'w') as f:
+        json.dump(release_feed, f)
 
 
 def update(start_asked, end, use_top_packages):
@@ -193,7 +226,7 @@ def update(start_asked, end, use_top_packages):
             start = end_cache
         if start_cache <= start < end <= end_cache:
             _LOGGER.info(f'cache is up to date between {start} & {end}')
-            return
+            #return
     else:
         end_cache = start
 
@@ -216,10 +249,13 @@ def update(start_asked, end, use_top_packages):
         top_packages.sort()
         _LOGGER.debug(f'now using {len(top_packages)} top package names')
 
+    release_feed = _load_release_feed()
     to_remove = set()
     for package in packages + top_packages:
-        rows.extend(_package_update(package, start, end, to_remove))
+        rows.extend(_package_update(package, start, end, to_remove, release_feed))
+    _save_release_feed(release_feed)
     packages.extend(set(top_packages) & set(r.package for r in rows))
+    exit(0)
     _save_rows(rows)
     packages = list(set(packages) - to_remove)
     packages.sort()
