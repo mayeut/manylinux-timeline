@@ -2,6 +2,7 @@ import argparse
 import logging
 
 from datetime import date
+from shutil import copy, rmtree
 
 import update_cache
 import update_stats
@@ -49,5 +50,11 @@ if __name__ == "__main__":
 
     if start >= end:
         raise ValueError(f'{start} >= {end}')
+    if utils.BUILD_PATH.exists():
+        rmtree(utils.BUILD_PATH)
+    utils.BUILD_PATH.mkdir()
     update_cache.update(start, end, args.top_packages)
     update_stats.update(start, end)
+    copy(utils.ROOT_PATH / 'index.html', utils.BUILD_PATH)
+    copy(utils.ROOT_PATH / 'style.css', utils.BUILD_PATH)
+    copy(utils.ROOT_PATH / 'favicon.ico', utils.BUILD_PATH)

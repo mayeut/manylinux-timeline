@@ -1,12 +1,12 @@
 import logging
 import lzma
 import json
-import os
 import re
 
 from datetime import date, datetime, timedelta
 from typing import NamedTuple, Optional
 
+import feedparser
 import requests
 import utils
 
@@ -98,17 +98,44 @@ def _parse_version(files):
     return utils.to_week_str(upload_date), python_str, manylinux_str
 
 
+def _has_new_release(package, start, end, to_remove):
+    url = f'https://pypi.org/rss/project/{package}/releases.xml'
+    feed = feedparser.parse(url)
+    if feed.status == 404:
+        _LOGGER.warning(f'"{package}" is not available on PyPI anymore')
+        to_remove.add(package)
+        return False
+    elif feed.bozo:
+        _LOGGER.error(f'error "{e}" when retrieving "{package}" release feed')
+        return False
+    if len(feed['entries']) == 0:
+        return False
+    published = [date(*entry['published_parsed'][:3])
+                 for entry in feed['entries']]
+    published_min = min(published)
+    published_max = max(published)
+    if published_max < start:
+        return False
+    if published_min > start:
+        _LOGGER.debug(f'assuming new release for "{package}"')
+        return True
+    return any([start <= p < end for p in published])
+
+
 def _package_update(package, start, end, to_remove):
     _LOGGER.info(f'retrieving "{package}" info')
+    if not _has_new_release(package, start, end, to_remove):
+        _LOGGER.info(f'No new release for "{package}" between {start} & {end}')
+        return []
     response = requests.get(f'https://pypi.org/pypi/{package}/json')
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if response.status_code == 404:
-            _LOGGER.warning(f'{package} is not available on PyPI anymore')
+            _LOGGER.warning(f'"{package}" is not available on PyPI anymore')
             to_remove.add(package)
         else:
-            _LOGGER.error(f'error {e} when retrieving {package} info')
+            _LOGGER.error(f'error "{e}" when retrieving "{package}" info')
         return []
     info = response.json()
     versions = _filter_versions(package, info, start, end)
@@ -122,6 +149,8 @@ def _package_update(package, start, end, to_remove):
     if len(versions) and not len(rows):
         # to_remove.add(package)
         _LOGGER.warning(f'"{package} has no manylinux wheel in "{versions}"')
+    else:
+        _LOGGER.info(f'info for "{package}" retrieved')
     return rows
 
 
@@ -129,8 +158,8 @@ def _load_rows():
     rows = []
     start = date.max
     end = date.min
-    if os.path.exists(utils.CACHE_NAME):
-        with lzma.open(utils.CACHE_NAME, 'rt') as f:
+    if utils.CACHE_PATH.exists():
+        with lzma.open(utils.CACHE_PATH, 'rt') as f:
             for line in f:
                 row = utils.Row(*line.strip().split(','))
                 upload_date = utils.from_week_str(row.week)
@@ -144,12 +173,32 @@ def _load_rows():
 def _save_rows(rows):
     rows.sort(key=lambda x: (x.python, x.manylinux, x.package, x.week))
     # rows.sort(key=lambda x: (x[1], x[2]))
-    with lzma.open(utils.CACHE_NAME, 'wt') as f:
+    with lzma.open(utils.CACHE_PATH, 'wt') as f:
         for row in rows:
             f.write(f'{",".join(row)}\n')
 
 
 def update(start_asked, end, use_top_packages):
+    rows, start_cache, end_cache = _load_rows()
+    # _save_rows(rows)
+    # exit(0)
+    start = start_asked - utils.WINDOW_SIZE
+    if len(rows) > 0:
+        if start < start_cache < end_cache < end:
+            raise NotImplementedError(
+                f'{start} < {start_cache} < {end_cache} < {end}')
+        if start < start_cache <= end:
+            end = start_cache
+        if start <= end_cache < end:
+            start = end_cache
+        if start_cache <= start < end <= end_cache:
+            _LOGGER.info(f'cache is up to date between {start} & {end}')
+            return
+    else:
+        end_cache = start
+
+    _LOGGER.info(f'updating timeline between {start} & {end}')
+
     _LOGGER.debug('loading package list')
     with open('./packages.json') as f:
         packages = json.load(f)
@@ -167,23 +216,6 @@ def update(start_asked, end, use_top_packages):
         top_packages.sort()
         _LOGGER.debug(f'now using {len(top_packages)} top package names')
 
-    rows, start_cache, end_cache = _load_rows()
-    # _save_rows(rows)
-    # exit(0)
-    start = start_asked - utils.WINDOW_SIZE
-    if len(rows) > 0:
-        if start < start_cache < end_cache < end:
-            raise NotImplementedError(
-                f'{start} < {start_cache} < {end_cache} < {end}')
-        if start < start_cache <= end:
-            end = start_cache
-        if start <= end_cache < end:
-            start = end_cache
-        if start_cache <= start < end <= end_cache:
-            _LOGGER.info(f'cache is up to date between {start} & {end}')
-            return
-
-    _LOGGER.info(f'updating timeline between {start} & {end}')
     to_remove = set()
     for package in packages + top_packages:
         rows.extend(_package_update(package, start, end, to_remove))

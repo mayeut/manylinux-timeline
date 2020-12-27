@@ -1,5 +1,6 @@
 certifi==2020.12.5
 chardet==4.0.0
+feedparser==6.0.2
 idna==2.10
 numpy==1.19.4
 packaging==20.8
@@ -8,5 +9,6 @@ pyparsing==2.4.7
 python-dateutil==2.8.1
 pytz==2020.5
 requests==2.25.1
+sgmllib3k==1.0.0
 six==1.15.0
 urllib3==1.26.2

@@ -34,7 +34,7 @@ IMPLEMENTATIONS = tuple(itertools.chain(
 
 def _get_full_dataframe():
     df = pd.read_csv(
-        utils.CACHE_NAME,
+        utils.CACHE_PATH,
         names=utils.Row._fields,
         converters={'week': lambda x: pd.to_datetime(utils.from_week_str(x))}
     )
@@ -157,5 +157,5 @@ def update(start, end):
         out['architecture'][series_name] = [
             float(f'{row[i]:.4f}') for row in rows_arch]
 
-    with open('data.json', 'w') as f:
+    with open(utils.DATA_PATH, 'w') as f:
         json.dump(out, f, separators=(',', ':'))

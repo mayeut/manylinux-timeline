@@ -1,8 +1,11 @@
 from datetime import date, timedelta
+from pathlib import Path
 from typing import NamedTuple
 
-
-CACHE_NAME = 'rows.csv.xz'
+ROOT_PATH = Path(__file__).resolve().parent
+BUILD_PATH = ROOT_PATH / 'build'
+CACHE_PATH = ROOT_PATH / 'rows.csv.xz'
+DATA_PATH = BUILD_PATH / 'data.json'
 WEEK_DELTA = timedelta(days=7)
 WINDOW_SIZE = WEEK_DELTA * 26
 
