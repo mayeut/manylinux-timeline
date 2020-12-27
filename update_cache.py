@@ -147,7 +147,6 @@ def _package_update(package, start, end, to_remove, release_feed):
     if not _has_new_release(package, start, end, to_remove, release_feed):
         _LOGGER.info(f'"{package}": no new release')
         return []
-    return []
     response = requests.get(f'https://pypi.org/pypi/{package}/json')
     try:
         response.raise_for_status()
@@ -226,9 +225,7 @@ def update(start_asked, end, use_top_packages):
             start = end_cache
         if start_cache <= start < end <= end_cache:
             _LOGGER.info(f'cache is up to date between {start} & {end}')
-            #return
-    else:
-        end_cache = start
+            return
 
     _LOGGER.info(f'updating timeline between {start} & {end}')
 
@@ -249,13 +246,12 @@ def update(start_asked, end, use_top_packages):
         top_packages.sort()
         _LOGGER.debug(f'now using {len(top_packages)} top package names')
 
-    release_feed = _load_release_feed()
     to_remove = set()
+    release_feed = _load_release_feed()
     for package in packages + top_packages:
         rows.extend(_package_update(package, start, end, to_remove, release_feed))
     _save_release_feed(release_feed)
     packages.extend(set(top_packages) & set(r.package for r in rows))
-    exit(0)
     _save_rows(rows)
     packages = list(set(packages) - to_remove)
     packages.sort()
