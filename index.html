@@ -79,19 +79,23 @@
         });
         Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1%"}}}}, {"displayModeBar": false, "responsive": true});
     }
-    $.get("data.json", function(data_raw, status){
-        if (status != "success") {
-            alert("Can't load data !");
-            return;
-        }
-        data = JSON.parse(data_raw);
+    function update_data(data) {
         $("#last_update").text(data.last_update)
         $("#package_count").text(data.package_count)
         load_plot("lowest-policy-plot", data.index, data.lowest_policy, true);
         load_plot("highest-policy-plot", data.index, data.highest_policy, true);
         load_plot("python-implementation-plot", data.index, data.implementation, false);
         load_plot("architecture-plot", data.index, data.architecture, false);
-    });
+    }
+    $.getJSON("data.json")
+        .done(function( json ) {
+            update_data(json);
+        })
+        .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+            alert("Can't load data !");
+        });
 </script>
 </body>
 </html>
