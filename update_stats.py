@@ -4,7 +4,6 @@ import logging
 
 from datetime import datetime, timezone
 from io import StringIO
-from string import Template
 
 import pandas as pd
 import utils
