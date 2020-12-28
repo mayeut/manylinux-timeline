@@ -66,7 +66,7 @@ if __name__ == "__main__":
         packages = update_cache.update(packages, args.top_packages)
     packages, rows = update_dataset.update(packages)
     with open(utils.ROOT_PATH / 'packages.json', 'w') as f:
-        json.dump(packages, f, separators=(',', ':'))
+        json.dump(packages, f, indent=0)
     update_stats.update(rows, start, end)
     copy(utils.ROOT_PATH / 'index.html', utils.BUILD_PATH)
     copy(utils.ROOT_PATH / 'style.css', utils.BUILD_PATH)
