@@ -18,7 +18,7 @@ def _build_url(package):
 
 
 def _package_update(package):
-    headers = {}
+    headers = {'User-Agent': utils.USER_AGENT}
     package_new_name = package
     cache_file = utils.get_release_cache_path(package)
     if cache_file.exists():

@@ -11,6 +11,8 @@ CACHE_PATH = ROOT_PATH / 'cache'
 RELEASE_INFO_PATH = CACHE_PATH / 'info'
 WEEK_DELTA = timedelta(days=7)
 WINDOW_SIZE = WEEK_DELTA * 26
+USER_AGENT = ('manylinux-timeline/1.0 '
+              '(https://github.com/mayeut/manylinux-timeline)')
 
 Row = NamedTuple('Row', [
     ('day', date),
