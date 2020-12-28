@@ -30,9 +30,8 @@ IMPLEMENTATIONS = tuple(itertools.chain(
 ))
 
 
-def _get_full_dataframe(start, end):
-    df = pd.read_csv(utils.ROWS_PATH, names=utils.Row._fields, converters={
-        'week': lambda x: pd.to_datetime(utils.from_week_str(x))})
+def _get_full_dataframe(rows, start, end):
+    df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f'{policy}_x86_64')
     for arch in ARCHITECTURES:
@@ -49,8 +48,9 @@ def _get_full_dataframe(start, end):
         | df.python.str.contains('pp2')
     df['any3'] = df.python.str.contains('py3') | df.python.str.contains('cp3') \
         | df.python.str.contains('pp3')
-    df_r = df[(df['week'] >= (start - utils.WINDOW_SIZE)) & (df['week'] < end)]
-    return df_r.sort_values('week', ascending=False).copy(deep=True)
+    df_r = df[(df['day'] >= (start - utils.WINDOW_SIZE)) & (df['day'] < end)]
+    df_r = df_r.drop(columns=['version', 'python', 'manylinux'])
+    return df_r.sort_values('day', ascending=False).copy(deep=True)
 
 
 def _get_stat(stats, key, level):
@@ -60,23 +60,26 @@ def _get_stat(stats, key, level):
         return 0.0
 
 
-def update(start, end):
+def update(rows, start, end):
     pd.set_option('display.max_columns', None)
-    date = pd.to_datetime(end)  # start at end
+    current = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
-    df = _get_full_dataframe(start_date, date)
+    _LOGGER.info('create main data frame')
+    df = _get_full_dataframe(rows, start_date, current)
     rows_highest_policy = []
     rows_lowest_policy = []
     rows_impl = []
     rows_arch = []
     index = []
     package_count = df[['package']].drop_duplicates().agg('count')['package']
-    while date >= start_date:
-        window_start = date - utils.WINDOW_SIZE
-        df_window = df[(df['week'] >= window_start) & (df['week'] < date)].\
+    _LOGGER.info(f'update stats using a {utils.WINDOW_SIZE.days} days sliding '
+                 'window')
+    while current >= start_date:
+        window_start = current - utils.WINDOW_SIZE
+        df_window = df[(df['day'] >= window_start) & (df['day'] < current)].\
             drop_duplicates(['package'])
-        index.append(date)
-        date -= utils.WEEK_DELTA
+        index.append(current)
+        current -= utils.WEEK_DELTA
         stats_policy = df_window[df_window['x86_64']].value_counts(
             subset=list(POLICIES), normalize=True)
         stats_arch = df_window.value_counts(subset=list(ARCHITECTURES),

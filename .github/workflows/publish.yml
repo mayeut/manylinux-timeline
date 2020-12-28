@@ -21,7 +21,15 @@ jobs:
         git config user.email "${{ github.actor }}@users.noreply.github.com"
         git config user.name "${{ github.actor }}"
         git config user.password ${{ github.token }}
+    - id: timestamp
+      run: echo "::set-output name=timestamp::$(python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"))')"
+    - name: Setup cache
+      uses: actions/cache@v2
+      with:
+        path: cache/*
+        key: pypi-cache-${{ steps.timestamp.outputs.timestamp }}
+        restore-keys: pypi-cache-
     - name: Build
       run: ./build.sh
     - name: Deploy
-      run: ./deploy.sh
+      run: exit 0 #./deploy.sh
