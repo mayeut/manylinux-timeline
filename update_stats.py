@@ -64,7 +64,7 @@ def update(rows, start, end):
     pd.set_option('display.max_columns', None)
     current = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
-    step = timedelta(days=7)
+    step = timedelta(days=1)
     _LOGGER.info('create main data frame')
     df = _get_full_dataframe(rows, start_date, current)
     rows_highest_policy = []
