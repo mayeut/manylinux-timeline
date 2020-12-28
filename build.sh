@@ -46,7 +46,7 @@ if [[ ${NOCHECK} -eq 0 ]]; then
 fi
 
 # Generate the files
-python3 update.py -v
+python3 update.py -vv
 
 if ! git diff --quiet --exit-code; then
 	if [[ ${NOCOMMIT} -ne 0 ]]; then
