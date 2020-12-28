@@ -37,3 +37,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
         FOLDER: build
+        COMMIT_MESSAGE: [bot] Deploying from ${{ github.sha }} on ${{ steps.timestamp.outputs.timestamp }}
