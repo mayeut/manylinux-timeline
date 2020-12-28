@@ -22,7 +22,7 @@ jobs:
         git config user.name "${{ github.actor }}"
         git config user.password ${{ github.token }}
     - id: timestamp
-      run: echo "::set-output name=timestamp::$(python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"))')"
+      run: echo "::set-output name=timestamp::$(python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).isoformat())')"
     - name: Setup cache
       uses: actions/cache@v2
       with:
