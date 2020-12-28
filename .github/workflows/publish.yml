@@ -32,7 +32,7 @@ jobs:
     - name: Build static site
       run: ./build.sh
     - name: Deploy to GitHub Pages
-      uses: Cecilapp/GitHub-Pages-deploy@v3.1.0
+      uses: Cecilapp/GitHub-Pages-deploy@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
