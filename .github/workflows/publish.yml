@@ -16,11 +16,6 @@ jobs:
       with:
         python-version: 3.9
         architecture: x64
-    - name: Configure git user
-      run: |
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git config user.name "${{ github.actor }}"
-        git config user.password ${{ github.token }}
     - id: timestamp
       run: echo "::set-output name=timestamp::$(python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).isoformat())')"
     - name: Setup cache
@@ -30,7 +25,14 @@ jobs:
         key: pypi-cache-${{ steps.timestamp.outputs.timestamp }}
         restore-keys: pypi-cache-
     - name: Build static site
-      run: ./build.sh
+      run: |
+        python3 -m pip install -r requirements.txt
+        python3 update.py -vv
+    - name: Auto-commit packages.json
+      uses: stefanzweifel/git-auto-commit-action@v4.8.0
+      with:
+        commit_message: "[bot] Update packages.json on ${{ steps.timestamp.outputs.timestamp }}"
+        file_pattern: packages.json
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
