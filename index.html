@@ -50,7 +50,7 @@
 
     </div>
     <footer>
-        <p class="footer">Last updated <span id="last_update">never</span>. (Updated weekly.)</p>
+        <p class="footer">Last updated <span id="last_update">never</span>. (Updated daily.)</p>
         <a class="github-fork-ribbon" href="https://github.com/mayeut/manylinux-timeline" target="_blank" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
     </footer>
 </div>
@@ -75,7 +75,7 @@
             new_series = Object.assign(new_series, {"y":series[key], "legendgroup": key, "name": key, "line": {"color": colors[index]}});
             series_parameters.push(new_series);
         });
-        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1%"}}}}, {"displayModeBar": false, "responsive": true});
+        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1", "ticksuffix": "%"}}}}, {"displayModeBar": false, "responsive": true});
     }
     function update_data(data) {
         $("#last_update").text(data.last_update)

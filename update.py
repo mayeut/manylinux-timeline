@@ -2,7 +2,7 @@ import argparse
 import json
 import logging
 
-from datetime import date
+from datetime import date, timedelta
 from shutil import copy, rmtree
 
 import update_cache
@@ -15,8 +15,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 if __name__ == "__main__":
-    default_end = utils.week_start(date.today()) - utils.WEEK_DELTA
-    default_start = default_end - 104 * utils.WEEK_DELTA
+    default_end = date.today() - timedelta(days=1)
+    default_start = default_end - timedelta(days=365 * 2)
 
     parser = argparse.ArgumentParser(
         description='Update manylinux timeline',
@@ -37,19 +37,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logging.basicConfig(level=30 - 10 * min(args.verbosity or 0, 2))
-    start = utils.week_start(args.start)
-    if start != args.start:
-        _LOGGER.warning(f'start date ({args.start}) adjusted to 1st day of the '
-                        f'same week ({start}) ')
-    end = utils.week_start(args.end)
-    if end != args.end:
-        _LOGGER.warning(f'end date ({args.end}) adjusted to 1st day of the '
-                        f'same week ({end}) ')
+    start = args.start
+    end = args.end
     if end > default_end:
         end = default_end
         _LOGGER.warning(f'end date ({args.end}) adjusted to the default end '
-                        f'date ({end}) to let packagers time to release all '
-                        'manylinux wheels')
+                        f'date ({end})')
     if start >= end:
         raise ValueError(f'{start} >= {end}')
 

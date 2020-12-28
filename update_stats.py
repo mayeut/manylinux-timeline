@@ -2,7 +2,7 @@ import itertools
 import json
 import logging
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import utils
@@ -64,6 +64,7 @@ def update(rows, start, end):
     pd.set_option('display.max_columns', None)
     current = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
+    step = timedelta(days=7)
     _LOGGER.info('create main data frame')
     df = _get_full_dataframe(rows, start_date, current)
     rows_highest_policy = []
@@ -79,7 +80,7 @@ def update(rows, start, end):
         df_window = df[(df['day'] >= window_start) & (df['day'] < current)].\
             drop_duplicates(['package'])
         index.append(current)
-        current -= utils.WEEK_DELTA
+        current -= step
         stats_policy = df_window[df_window['x86_64']].value_counts(
             subset=list(POLICIES), normalize=True)
         stats_arch = df_window.value_counts(subset=list(ARCHITECTURES),
@@ -121,19 +122,19 @@ def update(rows, start, end):
     for i, series in enumerate(POLICIES):
         series_name = series.replace('ml', 'manylinux')
         out['lowest_policy'][series_name] = [
-            float(f'{row[i]:.4f}') for row in rows_lowest_policy]
+            float(f'{100.0 * row[i]:.1f}') for row in rows_lowest_policy]
         out['highest_policy'][series_name] = [
-            float(f'{row[i]:.4f}') for row in rows_highest_policy]
+            float(f'{100.0 * row[i]:.1f}') for row in rows_highest_policy]
 
     out['implementation']['keys'] = [series for series in IMPLEMENTATIONS]
     for i, series_name in enumerate(IMPLEMENTATIONS):
         out['implementation'][series_name] = [
-            float(f'{row[i]:.4f}') for row in rows_impl]
+            float(f'{100.0 * row[i]:.1f}') for row in rows_impl]
 
     out['architecture']['keys'] = [series for series in ARCHITECTURES]
     for i, series_name in enumerate(ARCHITECTURES):
         out['architecture'][series_name] = [
-            float(f'{row[i]:.4f}') for row in rows_arch]
+            float(f'{100.0 * row[i]:.1f}') for row in rows_arch]
 
     with open(utils.DATA_PATH, 'w') as f:
         json.dump(out, f, separators=(',', ':'))

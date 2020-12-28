@@ -9,8 +9,7 @@ BUILD_PATH = ROOT_PATH / 'build'
 DATA_PATH = BUILD_PATH / 'data.json'
 CACHE_PATH = ROOT_PATH / 'cache'
 RELEASE_INFO_PATH = CACHE_PATH / 'info'
-WEEK_DELTA = timedelta(days=7)
-WINDOW_SIZE = WEEK_DELTA * 26
+WINDOW_SIZE = timedelta(days=180)
 USER_AGENT = ('manylinux-timeline/1.0 '
               '(https://github.com/mayeut/manylinux-timeline)')
 
@@ -35,10 +34,6 @@ WheelMetadata = NamedTuple('_WheelMetadata', [
     ('abi', str),
     ('platform', str)
 ])
-
-
-def week_start(date_):
-    return date.fromisocalendar(*date_.isocalendar()[:2], 1)
 
 
 def get_release_cache_path(package):
