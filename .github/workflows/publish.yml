@@ -29,7 +29,12 @@ jobs:
         path: cache/*
         key: pypi-cache-${{ steps.timestamp.outputs.timestamp }}
         restore-keys: pypi-cache-
-    - name: Build
+    - name: Build static site
       run: ./build.sh
-    - name: Deploy
-      run: exit 0 #./deploy.sh
+    - name: Deploy to GitHub Pages
+      uses: Cecilapp/GitHub-Pages-deploy@v3.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        email: ${{ github.actor }}@users.noreply.github.com
+        build_dir: build
