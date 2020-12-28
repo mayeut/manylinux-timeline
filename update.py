@@ -71,3 +71,4 @@ if __name__ == "__main__":
     copy(utils.ROOT_PATH / 'index.html', utils.BUILD_PATH)
     copy(utils.ROOT_PATH / 'style.css', utils.BUILD_PATH)
     copy(utils.ROOT_PATH / 'favicon.ico', utils.BUILD_PATH)
+    copy(utils.ROOT_PATH / '.gitignore', utils.BUILD_PATH)
