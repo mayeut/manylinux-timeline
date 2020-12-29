@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - "dependabot/**"
       - "gh-pages"
+      - "update/**"
   pull_request:
   workflow_dispatch:
   schedule:
