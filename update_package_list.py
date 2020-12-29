@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import List, Optional, Set
 
 import requests
 from google.api_core.exceptions import Forbidden, GoogleAPIError
@@ -15,7 +16,7 @@ BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
 
 
 class _Item:
-    def __init__(self, value):
+    def __init__(self, value: str):
         self.value = value
         self.value_ = canonicalize_name(value)
 
@@ -26,7 +27,7 @@ class _Item:
         return self.value_.__eq__(other.value_)
 
 
-def _merge(source, new_packages, packages_set):
+def _merge(source: str, new_packages: Set[str], packages_set: Set[str]):
     _LOGGER.debug(f"{source}: merging {len(new_packages)} package names")
     # need to handle canonicalize_name
     dst = set([_Item(value) for value in packages_set])
@@ -36,7 +37,9 @@ def _merge(source, new_packages, packages_set):
     _LOGGER.debug(f"{source}: now using {len(packages_set)} package names")
 
 
-def _update_bigquery(bigquery_credentials, packages_set):
+def _update_bigquery(
+    bigquery_credentials: Optional[Path], packages_set: Set[str]
+) -> None:
     _LOGGER.info("bigquery: fetching packages")
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y%m%d")
@@ -78,7 +81,7 @@ def _update_bigquery(bigquery_credentials, packages_set):
     _merge("bigquery", set(row.project for row in rows), packages_set)
 
 
-def _update_top_packages(packages_set):
+def _update_top_packages(packages_set: Set[str]) -> None:
     _LOGGER.info("top pypi: fetching packages")
     response = requests.get(
         "https://hugovk.github.io/top-pypi-packages/"
@@ -92,7 +95,9 @@ def _update_top_packages(packages_set):
     _LOGGER.debug(f"top pypi: now using {len(packages_set)} package names")
 
 
-def update(packages, use_top_packages, bigquery_credentials):
+def update(
+    packages: List[str], use_top_packages: bool, bigquery_credentials: Optional[Path]
+) -> List[str]:
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)

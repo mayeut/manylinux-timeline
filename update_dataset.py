@@ -1,6 +1,7 @@
 import json
 import logging
 from datetime import date
+from typing import Dict, List, Tuple
 
 from packaging.version import InvalidVersion, Version
 
@@ -9,7 +10,7 @@ import utils
 _LOGGER = logging.getLogger(__name__)
 
 
-def _filter_versions(package, info):
+def _filter_versions(package: str, info: dict) -> List[str]:
     candidate_versions = []
     for version in info["releases"].keys():
         try:
@@ -33,7 +34,7 @@ def _filter_versions(package, info):
     return filtered
 
 
-def _parse_version(files):
+def _parse_version(files: List[Dict[str, str]]) -> Tuple[date, str, str]:
     upload_date = date.max.isoformat()
     pythons = set()
     manylinux = set()
@@ -43,6 +44,8 @@ def _parse_version(files):
         if not filename.lower().endswith(".whl"):
             continue
         parsed_filename = utils.WHEEL_INFO_RE.match(filename)
+        if parsed_filename is None:
+            continue
         metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
         for python in metadata.implementation.replace(",", ".").split("."):
             try:
@@ -63,7 +66,7 @@ def _parse_version(files):
     return date.fromisoformat(upload_date), python_str, manylinux_str
 
 
-def _package_update(package):
+def _package_update(package: str) -> List[utils.Row]:
     cache_file = utils.get_release_cache_path(package)
     if not cache_file.exists():
         return []
@@ -83,7 +86,7 @@ def _package_update(package):
     return rows
 
 
-def update(packages):
+def update(packages: List[str]) -> Tuple[List[str], List[utils.Row]]:
     rows = []
     for package in packages:
         _LOGGER.info(f'"{package}": begin dataset creation')

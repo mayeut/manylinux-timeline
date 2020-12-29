@@ -2,6 +2,7 @@ import itertools
 import json
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import Iterable, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -34,7 +35,7 @@ IMPLEMENTATIONS = tuple(
 )
 
 
-def _get_range_dataframe(df, start, end):
+def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
@@ -63,7 +64,9 @@ def _get_range_dataframe(df, start, end):
     return df_r.sort_values("day", ascending=False).copy(deep=True)
 
 
-def _get_rolling_dataframe(df, start_date, end_date):
+def _get_rolling_dataframe(
+    df: pd.DataFrame, start_date, end_date
+) -> Tuple[List[str], pd.DataFrame]:
     current = end_date
     step = timedelta(days=1)
     index = []
@@ -83,20 +86,20 @@ def _get_rolling_dataframe(df, start_date, end_date):
     return index_as_str, pd.concat(rolling_dfs).sort_values("day")
 
 
-def _get_stats_df(full_dataframe, columns):
+def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.DataFrame:
     columns_ = list(columns)
     values = full_dataframe.value_counts(subset=["day"] + columns_, sort=False)
     df_with_count = values.unstack(columns_, fill_value=0.0)
     return df_with_count.apply(lambda x: x / np.sum(x), axis=1)
 
 
-def _get_stats(df, key, level):
+def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> List[float]:
     ts = df.xs(key=key, axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    return [float(f"{100.0 * value:.1f}") for value in ts.sort_index().values]
+    return list([float(f"{100.0 * value:.1f}") for value in ts.sort_index().values])
 
 
-def _get_total_packages(df, start_date, end_date):
+def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> List[int]:
     ts = (
         df.sort_values("day")
         .drop_duplicates("package")

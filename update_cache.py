@@ -4,6 +4,7 @@ import urllib.parse
 from datetime import date, datetime
 from pathlib import Path
 from shutil import move
+from typing import List, Optional
 
 import requests
 
@@ -12,11 +13,11 @@ import utils
 _LOGGER = logging.getLogger(__name__)
 
 
-def _build_url(package):
+def _build_url(package: str) -> str:
     return f"https://pypi.org/pypi/{package}/json"
 
 
-def _package_update(package):
+def _package_update(package: str) -> Optional[str]:
     headers = {"User-Agent": utils.USER_AGENT}
     package_new_name = package
     cache_file = utils.get_release_cache_path(package)
@@ -89,7 +90,7 @@ def _package_update(package):
     return package_new_name
 
 
-def update(packages):
+def update(packages: List[str]) -> List[str]:
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
     packages_set = set(packages)
     to_remove = set()

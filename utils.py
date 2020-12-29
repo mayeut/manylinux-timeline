@@ -41,5 +41,5 @@ WheelMetadata = NamedTuple(
 )
 
 
-def get_release_cache_path(package):
+def get_release_cache_path(package: str) -> Path:
     return RELEASE_INFO_PATH / f"{package}.json"
