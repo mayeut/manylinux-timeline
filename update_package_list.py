@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 
 import requests
 
+from google.api_core.exceptions import Forbidden, GoogleAPIError
 from google.cloud import bigquery
 from packaging.utils import canonicalize_name
 
@@ -41,7 +42,7 @@ def _merge(source, new_packages, packages_set):
 def _update_bigquery(bigquery_credentials, packages_set):
     _LOGGER.info('bigquery: fetching packages')
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
-    table_suffix = (today - timedelta(days=1)).strftime('%Y%m%d')
+    table_suffix = (today - timedelta(days=2)).strftime('%Y%m%d')
     query = (
         'SELECT file.project AS project FROM '
         f'the-psf.pypi.downloads{table_suffix} WHERE '
@@ -57,7 +58,18 @@ def _update_bigquery(bigquery_credentials, packages_set):
         client = bigquery.Client.from_service_account_json(bigquery_credentials,
                                                            project=project)
     query_job = client.query(query)
-    rows = query_job.result()
+    try:
+        rows = query_job.result()
+    except Forbidden as e:
+        if hasattr(e, 'errors') and len(e.errors) > 0 and \
+                'message' in e.errors[0]:
+            _LOGGER.warning(f'bigquery: {e.errors[0]["message"]}')
+        else:
+            _LOGGER.warning(f'bigquery: {e}')
+        return
+    except GoogleAPIError as e:
+        _LOGGER.warning(f'bigquery: {e}')
+        return
     if query_job.cache_hit:
         _LOGGER.debug('bigquery: using cached results')
     _merge('bigquery', set(row.project for row in rows), packages_set)
@@ -79,7 +91,6 @@ def update(packages, use_top_packages, bigquery_credentials):
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)
-
     if bigquery_credentials or BIGQUERY_TOKEN in os.environ:
         _update_bigquery(bigquery_credentials, packages_set)
     return list(sorted(packages_set))

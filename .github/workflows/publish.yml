@@ -29,7 +29,7 @@ jobs:
     - name: Build static site
       env:
         BIGQUERY_TOKEN: ${{ secrets.BIGQUERY_TOKEN }}
-      run: python3 update.py -vv
+      run: python3 update.py -v
     - name: Auto-commit packages.json
       uses: stefanzweifel/git-auto-commit-action@v4.8.0
       with:
