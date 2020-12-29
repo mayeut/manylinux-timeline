@@ -88,21 +88,9 @@ def _package_update(package):
     return package_new_name
 
 
-def update(packages, use_top_packages):
+def update(packages):
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
-
     packages_set = set(packages)
-    if use_top_packages:
-        _LOGGER.info('fetching top pypi packages')
-        response = requests.get('https://hugovk.github.io/top-pypi-packages/'
-                                'top-pypi-packages-30-days.min.json')
-        response.raise_for_status()
-        top_packages_data = response.json()
-        _LOGGER.debug(f'merging {len(top_packages_data["rows"])} package names')
-        top_packages = set(row['project'] for row in top_packages_data['rows'])
-        packages_set |= top_packages
-        _LOGGER.debug(f'now using {len(packages_set)} package names')
-
     to_remove = set()
     to_add = set()
     for package in sorted(packages_set):

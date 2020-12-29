@@ -3,15 +3,26 @@ import json
 import logging
 
 from datetime import date, timedelta
+from pathlib import Path
 from shutil import copy, rmtree
 
 import update_cache
 import update_dataset
+import update_package_list
 import update_stats
 import utils
 
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def check_file(value):
+    if value is None:
+        return None
+    result = Path(value)
+    if not result.exists() or not result.is_file():
+        raise ValueError(result)
+    return result
 
 
 if __name__ == "__main__":
@@ -32,6 +43,8 @@ if __name__ == "__main__":
                         type=date.fromisoformat, help='end date')
     parser.add_argument('--skip-cache', action='store_true',
                         help='skip cache update')
+    parser.add_argument('--bigquery-credentials', type=check_file,
+                        help='path to bigquery credentials (enables bigquery)')
     parser.add_argument('-v', '--verbosity', action='count',
                         help='increase output verbosity')
     args = parser.parse_args()
@@ -55,8 +68,18 @@ if __name__ == "__main__":
     with open(utils.ROOT_PATH / 'packages.json') as f:
         packages = json.load(f)
     _LOGGER.debug(f'loaded {len(packages)} package names')
+    packages = update_package_list.update(packages, args.top_packages,
+                                          args.bigquery_credentials)
+    for file in utils.ROOT_PATH.glob('*.csv'):
+        with open(file) as f:
+            for line in f:
+                project = line.strip()
+                if project not in packages:
+                    packages.append(project)
+    packages.sort()
+    _LOGGER.debug(f'loaded {len(packages)} package names')
     if not args.skip_cache:
-        packages = update_cache.update(packages, args.top_packages)
+        packages = update_cache.update(packages)
     packages, rows = update_dataset.update(packages)
     with open(utils.ROOT_PATH / 'packages.json', 'w') as f:
         json.dump(packages, f, indent=0)
