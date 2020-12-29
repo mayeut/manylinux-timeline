@@ -42,7 +42,7 @@ def _merge(source, new_packages, packages_set):
 def _update_bigquery(bigquery_credentials, packages_set):
     _LOGGER.info('bigquery: fetching packages')
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
-    table_suffix = (today - timedelta(days=2)).strftime('%Y%m%d')
+    table_suffix = (today - timedelta(days=1)).strftime('%Y%m%d')
     query = (
         'SELECT file.project AS project FROM '
         f'the-psf.pypi.downloads{table_suffix} WHERE '
