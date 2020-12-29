@@ -54,7 +54,13 @@ def _update_bigquery(bigquery_credentials, packages_set):
             bigquery_credentials = Path(temp) / 'key.json'
             bigquery_credentials.write_text(os.environ[BIGQUERY_TOKEN])
         with open(bigquery_credentials) as f:
-            project = json.load(f)['project_id']
+            try:
+                project = json.load(f)['project_id']
+                invalid = False
+            except ValueError:
+                invalid = True
+        if invalid:
+            raise ValueError('BIGQUERY_TOKEN is invalid')
         client = bigquery.Client.from_service_account_json(bigquery_credentials,
                                                            project=project)
     query_job = client.query(query)
@@ -91,6 +97,6 @@ def update(packages, use_top_packages, bigquery_credentials):
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)
-    if bigquery_credentials or BIGQUERY_TOKEN in os.environ:
+    if bigquery_credentials or os.environ.get(BIGQUERY_TOKEN, '') != '':
         _update_bigquery(bigquery_credentials, packages_set)
     return list(sorted(packages_set))
