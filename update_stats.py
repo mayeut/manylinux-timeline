@@ -31,8 +31,7 @@ IMPLEMENTATIONS = tuple(itertools.chain(
 ))
 
 
-def _get_full_dataframe(rows, start, end):
-    df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
+def _get_range_dataframe(df, start, end):
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f'{policy}_x86_64')
     for arch in ARCHITECTURES:
@@ -83,6 +82,18 @@ def _get_stats(df, key, level):
     return [float(f'{100.0 * value:.1f}') for value in values]
 
 
+def _get_total_packages(df, start_date, end_date):
+    ts = df.sort_values('day').drop_duplicates('package').value_counts(
+        subset=['day'], sort=False)
+    ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name='day')
+    offset = timedelta(days=1)
+    stop = max(pd.to_datetime(ts.index.values[-1]), end_date) + offset
+    ts[stop] = 0
+    ts = ts.cumsum().resample('1d').pad()
+    ts.index += offset
+    return ts[(ts.index >= start_date) & (ts.index <= end_date)].values.tolist()
+
+
 def update(rows, start, end):
     out = {
         'last_update': datetime.now(timezone.utc).strftime(
@@ -93,12 +104,15 @@ def update(rows, start, end):
         'highest_policy': {},
         'implementation': {},
         'architecture': {},
+        'package': {'keys': ['total', 'analysis']}
     }
     pd.set_option('display.max_columns', None)
     end_date = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
     _LOGGER.info('create main data frame')
-    df = _get_full_dataframe(rows, start_date, end_date)
+    df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
+    out['package']['total'] = _get_total_packages(df, start_date, end_date)
+    df = _get_range_dataframe(df, start_date, end_date)
     out['package_count'] = int(
         df[['package']].drop_duplicates().agg('count')['package'])
     _LOGGER.info(f'update dataframe using a {utils.WINDOW_SIZE.days} days '
@@ -106,6 +120,8 @@ def update(rows, start, end):
     out['index'], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
     _LOGGER.info('compute statistics')
+    out['package']['analysis'] = rolling_df.value_counts(
+        subset=['day'], sort=False).values.tolist()
     policy_df = _get_stats_df(rolling_df[rolling_df['x86_64']], POLICIES)
     len_ = len(POLICIES)
     out['highest_policy']['keys'] = []

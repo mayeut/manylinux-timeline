@@ -34,13 +34,16 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
+            <h2 id="package">Packages</h2>
+            <div><div id="package-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
             <h2 id="what">What is this about?</h2>
             <p>Old manylinux images have reached <a href="https://github.com/mayeut/pep600_compliance/blob/master/README.rst">end of life</a>. It's about time to drop support for them.</p>
             <p>This site shows the adoption of newer manylinux images and how packagers are using them.</p>
             <p><span id="package_count">0</span> packages providing manylinux wheels have been released on <a href="https://pypi.org/">PyPI</a> in the analysis timeframe. Considering this low number of packages, the data set is smoothed using a sliding window algorithm. Only the latest version of a given package is taken into account in this 6-month window.</p>
             <p>This is not an official website, just a nice visual way to measure progress. To see the authoritative guide on wheels and other aspects of python packaging, see the <a href="https://packaging.python.org">Python Packaging User Guide</a>.</p>
-        </div>
-        <div class="col-sm-6">
+
             <h2 id="bugs">Something's wrong with this page!</h2>
             <p>Fantastic, a problem found is a problem fixed. Please <a href="https://github.com/mayeut/manylinux-timeline/issues/">create a ticket</a>!</p>
             <p>You can also <a href="https://github.com/mayeut/manylinux-timeline/pulls/">submit a pull request</a>.</p>
@@ -59,7 +62,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script>
     window.PLOTLYENV=window.PLOTLYENV || {};
-    function load_plot(id, index, series, stacked) {
+    function load_plot(id, index, series, stacked, ticksuffix) {
         const colors = ["#636efa", "#ef553b", "#00cc96", "#ab63fa", "#ffa15a", "#19d3f3", "#ff6692", "#b6e880", "#ff97ff", "#fecb52", "#636efa",  "#ef553b", "#00cc96", "#ab63fa", "#ffa15a"];
         var global_parameters = {"mode": "lines", "orientation": "v", "showlegend": true, "x": index, "xaxis": "x", "yaxis": "y"};
 
@@ -75,15 +78,16 @@
             new_series = Object.assign(new_series, {"y":series[key], "legendgroup": key, "name": key, "line": {"color": colors[index]}});
             series_parameters.push(new_series);
         });
-        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1", "ticksuffix": "%"}}}}, {"displayModeBar": false, "responsive": true});
+        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1", "ticksuffix": ticksuffix}}}}, {"displayModeBar": false, "responsive": true});
     }
     function update_data(data) {
         $("#last_update").text(data.last_update)
         $("#package_count").text(data.package_count)
-        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true);
-        load_plot("highest-policy-plot", data.index, data.highest_policy, true);
-        load_plot("python-implementation-plot", data.index, data.implementation, false);
-        load_plot("architecture-plot", data.index, data.architecture, false);
+        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true, "%");
+        load_plot("highest-policy-plot", data.index, data.highest_policy, true, "%");
+        load_plot("python-implementation-plot", data.index, data.implementation, false, "%");
+        load_plot("architecture-plot", data.index, data.architecture, false, "%");
+        load_plot("package-plot", data.index, data.package, false, "");
     }
     $.getJSON("data.json")
         .done(function( json ) {
