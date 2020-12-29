@@ -1,7 +1,10 @@
 import json
 import logging
+import os
 
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import requests
 
@@ -10,6 +13,7 @@ from packaging.utils import canonicalize_name
 
 
 _LOGGER = logging.getLogger(__name__)
+BIGQUERY_TOKEN = 'BIGQUERY_TOKEN'
 
 
 class _Item:
@@ -44,10 +48,14 @@ def _update_bigquery(bigquery_credentials, packages_set):
         'REGEXP_CONTAINS(file.filename, "-manylinux\\\\w+\\\\.whl$") '
         'GROUP BY project'
     )
-    with open(bigquery_credentials) as f:
-        project = json.load(f)['project_id']
-    client = bigquery.Client.from_service_account_json(bigquery_credentials,
-                                                       project=project)
+    with TemporaryDirectory() as temp:
+        if bigquery_credentials is None:
+            bigquery_credentials = Path(temp) / 'key.json'
+            bigquery_credentials.write_text(os.environ[BIGQUERY_TOKEN])
+        with open(bigquery_credentials) as f:
+            project = json.load(f)['project_id']
+        client = bigquery.Client.from_service_account_json(bigquery_credentials,
+                                                           project=project)
     query_job = client.query(query)
     rows = query_job.result()
     if query_job.cache_hit:
@@ -71,6 +79,7 @@ def update(packages, use_top_packages, bigquery_credentials):
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)
-    if bigquery_credentials:
+
+    if bigquery_credentials or BIGQUERY_TOKEN in os.environ:
         _update_bigquery(bigquery_credentials, packages_set)
     return list(sorted(packages_set))
