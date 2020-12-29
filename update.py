@@ -70,14 +70,6 @@ if __name__ == "__main__":
     _LOGGER.debug(f'loaded {len(packages)} package names')
     packages = update_package_list.update(packages, args.top_packages,
                                           args.bigquery_credentials)
-    for file in utils.ROOT_PATH.glob('*.csv'):
-        with open(file) as f:
-            for line in f:
-                project = line.strip()
-                if project not in packages:
-                    packages.append(project)
-    packages.sort()
-    _LOGGER.debug(f'loaded {len(packages)} package names')
     if not args.skip_cache:
         packages = update_cache.update(packages)
     packages, rows = update_dataset.update(packages)
