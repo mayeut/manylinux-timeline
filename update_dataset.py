@@ -1,12 +1,10 @@
 import json
 import logging
-
 from datetime import date
-
-import utils
 
 from packaging.version import InvalidVersion, Version
 
+import utils
 
 _LOGGER = logging.getLogger(__name__)
 

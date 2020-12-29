@@ -1,7 +1,6 @@
 import argparse
 import json
 import logging
-
 from datetime import date, timedelta
 from pathlib import Path
 from shutil import copy, rmtree
@@ -11,7 +10,6 @@ import update_dataset
 import update_package_list
 import update_stats
 import utils
-
 
 _LOGGER = logging.getLogger(__name__)
 

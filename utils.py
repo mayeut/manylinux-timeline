@@ -1,5 +1,4 @@
 import re
-
 from datetime import date, timedelta
 from pathlib import Path
 from typing import NamedTuple, Optional

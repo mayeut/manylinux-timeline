@@ -1,13 +1,12 @@
 import itertools
 import json
 import logging
-
 from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pandas as pd
-import utils
 
+import utils
 
 _LOGGER = logging.getLogger(__name__)
 

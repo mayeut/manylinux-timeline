@@ -1,17 +1,14 @@
 import json
 import logging
 import os
-
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import requests
-
 from google.api_core.exceptions import Forbidden, GoogleAPIError
 from google.cloud import bigquery
 from packaging.utils import canonicalize_name
-
 
 _LOGGER = logging.getLogger(__name__)
 BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
