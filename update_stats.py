@@ -78,8 +78,9 @@ def _get_stats_df(full_dataframe, columns):
 
 
 def _get_stats(df, key, level):
-    values = df.xs(key=key, axis=1, level=level).apply(np.sum, axis=1).values
-    return [float(f'{100.0 * value:.1f}') for value in values]
+    ts = df.xs(key=key, axis=1, level=level).apply(np.sum, axis=1)
+    ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name='day')
+    return [float(f'{100.0 * value:.1f}') for value in ts.sort_index().values]
 
 
 def _get_total_packages(df, start_date, end_date):
@@ -91,7 +92,8 @@ def _get_total_packages(df, start_date, end_date):
     ts[stop] = 0
     ts = ts.cumsum().resample('1d').pad()
     ts.index += offset
-    return ts[(ts.index >= start_date) & (ts.index <= end_date)].values.tolist()
+    ts = ts[(ts.index >= start_date) & (ts.index <= end_date)]
+    return ts.sort_index().values.tolist()
 
 
 def update(rows, start, end):
@@ -120,8 +122,9 @@ def update(rows, start, end):
     out['index'], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
     _LOGGER.info('compute statistics')
-    out['package']['analysis'] = rolling_df.value_counts(
-        subset=['day'], sort=False).values.tolist()
+    ts = rolling_df.value_counts(subset=['day'], sort=False)
+    ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name='day')
+    out['package']['analysis'] = ts.sort_index().values.tolist()
     policy_df = _get_stats_df(rolling_df[rolling_df['x86_64']], POLICIES)
     len_ = len(POLICIES)
     out['highest_policy']['keys'] = []
