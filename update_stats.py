@@ -4,6 +4,7 @@ import logging
 
 from datetime import datetime, timedelta, timezone
 
+import numpy as np
 import pandas as pd
 import utils
 
@@ -53,88 +54,85 @@ def _get_full_dataframe(rows, start, end):
     return df_r.sort_values('day', ascending=False).copy(deep=True)
 
 
-def _get_stat(stats, key, level):
-    try:
-        return stats.xs(key, level=level).agg('sum')
-    except KeyError:
-        return 0.0
-
-
-def update(rows, start, end):
-    pd.set_option('display.max_columns', None)
-    current = pd.to_datetime(end)  # start at end
-    start_date = pd.to_datetime(start)
+def _get_rolling_dataframe(df, start_date, end_date):
+    current = end_date
     step = timedelta(days=1)
-    _LOGGER.info('create main data frame')
-    df = _get_full_dataframe(rows, start_date, current)
-    rows_highest_policy = []
-    rows_lowest_policy = []
-    rows_impl = []
-    rows_arch = []
     index = []
-    package_count = df[['package']].drop_duplicates().agg('count')['package']
-    _LOGGER.info(f'update stats using a {utils.WINDOW_SIZE.days} days sliding '
-                 'window')
+    rolling_dfs = []
     while current >= start_date:
         window_start = current - utils.WINDOW_SIZE
         df_window = df[(df['day'] >= window_start) & (df['day'] < current)].\
-            drop_duplicates(['package'])
+            drop_duplicates(['package']).drop(columns=['package'])
+        df_window['day'] = current
+        rolling_dfs.append(df_window)
         index.append(current)
         current -= step
-        stats_policy = df_window[df_window['x86_64']].value_counts(
-            subset=list(POLICIES), normalize=True)
-        stats_arch = df_window.value_counts(subset=list(ARCHITECTURES),
-                                            normalize=True)
-        stats_impl = df_window.value_counts(subset=list(IMPLEMENTATIONS),
-                                            normalize=True)
-        len_ = len(POLICIES)
-        rows_highest_policy.append(tuple(
-            _get_stat(stats_policy,
-                      tuple([True] + [False] * (len_ - i - 1)),
-                      tuple(POLICIES[i:]))
-            for i in range(len_)
-        ))
-        rows_lowest_policy.append(tuple(
-            _get_stat(stats_policy,
-                      tuple([False] * i + [True]),
-                      tuple(POLICIES[:i + 1]))
-            for i in range(len_)
-        ))
-        rows_arch.append(tuple(_get_stat(stats_arch, (True,), (arch,))
-                               for arch in ARCHITECTURES))
-        rows_impl.append(tuple(_get_stat(stats_impl, (True,), (impl,))
-                               for impl in IMPLEMENTATIONS))
+    index_as_str = list([d.date().isoformat() for d in index[::-1]])
+    return index_as_str, pd.concat(rolling_dfs).sort_values('day')
 
+
+def _get_stats_df(full_dataframe, columns):
+    columns_ = list(columns)
+    values = full_dataframe.value_counts(subset=['day'] + columns_, sort=False)
+    df_with_count = values.unstack(columns_, fill_value=0.0)
+    return df_with_count.apply(lambda x: x / np.sum(x), axis=1)
+
+
+def _get_stats(df, key, level):
+    values = df.xs(key=key, axis=1, level=level).apply(np.sum, axis=1).values
+    return [float(f'{100.0 * value:.1f}') for value in values]
+
+
+def update(rows, start, end):
     out = {
         'last_update': datetime.now(timezone.utc).strftime(
             '%A, %d %B %Y, %H:%M:%S %Z'),
-        'package_count': int(package_count),
-        'index': list([d.date().isoformat() for d in index]),
+        'package_count': 0,
+        'index': [],
         'lowest_policy': {},
         'highest_policy': {},
         'implementation': {},
         'architecture': {},
     }
+    pd.set_option('display.max_columns', None)
+    end_date = pd.to_datetime(end)  # start at end
+    start_date = pd.to_datetime(start)
+    _LOGGER.info('create main data frame')
+    df = _get_full_dataframe(rows, start_date, end_date)
+    out['package_count'] = int(
+        df[['package']].drop_duplicates().agg('count')['package'])
+    _LOGGER.info(f'update dataframe using a {utils.WINDOW_SIZE.days} days '
+                 'sliding window')
+    out['index'], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
-    out['lowest_policy']['keys'] = [series.replace('ml', 'manylinux')
-                                    for series in POLICIES]
-    out['highest_policy']['keys'] = out['lowest_policy']['keys']
-    for i, series in enumerate(POLICIES):
-        series_name = series.replace('ml', 'manylinux')
-        out['lowest_policy'][series_name] = [
-            float(f'{100.0 * row[i]:.1f}') for row in rows_lowest_policy]
-        out['highest_policy'][series_name] = [
-            float(f'{100.0 * row[i]:.1f}') for row in rows_highest_policy]
+    _LOGGER.info('compute statistics')
+    policy_df = _get_stats_df(rolling_df[rolling_df['x86_64']], POLICIES)
+    len_ = len(POLICIES)
+    out['highest_policy']['keys'] = []
+    out['lowest_policy']['keys'] = []
+    for i in range(len_):
+        name = POLICIES[i].replace('ml', 'manylinux')
+        out['highest_policy']['keys'].append(name)
+        out['highest_policy'][name] = _get_stats(
+            policy_df, key=[True] + [False] * (len_ - i - 1),
+            level=POLICIES[i:])
+        out['lowest_policy']['keys'].append(name)
+        out['lowest_policy'][name] = _get_stats(
+            policy_df, key=[False] * i + [True], level=POLICIES[:i + 1])
 
-    out['implementation']['keys'] = [series for series in IMPLEMENTATIONS]
-    for i, series_name in enumerate(IMPLEMENTATIONS):
-        out['implementation'][series_name] = [
-            float(f'{100.0 * row[i]:.1f}') for row in rows_impl]
+    arch_df = _get_stats_df(rolling_df, ARCHITECTURES)
+    out['architecture']['keys'] = []
+    for arch in ARCHITECTURES:
+        out['architecture']['keys'].append(arch)
+        out['architecture'][arch] = _get_stats(
+            arch_df, key=[True], level=[arch])
 
-    out['architecture']['keys'] = [series for series in ARCHITECTURES]
-    for i, series_name in enumerate(ARCHITECTURES):
-        out['architecture'][series_name] = [
-            float(f'{100.0 * row[i]:.1f}') for row in rows_arch]
+    impl_df = _get_stats_df(rolling_df, IMPLEMENTATIONS)
+    out['implementation']['keys'] = []
+    for impl in IMPLEMENTATIONS:
+        out['implementation']['keys'].append(impl)
+        out['implementation'][impl] = _get_stats(
+            impl_df, key=[True], level=[impl])
 
     with open(utils.DATA_PATH, 'w') as f:
         json.dump(out, f, separators=(',', ':'))
