@@ -11,16 +11,14 @@ RELEASE_INFO_PATH = CACHE_PATH / "info"
 WINDOW_SIZE = timedelta(days=180)
 USER_AGENT = "manylinux-timeline/1.0 " "(https://github.com/mayeut/manylinux-timeline)"
 
-Row = NamedTuple(
-    "Row",
-    [
-        ("day", date),
-        ("package", str),
-        ("version", str),
-        ("python", str),
-        ("manylinux", str),
-    ],
-)
+
+class Row(NamedTuple):
+    day: date
+    package: str
+    version: str
+    python: str
+    manylinux: str
+
 
 WHEEL_INFO_RE = re.compile(
     r"""^(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(?:-(?P<build>\d[^-]*))?
@@ -28,17 +26,14 @@ WHEEL_INFO_RE = re.compile(
     re.VERBOSE,
 )
 
-WheelMetadata = NamedTuple(
-    "_WheelMetadata",
-    [
-        ("name", str),
-        ("version", str),
-        ("build_tag", Optional[str]),
-        ("implementation", str),
-        ("abi", str),
-        ("platform", str),
-    ],
-)
+
+class WheelMetadata(NamedTuple):
+    name: str
+    version: str
+    build_tag: Optional[str]
+    implementation: str
+    abi: str
+    platform: str
 
 
 def get_release_cache_path(package: str) -> Path:

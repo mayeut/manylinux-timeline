@@ -92,4 +92,4 @@ def update(packages: List[str]) -> Tuple[List[str], List[utils.Row]]:
         _LOGGER.info(f'"{package}": begin dataset creation')
         rows.extend(_package_update(package))
         _LOGGER.debug(f'"{package}": end dataset creation')
-    return list(sorted(set(r.package for r in rows))), rows
+    return list(sorted({r.package for r in rows})), rows

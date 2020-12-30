@@ -30,10 +30,10 @@ class _Item:
 def _merge(source: str, new_packages: Set[str], packages_set: Set[str]):
     _LOGGER.debug(f"{source}: merging {len(new_packages)} package names")
     # need to handle canonicalize_name
-    dst = set([_Item(value) for value in packages_set])
-    src = set([_Item(value) for value in new_packages])
+    dst = {_Item(value) for value in packages_set}
+    src = {_Item(value) for value in new_packages}
     subset = src - dst
-    packages_set |= set([item.value for item in subset])
+    packages_set |= {item.value for item in subset}
     _LOGGER.debug(f"{source}: now using {len(packages_set)} package names")
 
 
@@ -78,7 +78,7 @@ def _update_bigquery(
         return
     if query_job.cache_hit:
         _LOGGER.debug("bigquery: using cached results")
-    _merge("bigquery", set(row.project for row in rows), packages_set)
+    _merge("bigquery", {row.project for row in rows}, packages_set)
 
 
 def _update_top_packages(packages_set: Set[str]) -> None:
@@ -89,7 +89,7 @@ def _update_top_packages(packages_set: Set[str]) -> None:
     )
     response.raise_for_status()
     top_packages_data = response.json()
-    top_packages = set(row["project"] for row in top_packages_data["rows"])
+    top_packages = {row["project"] for row in top_packages_data["rows"]}
     _LOGGER.debug(f"top pypi: merging {len(top_packages)} package names")
     packages_set |= top_packages
     _LOGGER.debug(f"top pypi: now using {len(packages_set)} package names")
