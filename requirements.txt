@@ -35,4 +35,4 @@ rsa==4.7
 six==1.15.0
 toml==0.10.2
 urllib3==1.26.2
-virtualenv==20.2.2
+virtualenv==20.3.0
