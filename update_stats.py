@@ -11,7 +11,7 @@ import utils
 
 _LOGGER = logging.getLogger(__name__)
 
-POLICIES = ("ml1", "ml2010", "ml2014")
+POLICIES = ("ml1", "ml2010", "ml2014", "ml_2_24", "ml_2_27")
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x")
 # python implementations are a bit more complicated...
 IMPL_X2 = ("cp27", "pp27")
