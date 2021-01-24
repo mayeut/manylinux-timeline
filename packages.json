@@ -1931,6 +1931,7 @@
 "pybn254",
 "pyboy",
 "pybullet",
+"pybullet-rendering",
 "pycapnp",
 "pycares",
 "pycatchmod",
