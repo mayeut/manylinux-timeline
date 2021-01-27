@@ -34,5 +34,5 @@ requests==2.25.1
 rsa==4.7
 six==1.15.0
 toml==0.10.2
-urllib3==1.26.2
+urllib3==1.26.3
 virtualenv==20.4.0
