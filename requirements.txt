@@ -19,7 +19,7 @@ idna==2.10
 nodeenv==1.5.0
 numpy==1.20.1
 packaging==20.9
-pandas==1.2.1
+pandas==1.2.2
 pre-commit==2.10.1
 proto-plus==1.13.0
 protobuf==3.14.0
