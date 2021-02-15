@@ -1,7 +1,7 @@
 appdirs==1.4.4
 cachetools==4.2.1
 certifi==2020.12.5
-cffi==1.14.4
+cffi==1.14.5
 cfgv==3.2.0
 chardet==4.0.0
 distlib==0.3.1
