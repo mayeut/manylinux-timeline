@@ -13,7 +13,7 @@ google-cloud-core==1.6.0
 google-crc32c==1.1.2
 google-resumable-media==1.2.0
 googleapis-common-protos==1.53.0
-grpcio==1.36.0
+grpcio==1.36.1
 identify==1.6.1
 idna==2.10
 nodeenv==1.5.0
