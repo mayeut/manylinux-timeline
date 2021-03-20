@@ -5,7 +5,8 @@ from typing import NamedTuple, Optional
 
 ROOT_PATH = Path(__file__).resolve().parent
 BUILD_PATH = ROOT_PATH / "build"
-DATA_PATH = BUILD_PATH / "data.json"
+PRODUCER_DATA_PATH = BUILD_PATH / "producer-data.json"
+CONSUMER_DATA_PATH = BUILD_PATH / "consumer-data.json"
 CACHE_PATH = ROOT_PATH / "cache"
 RELEASE_INFO_PATH = CACHE_PATH / "info"
 WINDOW_SIZE = timedelta(days=180)

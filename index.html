@@ -12,6 +12,7 @@
 <body>
 <div class="container-fluid">
     <h1 id="title">Manylinux Timeline</h1>
+    <h2 id="producer-statistics">Package statistics</h2>
     <div class="row">
         <div class="col-sm-6">
             <h2 id="lowest-policy">Lowest (required) manylinux policy</h2>
@@ -38,21 +39,72 @@
             <div><div id="package-plot" class="plotly-graph-div"></div></div>
         </div>
         <div class="col-sm-6">
-            <h2 id="what">What is this about?</h2>
+            <h2 id="producer-what">What is this about?</h2>
             <p>Old manylinux images have reached <a href="https://github.com/mayeut/pep600_compliance/blob/master/README.rst">end of life</a>. It's about time to drop support for them.</p>
-            <p>This site shows the adoption of newer manylinux images and how packagers are using them.</p>
+            <p>This section shows the adoption of newer manylinux images and how packagers are using them.</p>
             <p><span id="package_count">0</span> packages providing manylinux wheels have been released on <a href="https://pypi.org/">PyPI</a> in the analysis timeframe. Considering this low number of packages, the data set is smoothed using a sliding window algorithm. Only the latest version of a given package is taken into account in this 6-month window.</p>
-            <p>This is not an official website, just a nice visual way to measure progress. To see the authoritative guide on wheels and other aspects of python packaging, see the <a href="https://packaging.python.org">Python Packaging User Guide</a>.</p>
-
+        </div>
+    </div>
+    <h2 id="consumer-statistics">Consumer statistics</h2>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 id="consumer-python-version">Python version</h2>
+            <div><div id="consumer-python-version-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-2.7">Policy readiness for python 2.7</h2>
+            <div><div id="consumer-policy-readiness-2.7-plot" class="plotly-graph-div"></div></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.5">Policy readiness for python 3.5</h2>
+            <div><div id="consumer-policy-readiness-3.5-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.6">Policy readiness for python 3.6</h2>
+            <div><div id="consumer-policy-readiness-3.6-plot" class="plotly-graph-div"></div></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.7">Policy readiness for python 3.7</h2>
+            <div><div id="consumer-policy-readiness-3.7-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.8">Policy readiness for python 3.8</h2>
+            <div><div id="consumer-policy-readiness-3.8-plot" class="plotly-graph-div"></div></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.9">Policy readiness for python 3.9</h2>
+            <div><div id="consumer-policy-readiness-3.9-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
+            <h2 id="consumer-what">What is this about?</h2>
+            <p>This section shows consumer readiness for a given policy.</p>
+            <p>
+                Support for a policy is a combination of glibc version (as denoted in the policy name for PEP600)
+                and pip version. The pip version available without upgrading it depends on either the python version
+                and/or the linux distribution being used. At least the python version is explicit in this section.
+            </p>
+            <p>
+                All manylinux wheel downloads from PyPI using pip are analysed each day to compute those statistics.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
             <h2 id="bugs">Something's wrong with this page!</h2>
             <p>Fantastic, a problem found is a problem fixed. Please <a href="https://github.com/mayeut/manylinux-timeline/issues/">create a ticket</a>!</p>
             <p>You can also <a href="https://github.com/mayeut/manylinux-timeline/pulls/">submit a pull request</a>.</p>
             <h2 id="thanks">Thanks</h2>
             <p>Thanks to <a href="https://hugovk.github.io/drop-python/">Drop Python</a>, <a href="https://pythonwheels.com/">Python Wheels</a> and <a href="https://python3wos.appspot.com/">Python 3 Wall of Superpowers</a> for the concept and making their code open source.</p>
         </div>
-
     </div>
     <footer>
+        <p class="footer">This is not an official website, just a nice visual way to measure progress. To see the authoritative guide on wheels and other aspects of python packaging, see the <a href="https://packaging.python.org">Python Packaging User Guide</a>.</p>
         <p class="footer">Last updated <span id="last_update">never</span>. (Updated daily.)</p>
         <a class="github-fork-ribbon" href="https://github.com/mayeut/manylinux-timeline" target="_blank" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
     </footer>
@@ -62,8 +114,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script>
     window.PLOTLYENV=window.PLOTLYENV || {};
-    function load_plot(id, index, series, stacked, ticksuffix) {
-        const colors = ["#636efa", "#ef553b", "#00cc96", "#ab63fa", "#ffa15a", "#19d3f3", "#ff6692", "#b6e880", "#ff97ff", "#fecb52", "#636efa",  "#ef553b", "#00cc96", "#ab63fa", "#ffa15a"];
+    function load_plot(id, index, series, stacked, ticksuffix, traceorder, show_cum_sum) {
+        const colors = ["#636efa", "#ef553b", "#00cc96", "#ab63fa", "#ffa15a", "#19d3f3", "#ff6692", "#b6e880", "#ff97ff", "#fecb52", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#aec7e8",  "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5"];
         var global_parameters = {"mode": "lines", "orientation": "v", "showlegend": true, "x": index, "xaxis": "x", "yaxis": "y"};
 
         if (stacked) {
@@ -73,30 +125,63 @@
             global_parameters = Object.assign(global_parameters, {"type": "scattergl"});
         }
         var series_parameters = [];
+        var cum_sum;
         series.keys.forEach(function (key, index) {
+            var y = series[key]
+            if (cum_sum == undefined) {
+                cum_sum = Array.from(y)
+            }
+            else {
+                cum_sum = cum_sum.map(function (num, idx) {
+                    return num + y[idx];
+                });
+            }
             new_series = Object.assign({}, global_parameters);
-            new_series = Object.assign(new_series, {"y":series[key], "legendgroup": key, "name": key, "line": {"color": colors[index]}});
+            new_series = Object.assign(new_series, {"y":y, "legendgroup": key, "name": key, "line": {"color": colors[index]}});
+            if (show_cum_sum) {
+                new_series = Object.assign(new_series, {"customdata": cum_sum, "hovertemplate": "%{y:.1f}% - %{customdata:.0f}%"})
+            }
             series_parameters.push(new_series);
         });
-        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom"}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1", "ticksuffix": ticksuffix}}}}, {"displayModeBar": false, "responsive": true});
+        Plotly.newPlot(id, series_parameters, {"hovermode": "x unified", "legend": {"orientation": "h", "tracegroupgap": 0, "x": 0.5, "xanchor": "center", "y": 1.0, "yanchor": "bottom", "traceorder": traceorder}, "margin": {"b": 80, "l": 0, "r": 0, "t": 0}, "template": { "layout": { "plot_bgcolor": "#E5ECF6", "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "tickangle": 45}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "zerolinecolor": "white", "tickformat": ",.1", "ticksuffix": ticksuffix}}}}, {"displayModeBar": false, "responsive": true});
     }
-    function update_data(data) {
+    function update_producer_data(data) {
         $("#last_update").text(data.last_update)
         $("#package_count").text(data.package_count)
-        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true, "%");
-        load_plot("highest-policy-plot", data.index, data.highest_policy, true, "%");
-        load_plot("python-implementation-plot", data.index, data.implementation, false, "%");
-        load_plot("architecture-plot", data.index, data.architecture, false, "%");
-        load_plot("package-plot", data.index, data.package, false, "");
+        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true, "%", "normal", false);
+        load_plot("highest-policy-plot", data.index, data.highest_policy, true, "%", "normal", false);
+        load_plot("python-implementation-plot", data.index, data.implementation, false, "%", "normal", false);
+        load_plot("architecture-plot", data.index, data.architecture, false, "%", "normal", false);
+        load_plot("package-plot", data.index, data.package, false, "", "normal", false);
     }
-    $.getJSON("data.json")
+    function update_consumer_data(data) {
+        $("#last_update").text(data.last_update)
+        $("#package_count").text(data.package_count)
+        load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false);
+        load_plot("consumer-policy-readiness-2.7-plot", data.index, data.policy_readiness["2.7"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.5-plot", data.index, data.policy_readiness["3.5"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.6-plot", data.index, data.policy_readiness["3.6"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.7-plot", data.index, data.policy_readiness["3.7"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.8-plot", data.index, data.policy_readiness["3.8"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.9-plot", data.index, data.policy_readiness["3.9"], true, "%", "reversed", true);
+    }
+    $.getJSON("producer-data.json")
         .done(function( json ) {
-            update_data(json);
+            update_producer_data(json);
         })
         .fail(function( jqxhr, textStatus, error ) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
-            alert("Can't load data !");
+            alert("Can't load producer data !");
+        });
+    $.getJSON("consumer-data.json")
+        .done(function( json ) {
+            update_consumer_data(json);
+        })
+        .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+            alert("Can't load consumer data !");
         });
 </script>
 </body>

@@ -40,8 +40,8 @@ jobs:
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       uses: stefanzweifel/git-auto-commit-action@v4.9.2
       with:
-        commit_message: "[bot] Update packages.json on ${{ steps.timestamp.outputs.timestamp }}"
-        file_pattern: packages.json
+        commit_message: "[bot] Update packages.json / consumer_data on ${{ steps.timestamp.outputs.timestamp }}"
+        file_pattern: packages.json consumer_data/**/*.csv
     - name: Deploy to GitHub Pages
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       uses: JamesIves/github-pages-deploy-action@4.1.0

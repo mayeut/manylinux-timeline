@@ -6,6 +6,8 @@ from pathlib import Path
 from shutil import copy, rmtree
 
 import update_cache
+import update_consumer_data
+import update_consumer_stats
 import update_dataset
 import update_package_list
 import update_stats
@@ -73,6 +75,13 @@ if __name__ == "__main__":
         rmtree(utils.BUILD_PATH)
     utils.BUILD_PATH.mkdir()
     utils.CACHE_PATH.mkdir(exist_ok=True)
+
+    _LOGGER.debug("updating consumer data")
+
+    update_consumer_data.update(
+        utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
+    )
+    update_consumer_stats.update(utils.ROOT_PATH / "consumer_data", start, end)
 
     _LOGGER.debug("loading package list")
     with open(utils.ROOT_PATH / "packages.json") as f:

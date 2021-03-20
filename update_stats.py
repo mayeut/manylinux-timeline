@@ -172,5 +172,5 @@ def update(rows, start, end):
         out["implementation"]["keys"].append(impl)
         out["implementation"][impl] = _get_stats(impl_df, key=[True], level=[impl])
 
-    with open(utils.DATA_PATH, "w") as f:
+    with open(utils.PRODUCER_DATA_PATH, "w") as f:
         json.dump(out, f, separators=(",", ":"))
