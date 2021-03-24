@@ -15,11 +15,11 @@ BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
 
 def _update_consumer_data(path: Path, bigquery_credentials: Optional[Path]) -> None:
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
-    table_suffix = (today - timedelta(days=1)).strftime("%Y%m%d")
+    table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
     # table_suffix = "20200611"
-    folder = path / table_suffix[0:4] / table_suffix[4:6]
+    folder = path / table_suffix[0:4] / table_suffix[5:7]
     folder.mkdir(parents=True, exist_ok=True)
-    file = folder / f"{table_suffix[6:8]}.csv"
+    file = folder / f"{table_suffix[8:10]}.csv"
     if file.exists():
         return
 
@@ -30,7 +30,9 @@ FROM (SELECT COUNT(*) AS num_downloads,
 REGEXP_EXTRACT(details.python, r"^([^\.]+\.[^\.]+)") as python_version,
 REGEXP_EXTRACT(details.installer.version, r"^([^\.]+\.[^\.]+)") AS pip_version,
 REGEXP_EXTRACT(details.distro.libc.version, r"^([^\.]+\.[^\.]+)") AS glibc_version,
-details.cpu FROM the-psf.pypi.downloads{table_suffix} WHERE
+details.cpu FROM bigquery-public-data.pypi.file_downloads WHERE
+timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND
+TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND
 details.installer.name = "pip" AND details.system.name = "Linux" AND
 details.distro.libc.lib = "glibc" AND
 REGEXP_CONTAINS(file.filename, r"-manylinux([0-9a-zA-Z_]+)\.whl")

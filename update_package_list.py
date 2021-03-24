@@ -42,10 +42,12 @@ def _update_bigquery(
 ) -> None:
     _LOGGER.info("bigquery: fetching packages")
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
-    table_suffix = (today - timedelta(days=1)).strftime("%Y%m%d")
+    table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
     query = (
         "SELECT file.project AS project FROM "
-        f"the-psf.pypi.downloads{table_suffix} WHERE "
+        "bigquery-public-data.pypi.file_downloads WHERE "
+        f'timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND '
+        f'TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND '
         'REGEXP_CONTAINS(file.filename, "-manylinux\\\\w+\\\\.whl$") '
         "GROUP BY project"
     )
