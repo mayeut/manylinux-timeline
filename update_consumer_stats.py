@@ -57,13 +57,7 @@ def update(path: Path, start: datetime, end: datetime):
         date_ = date_ + timedelta(days=1)
 
     df = pd.concat(dataframes)
-    df_glibc = (
-        df[["day", "glibc_version", "num_downloads"]]
-        .groupby(["day", "glibc_version"])
-        .aggregate(np.sum)
-    )
-    df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
-    df_glibc_stats = df_glibc / df_glibc_all
+
     pip_version = df["pip_version"].str.split(".", n=2, expand=True)
     df["pip_major"] = pd.to_numeric(pip_version[0])
     df["pip_minor"] = pd.to_numeric(pip_version[1])
@@ -130,7 +124,6 @@ def update(path: Path, start: datetime, end: datetime):
     df.drop(
         columns=[
             "pip_version",
-            "glibc_version",
             "pip_major",
             "pip_minor",
             "glibc_major",
@@ -151,17 +144,28 @@ def update(path: Path, start: datetime, end: datetime):
     )
     df = df[(df["cpu"] == "x86_64") | (df["cpu"] == "i686")]
     df.drop(columns=["cpu"], inplace=True)
-    df = df.groupby(["day", "python_version", "policy"], as_index=False).aggregate(
-        np.sum
-    )
+    df = df.groupby(
+        ["day", "python_version", "glibc_version", "policy"], as_index=False
+    ).aggregate(np.sum)
     df.set_index("day", append=True, inplace=True)
     df = df.swaplevel()
 
     # python version download stats
-    df_python = df.drop(columns=["policy"])
-    df_python = df_python.groupby(["day", "python_version"]).aggregate(np.sum)
+    df_python = (
+        df[["python_version", "num_downloads"]]
+        .groupby(["day", "python_version"])
+        .aggregate(np.sum)
+    )
     df_python_all = df_python.groupby(["day"]).aggregate(np.sum)
     df_python_stats = df_python / df_python_all
+    # glibc version download stats
+    df_glibc = (
+        df[["glibc_version", "num_downloads"]]
+        .groupby(["day", "glibc_version"])
+        .aggregate(np.sum)
+    )
+    df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
+    df_glibc_stats = df_glibc / df_glibc_all
 
     out: dict[str, Any] = {
         "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
@@ -172,8 +176,7 @@ def update(path: Path, start: datetime, end: datetime):
     # but still accounting for the smaller one
     glibc_versions = [
         ("2.5", "2.6"),
-        ("2.7", "2.8"),
-        ("2.9", "2.10", "2.11"),
+        ("2.7", "2.8", "2.9", "2.10", "2.11"),
         ("2.12", "2.13", "2.14", "2.15", "2.16"),
         ("2.17", "2.18"),
         ("2.19", "2.20", "2.21", "2.22"),
@@ -206,6 +209,7 @@ def update(path: Path, start: datetime, end: datetime):
     python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
     python_version = dict[str, Union[list[str], list[float]]]()
     policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
+    glibc_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
     python_version["keys"] = python_versions
     for version in python_versions:
         stats = []
@@ -219,9 +223,13 @@ def update(path: Path, start: datetime, end: datetime):
             stats.append(float(f"{100.0 * value:.1f}"))
         python_version[version] = stats
 
-        df_policy = df[df["python_version"] == version]
-        df_policy = df_policy.drop(columns=["python_version"])
-        df_policy = df_policy.groupby(["day", "policy"]).aggregate(np.sum)
+        df_python_version = df[df["python_version"] == version]
+
+        df_policy = (
+            df_python_version[["policy", "num_downloads"]]
+            .groupby(["day", "policy"])
+            .aggregate(np.sum)
+        )
         df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
         df_policy_stats = df_policy / df_policy_all
         policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
@@ -241,8 +249,36 @@ def update(path: Path, start: datetime, end: datetime):
                     value = 0.0
                 stats.append(float(f"{100.0 * value:.2f}"))
             policy_readiness_ver[policy] = stats
+
+        df_glibc = (
+            df_python_version[["glibc_version", "num_downloads"]]
+            .groupby(["day", "glibc_version"])
+            .aggregate(np.sum)
+        )
+        df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
+        df_glibc_stats = df_glibc / df_policy_all
+        glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
+        glibc_readiness_ver["keys"] = list([v[0] for v in glibc_versions])
+        glibc_readiness[version] = glibc_readiness_ver
+        for versions in glibc_versions:
+            stats = []
+            for day in out["index"]:
+                value = 0.0
+                for glibc_version in versions:
+                    try:
+                        value += float(
+                            df_glibc_stats.loc[
+                                (pd.to_datetime(day), glibc_version), "num_downloads"
+                            ]
+                        )
+                    except KeyError:
+                        pass
+                stats.append(float(f"{100.0 * value:.2f}"))
+            glibc_readiness_ver[versions[0]] = stats
+
     out["python_version"] = python_version
     out["policy_readiness"] = policy_readiness
+    out["glibc_readiness"] = glibc_readiness
 
     with open(utils.CONSUMER_DATA_PATH, "w") as f:
         json.dump(out, f, separators=(",", ":"))
