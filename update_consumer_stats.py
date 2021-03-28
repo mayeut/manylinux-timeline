@@ -27,6 +27,8 @@ POLICIES = {
 
 def _get_major_minor(x):
     version = Version(x)
+    if version.major > 50:
+        return "0.0"  # invalid version
     return f"{version.major}.{version.minor}"
 
 
