@@ -2206,6 +2206,7 @@
 "pyexiv2",
 "pyfakers",
 "pyfastnoiselite",
+"pyfastnoisesimd",
 "pyfastx",
 "pyfaust",
 "pyffmpeg",
