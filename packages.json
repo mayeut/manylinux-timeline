@@ -411,7 +411,6 @@
 "blake3",
 "blis",
 "blosc",
-"blosc2",
 "blspy",
 "blurhash-python",
 "bmlx-metadata",
