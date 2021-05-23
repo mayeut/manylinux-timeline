@@ -14,7 +14,7 @@ google-crc32c==1.1.2
 google-resumable-media==1.2.0
 googleapis-common-protos==1.53.0
 grpcio==1.37.1
-identify==2.2.4
+identify==2.2.5
 idna==2.10
 nodeenv==1.6.0
 numpy==1.20.3
