@@ -809,6 +809,7 @@
 "downward-ch",
 "dpcpp-cpp-rt",
 "dpctl",
+"dpkg_json",
 "dpnp",
 "dqcsim",
 "dqcsim-cqasm",
@@ -937,6 +938,7 @@
 "falsedto",
 "farmhashpy",
 "fasm",
+"fast-bencode",
 "fast-colorthief",
 "fast-ctc-decode",
 "fast-histogram",
@@ -1537,6 +1539,7 @@
 "libqasm",
 "librabbitmq",
 "librabbitmq-fork",
+"librapid",
 "libraw-cffi",
 "libroadrunner",
 "libroadrunner-experimental",
@@ -2146,6 +2149,7 @@
 "poreplex",
 "porridge",
 "portmod",
+"pos",
 "potpourri3d",
 "power-instruction-analyzer",
 "ppmd-cffi",
@@ -3566,5 +3570,6 @@
 "zprofile",
 "zstandard",
 "zwitutils",
+"zxing-cpp",
 "zyt"
 ]
