@@ -4,7 +4,7 @@ certifi==2020.12.5
 cffi==1.14.5
 cfgv==3.3.0
 chardet==4.0.0
-distlib==0.3.1
+distlib==0.3.2
 filelock==3.0.12
 google-api-core==1.28.0
 google-auth==1.30.1
