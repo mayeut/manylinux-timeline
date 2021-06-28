@@ -17,7 +17,7 @@ grpcio==1.38.0
 identify==2.2.10
 idna==2.10
 nodeenv==1.6.0
-numpy==1.20.3
+numpy==1.21.0
 packaging==20.9
 pandas==1.2.4
 pre-commit==2.13.0
