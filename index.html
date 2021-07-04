@@ -126,6 +126,16 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
+            <h2 id="consumer-policy-readiness-3.10">Policy readiness for python 3.10</h2>
+            <div><div id="consumer-policy-readiness-3.10-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
+            <h2 id="consumer-glibc-readiness-3.10">glibc readiness for python 3.10</h2>
+            <div><div id="consumer-glibc-readiness-3.10-plot" class="plotly-graph-div"></div></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
             <h2 id="consumer-about">About consumer statistics</h2>
             <p>This section shows consumer readiness for a given policy.</p>
             <p>
@@ -222,6 +232,8 @@
         load_plot("consumer-glibc-readiness-3.8-plot", data.index, data.glibc_readiness["3.8"], true, "%", "reversed", true);
         load_plot("consumer-policy-readiness-3.9-plot", data.index, data.policy_readiness["3.9"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.9-plot", data.index, data.glibc_readiness["3.9"], true, "%", "reversed", true);
+        load_plot("consumer-policy-readiness-3.10-plot", data.index, data.policy_readiness["3.10"], true, "%", "reversed", true);
+        load_plot("consumer-glibc-readiness-3.10-plot", data.index, data.glibc_readiness["3.10"], true, "%", "reversed", true);
     }
     $.getJSON("producer-data.json")
         .done(function( json ) {

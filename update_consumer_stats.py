@@ -208,7 +208,7 @@ def update(path: Path, start: datetime, end: datetime):
         glibc_version[versions[0]] = stats
     out["glibc_version"] = glibc_version
 
-    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
+    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]
     python_version = dict[str, Union[list[str], list[float]]]()
     policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
     glibc_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
