@@ -94,7 +94,7 @@ def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.Da
 
 
 def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> List[float]:
-    ts = df.xs(key=key, axis=1, level=level).apply(np.sum, axis=1)
+    ts = df.xs(key=tuple(key), axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
     return list([float(f"{100.0 * value:.1f}") for value in ts.sort_index().values])
 
@@ -131,6 +131,7 @@ def update(rows, start, end):
     start_date = pd.to_datetime(start)
     _LOGGER.info("create main data frame")
     df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
+    df["day"] = pd.to_datetime(df["day"])
     out["package"]["total"] = _get_total_packages(df, start_date, end_date)
     df = _get_range_dataframe(df, start_date, end_date)
     out["package_count"] = int(
