@@ -2,7 +2,7 @@ import itertools
 import json
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Iterable, List, Tuple
+from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -66,7 +66,7 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
 
 def _get_rolling_dataframe(
     df: pd.DataFrame, start_date, end_date
-) -> Tuple[List[str], pd.DataFrame]:
+) -> tuple[list[str], pd.DataFrame]:
     current = end_date
     step = timedelta(days=1)
     index = []
@@ -82,7 +82,7 @@ def _get_rolling_dataframe(
         rolling_dfs.append(df_window)
         index.append(current)
         current -= step
-    index_as_str = list([d.date().isoformat() for d in index[::-1]])
+    index_as_str = list(d.date().isoformat() for d in index[::-1])
     return index_as_str, pd.concat(rolling_dfs).sort_values("day")
 
 
@@ -93,13 +93,13 @@ def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.Da
     return df_with_count.apply(lambda x: x / np.sum(x), axis=1)
 
 
-def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> List[float]:
+def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> list[float]:
     ts = df.xs(key=tuple(key), axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    return list([float(f"{100.0 * value:.1f}") for value in ts.sort_index().values])
+    return list(float(f"{100.0 * value:.1f}") for value in ts.sort_index().values)
 
 
-def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> List[int]:
+def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> list[int]:
     ts = (
         df.sort_values("day")
         .drop_duplicates("package")

@@ -4,7 +4,7 @@ import urllib.parse
 from datetime import date, datetime
 from pathlib import Path
 from shutil import move
-from typing import List, Optional
+from typing import Optional
 
 import requests
 
@@ -90,7 +90,7 @@ def _package_update(package: str) -> Optional[str]:
     return package_new_name
 
 
-def update(packages: List[str]) -> List[str]:
+def update(packages: list[str]) -> list[str]:
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
     packages_set = set(packages)
     to_remove = set()

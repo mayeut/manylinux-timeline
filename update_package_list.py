@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import List, Optional, Set
+from typing import Optional
 
 import requests
 from google.api_core.exceptions import Forbidden, GoogleAPIError
@@ -27,7 +27,7 @@ class _Item:
         return self.value_.__eq__(other.value_)
 
 
-def _merge(source: str, new_packages: Set[str], packages_set: Set[str]):
+def _merge(source: str, new_packages: set[str], packages_set: set[str]):
     _LOGGER.debug(f"{source}: merging {len(new_packages)} package names")
     # need to handle canonicalize_name
     dst = {_Item(value) for value in packages_set}
@@ -38,7 +38,7 @@ def _merge(source: str, new_packages: Set[str], packages_set: Set[str]):
 
 
 def _update_bigquery(
-    bigquery_credentials: Optional[Path], packages_set: Set[str]
+    bigquery_credentials: Optional[Path], packages_set: set[str]
 ) -> None:
     _LOGGER.info("bigquery: fetching packages")
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
@@ -83,7 +83,7 @@ def _update_bigquery(
     _merge("bigquery", {row.project for row in rows}, packages_set)
 
 
-def _update_top_packages(packages_set: Set[str]) -> None:
+def _update_top_packages(packages_set: set[str]) -> None:
     _LOGGER.info("top pypi: fetching packages")
     response = requests.get(
         "https://hugovk.github.io/top-pypi-packages/"
@@ -98,8 +98,8 @@ def _update_top_packages(packages_set: Set[str]) -> None:
 
 
 def update(
-    packages: List[str], use_top_packages: bool, bigquery_credentials: Optional[Path]
-) -> List[str]:
+    packages: list[str], use_top_packages: bool, bigquery_credentials: Optional[Path]
+) -> list[str]:
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)

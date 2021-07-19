@@ -171,7 +171,7 @@ def update(path: Path, start: datetime, end: datetime):
 
     out: dict[str, Any] = {
         "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
-        "index": list([d.date().isoformat() for d in df_python_all.index]),
+        "index": list(d.date().isoformat() for d in df_python_all.index),
     }
 
     # combine some versions to remove some of the less used ones
@@ -187,10 +187,10 @@ def update(path: Path, start: datetime, end: datetime):
         ("2.26",),
         ("2.27",),
         ("2.28", "2.29", "2.30"),
-    ] + list([(f"2.{minor}",) for minor in range(31, 34)])
+    ] + list((f"2.{minor}",) for minor in range(31, 34))
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
-    glibc_version["keys"] = list([v[0] for v in glibc_versions])
+    glibc_version["keys"] = list(v[0] for v in glibc_versions)
     for versions in glibc_versions:
         stats = []
         for day in out["index"]:
@@ -236,7 +236,7 @@ def update(path: Path, start: datetime, end: datetime):
         df_policy_stats = df_policy / df_policy_all
         policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
         policy_readiness_ver["keys"] = list(
-            [POLICIES[i] for i in range(len(POLICIES))[::-1]]
+            POLICIES[i] for i in range(len(POLICIES))[::-1]
         )
         policy_readiness[version] = policy_readiness_ver
         for i in range(len(POLICIES))[::-1]:
@@ -260,7 +260,7 @@ def update(path: Path, start: datetime, end: datetime):
         df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
         df_glibc_stats = df_glibc / df_policy_all
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
-        glibc_readiness_ver["keys"] = list([v[0] for v in glibc_versions])
+        glibc_readiness_ver["keys"] = list(v[0] for v in glibc_versions)
         glibc_readiness[version] = glibc_readiness_ver
         for versions in glibc_versions:
             stats = []
