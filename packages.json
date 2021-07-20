@@ -3314,6 +3314,7 @@
 "tensorboard-data-server",
 "tensorflow",
 "tensorflow-addons",
+"tensorflow-ascend",
 "tensorflow-compression",
 "tensorflow-cpu",
 "tensorflow-data-validation",
