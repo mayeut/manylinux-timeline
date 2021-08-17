@@ -2302,6 +2302,7 @@
 "py-spy",
 "py-spy-kw",
 "py-sr25519-bindings",
+"py-sr25519-bindings-fork",
 "py-sv-parser",
 "py-wick",
 "py3coap",
