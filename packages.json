@@ -748,7 +748,6 @@
 "dask-ml",
 "datafusion",
 "datapan",
-"dataqa",
 "datatable",
 "datetimeparse",
 "datrie",
