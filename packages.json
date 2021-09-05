@@ -1006,6 +1006,7 @@
 "fastcluster",
 "fastcountvectorizer",
 "fastcrc",
+"fastcrypto",
 "faster-fifo",
 "faster-hash",
 "fastfm2",
