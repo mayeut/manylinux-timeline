@@ -8,7 +8,7 @@ distlib==0.3.2
 filelock==3.0.12
 google-api-core==2.0.0
 google-auth==2.0.2
-google-cloud-bigquery==2.25.1
+google-cloud-bigquery==2.26.0
 google-cloud-core==2.0.0
 google-crc32c==1.1.2
 google-resumable-media==2.0.2
