@@ -421,6 +421,7 @@
 "bearlibterminal",
 "bed-reader",
 "bencoder.pyx",
+"benpy",
 "bergkvist-test",
 "bezier",
 "bfsccylinder",
