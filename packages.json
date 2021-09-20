@@ -1387,7 +1387,6 @@
 "intel-numpy",
 "intel-opencl-rt",
 "intel-openmp",
-"intel-scikit-learn",
 "intel-scipy",
 "intel-tensorflow",
 "intel-tensorflow-avx512",
