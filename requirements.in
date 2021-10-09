@@ -1,0 +1,7 @@
+google-api-core
+google-cloud-bigquery
+numpy
+packaging
+pandas
+pre-commit
+requests
