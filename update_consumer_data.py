@@ -16,7 +16,7 @@ BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
 def _update_consumer_data(path: Path, bigquery_credentials: Optional[Path]) -> None:
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
-    # table_suffix = "20200611"
+    # table_suffix = "2021-01-24"
     folder = path / table_suffix[0:4] / table_suffix[5:7]
     folder.mkdir(parents=True, exist_ok=True)
     file = folder / f"{table_suffix[8:10]}.csv"
