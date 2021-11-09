@@ -2536,6 +2536,7 @@
 "pyfastnoisesimd",
 "pyfastx",
 "pyfaust",
+"pyfaust-openblaso",
 "pyfaust-torch",
 "pyffmpeg",
 "pyffmpeg-bin",
