@@ -4,7 +4,6 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import requests
 from google.api_core.exceptions import Forbidden, GoogleAPIError
@@ -37,9 +36,7 @@ def _merge(source: str, new_packages: set[str], packages_set: set[str]):
     _LOGGER.debug(f"{source}: now using {len(packages_set)} package names")
 
 
-def _update_bigquery(
-    bigquery_credentials: Optional[Path], packages_set: set[str]
-) -> None:
+def _update_bigquery(bigquery_credentials: Path | None, packages_set: set[str]) -> None:
     _LOGGER.info("bigquery: fetching packages")
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -98,7 +95,7 @@ def _update_top_packages(packages_set: set[str]) -> None:
 
 
 def update(
-    packages: list[str], use_top_packages: bool, bigquery_credentials: Optional[Path]
+    packages: list[str], use_top_packages: bool, bigquery_credentials: Path | None
 ) -> list[str]:
     packages_set = set(packages)
     if use_top_packages:

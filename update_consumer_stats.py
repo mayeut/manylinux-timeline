@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,7 @@ def _get_major_minor(x):
     return f"{version.major}.{version.minor}"
 
 
-def _load_df(path: Path, date: datetime) -> Optional[pd.DataFrame]:
+def _load_df(path: Path, date: datetime) -> pd.DataFrame | None:
     folder = path / date.strftime("%Y") / date.strftime("%m")
     file = folder / f"{date.strftime('%d')}.csv"
     if not file.exists():

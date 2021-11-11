@@ -4,7 +4,6 @@ import urllib.parse
 from datetime import date, datetime
 from pathlib import Path
 from shutil import move
-from typing import Optional
 
 import requests
 
@@ -17,7 +16,7 @@ def _build_url(package: str) -> str:
     return f"https://pypi.org/pypi/{package}/json"
 
 
-def _package_update(package: str) -> Optional[str]:
+def _package_update(package: str) -> str | None:
     headers = {"User-Agent": utils.USER_AGENT}
     package_new_name = package
     cache_file = utils.get_release_cache_path(package)

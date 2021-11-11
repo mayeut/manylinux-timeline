@@ -1,7 +1,7 @@
 import re
 from datetime import date, timedelta
 from pathlib import Path
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 ROOT_PATH = Path(__file__).resolve().parent
 BUILD_PATH = ROOT_PATH / "build"
@@ -31,7 +31,7 @@ WHEEL_INFO_RE = re.compile(
 class WheelMetadata(NamedTuple):
     name: str
     version: str
-    build_tag: Optional[str]
+    build_tag: str | None
     implementation: str
     abi: str
     platform: str

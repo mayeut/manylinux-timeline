@@ -4,7 +4,6 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 from google.api_core.exceptions import Forbidden, GoogleAPIError
 from google.cloud import bigquery
@@ -13,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
 
 
-def _update_consumer_data(path: Path, bigquery_credentials: Optional[Path]) -> None:
+def _update_consumer_data(path: Path, bigquery_credentials: Path | None) -> None:
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
     # table_suffix = "2021-11-09"
@@ -74,6 +73,6 @@ ORDER BY num_downloads DESC) AS t0;
             f.write(",".join([str(field) for field in row]) + "\n")
 
 
-def update(path: Path, bigquery_credentials: Optional[Path]) -> None:
+def update(path: Path, bigquery_credentials: Path | None) -> None:
     if bigquery_credentials or os.environ.get(BIGQUERY_TOKEN, "") != "":
         _update_consumer_data(path, bigquery_credentials)
