@@ -25,7 +25,7 @@ jobs:
     - id: timestamp
       run: echo "::set-output name=timestamp::$(python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).isoformat())')"
     - name: Setup cache
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: cache/*
         key: pypi-cache-${{ steps.timestamp.outputs.timestamp }}
