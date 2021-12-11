@@ -2738,6 +2738,7 @@
 "pyo",
 "pyo3-pack",
 "pyo3avro-rs",
+"pyobs-sbig",
 "pyodide-interrupts",
 "pyodps",
 "pyogmaneo",
