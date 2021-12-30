@@ -1054,6 +1054,7 @@
 "fast-mosestokenizer",
 "fast-statistics",
 "fast-svmlight-loader",
+"fast-xbrl-parser",
 "fast5mod",
 "fastFM",
 "fastavro",
