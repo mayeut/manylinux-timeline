@@ -1667,6 +1667,7 @@
 "lazy-object-proxy",
 "lbry-rocksdb",
 "lbry-rocksdb-optimized",
+"lcreg",
 "lda",
 "ldafork",
 "ldpc",
