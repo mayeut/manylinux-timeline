@@ -16,8 +16,8 @@ ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
 IMPL_X2 = ("cp27", "pp27")
 IMPL_CP3_FIRST = 5
-IMPL_CP3_LAST = 10
-IMPL_PP3 = tuple(f"pp3{i}" for i in range(6, 7 + 1))
+IMPL_CP3_LAST = 11
+IMPL_PP3 = tuple(f"pp3{i}" for i in range(6, 8 + 1))
 # that's what is ultimately displayed
 IMPLEMENTATIONS = tuple(
     itertools.chain(
