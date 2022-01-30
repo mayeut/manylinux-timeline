@@ -109,7 +109,7 @@ def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> list[int]:
     offset = timedelta(days=1)
     stop = max(pd.to_datetime(ts.index.values[-1]), end_date) + offset
     ts[stop] = 0
-    ts = ts.cumsum().resample("1d").pad()
+    ts = ts.cumsum().resample("1d").ffill()
     ts.index += offset
     ts = ts[(ts.index >= start_date) & (ts.index <= end_date)]
     return ts.sort_index().values.tolist()
