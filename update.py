@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 from datetime import date, timedelta
 from pathlib import Path
 from shutil import copy, rmtree
@@ -77,7 +78,6 @@ if __name__ == "__main__":
     utils.CACHE_PATH.mkdir(exist_ok=True)
 
     _LOGGER.debug("updating consumer data")
-
     update_consumer_data.update(
         utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
     )
@@ -87,9 +87,22 @@ if __name__ == "__main__":
     with open(utils.ROOT_PATH / "packages.json") as f:
         packages = json.load(f)
     _LOGGER.debug(f"loaded {len(packages)} package names")
-    packages = update_package_list.update(
-        packages, args.top_packages, args.bigquery_credentials
-    )
+    skip_update_package_list = False
+    if "GITHUB_EVENT_NAME" in os.environ:
+        event_name = os.environ["GITHUB_EVENT_NAME"]
+        today = date.today()
+        if event_name != "schedule":
+            _LOGGER.info(f"skip package list update for event '{event_name}'")
+            skip_update_package_list = True
+        elif today.isoweekday() == 3 and 7 < today.day <= 14:
+            # use top_packages one wednesday per month
+            args.top_packages = True
+
+    if not skip_update_package_list:
+        packages = update_package_list.update(
+            packages, args.top_packages, args.bigquery_credentials
+        )
+
     if not args.skip_cache:
         packages = update_cache.update(packages)
     packages, rows = update_dataset.update(packages)
