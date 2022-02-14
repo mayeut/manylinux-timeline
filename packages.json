@@ -3695,7 +3695,6 @@
 "tfdlpack-gpu",
 "tflibs-test",
 "tflite-runtime",
-"tflite-runtime-nightly",
 "tflite-support",
 "tflite-support-nightly",
 "tfmiss",
