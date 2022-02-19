@@ -50,7 +50,7 @@ def _load_df(path: Path, date: datetime) -> pd.DataFrame | None:
 
 
 def update(path: Path, start: datetime, end: datetime):
-    date_ = start
+    date_ = start - utils.CONSUMER_WINDOW_SIZE
     dataframes = []
     while date_ < end:
         df = _load_df(path, date_)
@@ -146,6 +146,23 @@ def update(path: Path, start: datetime, end: datetime):
     )
     df = df[(df["cpu"] == "x86_64") | (df["cpu"] == "i686")]
     df.drop(columns=["cpu"], inplace=True)
+    df = df.groupby(
+        ["day", "python_version", "glibc_version", "policy"], as_index=False
+    ).aggregate(np.sum)
+
+    # apply rolling window
+    df = pd.pivot_table(
+        df,
+        index="day",
+        columns=["python_version", "glibc_version", "policy"],
+        values="num_downloads",
+        fill_value=0,
+        aggfunc="sum",
+    )
+    df = df.rolling(window=utils.CONSUMER_WINDOW_SIZE, min_periods=1).sum()
+    df = df.stack(list(range(df.columns.nlevels))).reset_index().fillna(0.0)
+    df.rename(columns={0: "num_downloads"}, inplace=True)
+    df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
         ["day", "python_version", "glibc_version", "policy"], as_index=False
     ).aggregate(np.sum)

@@ -59,7 +59,7 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
         | df.python.str.contains("cp3")
         | df.python.str.contains("pp3")
     )
-    df_r = df[(df["day"] >= (start - utils.WINDOW_SIZE)) & (df["day"] < end)]
+    df_r = df[(df["day"] >= (start - utils.PRODUCER_WINDOW_SIZE)) & (df["day"] < end)]
     df_r = df_r.drop(columns=["version", "python", "manylinux"])
     return df_r.sort_values("day", ascending=False).copy(deep=True)
 
@@ -72,7 +72,7 @@ def _get_rolling_dataframe(
     index = []
     rolling_dfs = []
     while current >= start_date:
-        window_start = current - utils.WINDOW_SIZE
+        window_start = current - utils.PRODUCER_WINDOW_SIZE
         df_window = (
             df[(df["day"] >= window_start) & (df["day"] < current)]
             .drop_duplicates(["package"])
@@ -138,7 +138,8 @@ def update(rows, start, end):
         df[["package"]].drop_duplicates().agg("count")["package"]
     )
     _LOGGER.info(
-        f"update dataframe using a {utils.WINDOW_SIZE.days} days " "sliding window"
+        f"update dataframe using a {utils.PRODUCER_WINDOW_SIZE.days} days "
+        "sliding window"
     )
     out["index"], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
