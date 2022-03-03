@@ -54,7 +54,11 @@ def _parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                 continue
             pythons.add(python)
             if metadata.abi == "abi3":
-                assert python.startswith("cp3")
+                if not python.startswith("cp3"):
+                    _LOGGER.warning(
+                        f'ignoring python "{python}-abi3" for wheel "{filename}"'
+                    )
+                    continue
                 # Add abi3 to know that cp3? > {python} are supported
                 pythons.add("ab3")
         manylinux.add(metadata.platform)
