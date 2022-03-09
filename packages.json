@@ -1772,6 +1772,7 @@
 "libMcPhase",
 "libaio-bins",
 "libasd",
+"libcalculus",
 "libceed",
 "libcellml",
 "libclang",
