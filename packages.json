@@ -3337,6 +3337,7 @@
 "reportlab",
 "reproject",
 "reprozip",
+"reqwest",
 "restrained-ESP-fit",
 "retworkx",
 "reynir",
