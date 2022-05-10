@@ -2655,6 +2655,7 @@
 "pyClickModels",
 "pyEDFlib",
 "pyEDM",
+"pyEdgeEval",
 "pyFAI",
 "pyFAST",
 "pyFFTW",
