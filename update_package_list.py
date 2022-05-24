@@ -45,7 +45,8 @@ def _update_bigquery(bigquery_credentials: Path | None, packages_set: set[str]) 
         "bigquery-public-data.pypi.file_downloads WHERE "
         f'timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND '
         f'TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND '
-        'REGEXP_CONTAINS(file.filename, "-manylinux\\\\w+\\\\.whl$") '
+        "REGEXP_CONTAINS(file.filename"
+        ', "-[0-9A-Za-z_.]*manylinux[0-9A-Za-z_.]+\\\\.whl$") '
         "GROUP BY project"
     )
     with TemporaryDirectory() as temp:
