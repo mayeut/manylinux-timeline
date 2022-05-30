@@ -103,9 +103,9 @@ google-resumable-media==2.3.3 \
     --hash=sha256:27c52620bd364d1c8116eaac4ea2afcbfb81ae9139fb3199652fcac1724bfb6c \
     --hash=sha256:5b52774ea7a829a8cdaa8bd2d4c3d4bc660c91b30857ab2668d0eb830f4ea8c5
     # via google-cloud-bigquery
-googleapis-common-protos==1.56.1 \
-    --hash=sha256:6b5ee59dc646eb61a8eb65ee1db186d3df6687c8804830024f32573298bca19b \
-    --hash=sha256:ddcd955b5bb6589368f659fa475373faa1ed7d09cde5ba25e88513d87007e174
+googleapis-common-protos==1.56.2 \
+    --hash=sha256:023eaea9d8c1cceccd9587c6af6c20f33eeeb05d4148670f2b0322dc1511700c \
+    --hash=sha256:b09b56f5463070c2153753ef123f07d2e49235e89148e9b2459ec8ed2f68d7d3
     # via
     #   google-api-core
     #   grpcio-status
