@@ -248,9 +248,9 @@ pre-commit==2.19.0 \
     --hash=sha256:10c62741aa5704faea2ad69cb550ca78082efe5697d6f04e5710c3c229afdd10 \
     --hash=sha256:4233a1e38621c87d9dda9808c6606d7e7ba0e087cd56d3fe03202a01d2919615
     # via -r requirements.in
-proto-plus==1.20.4 \
-    --hash=sha256:3cfaac30676793d5ee764a0982bc30481beb5059f315e2a2422d7c73ded5b601 \
-    --hash=sha256:6653541c2f1209e4d5268d3e6302791f72a95cc5f8bdcf3e60d943edc657e70a
+proto-plus==1.20.5 \
+    --hash=sha256:81794eb1be333c67986333948df70ebb8cdf538e039f8cfa92fd2a9d7176d405 \
+    --hash=sha256:fa29fec8a91cf178bc1d8bf9263769421d2dba7787eae42b67235676e211c158
     # via
     #   google-cloud-bigquery
     #   google-cloud-bigquery-storage
