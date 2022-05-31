@@ -564,7 +564,6 @@
 "awkward-cuda-kernels",
 "awkward1",
 "awkward1-cuda-kernels",
-"aws-tensorflow-cpu",
 "awscrt",
 "awslambdaric",
 "ax-platform",
