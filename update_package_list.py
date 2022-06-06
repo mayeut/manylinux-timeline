@@ -1,10 +1,13 @@
+import gzip
 import json
 import logging
 import os
+import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
+import lastversion
 import requests
 from google.api_core.exceptions import Forbidden, GoogleAPIError
 from google.cloud import bigquery
@@ -90,17 +93,47 @@ def _update_top_packages(packages_set: set[str]) -> None:
     response.raise_for_status()
     top_packages_data = response.json()
     top_packages = {row["project"] for row in top_packages_data["rows"]}
-    _LOGGER.debug(f"top pypi: merging {len(top_packages)} package names")
-    packages_set |= top_packages
-    _LOGGER.debug(f"top pypi: now using {len(packages_set)} package names")
+    _merge("top pypi", top_packages, packages_set)
+
+
+def _update_pypi_data(packages_set: set[str]) -> None:
+    _LOGGER.info("pypi data: fetching packages")
+    query = 'SELECT name FROM wheels WHERE platform LIKE "%manylinux%" GROUP BY name;'
+    db_url = lastversion.latest(
+        "https://github.com/sethmlarson/pypi-data",
+        output_format="assets",
+        having_asset="pypi.db.gz",
+    )[0]
+    _LOGGER.debug("pypi data: download database")
+    response = requests.get(db_url)
+    response.raise_for_status()
+    with NamedTemporaryFile() as f:
+        _LOGGER.debug("pypi data: decompress database")
+        f.write(gzip.decompress(response.content))
+        _LOGGER.debug("pypi data: execute database query")
+        con = sqlite3.connect(f.name)
+        try:
+            cur = con.execute(query)
+            try:
+                new_packages = {row[0] for row in cur.fetchall()}
+            finally:
+                cur.close()
+        finally:
+            con.close()
+    _merge("pypi data", new_packages, packages_set)
 
 
 def update(
-    packages: list[str], use_top_packages: bool, bigquery_credentials: Path | None
+    packages: list[str],
+    use_top_packages: bool,
+    use_sethmlarson_pypi_data: bool,
+    bigquery_credentials: Path | None,
 ) -> list[str]:
     packages_set = set(packages)
     if use_top_packages:
         _update_top_packages(packages_set)
+    if use_sethmlarson_pypi_data:
+        _update_pypi_data(packages_set)
     if bigquery_credentials or os.environ.get(BIGQUERY_TOKEN, "") != "":
         _update_bigquery(bigquery_credentials, packages_set)
     return list(sorted(packages_set))

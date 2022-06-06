@@ -1,5 +1,6 @@
 google-api-core
 google-cloud-bigquery
+lastversion
 numpy
 packaging
 pandas

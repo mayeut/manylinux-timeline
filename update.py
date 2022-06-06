@@ -41,6 +41,11 @@ if __name__ == "__main__":
         help="check for new packages using manylinux wheels in top packages",
     )
     parser.add_argument(
+        "--sethmlarson-pypi-data",
+        action="store_true",
+        help="check for new packages using manylinux wheels in sethmlarson/pypi-data",
+    )
+    parser.add_argument(
         "-s",
         "--start",
         default=default_start,
@@ -95,12 +100,16 @@ if __name__ == "__main__":
             _LOGGER.info(f"skip package list update for event '{event_name}'")
             skip_update_package_list = True
         elif today.isoweekday() == 3 and 7 < today.day <= 14:
-            # use top_packages one wednesday per month
+            # use top_packages & sethmlarson_pypi_data one wednesday per month
             args.top_packages = True
+            args.sethmlarson_pypi_data = True
 
     if not skip_update_package_list:
         packages = update_package_list.update(
-            packages, args.top_packages, args.bigquery_credentials
+            packages,
+            args.top_packages,
+            args.sethmlarson_pypi_data,
+            args.bigquery_credentials,
         )
 
     if not args.skip_cache:
