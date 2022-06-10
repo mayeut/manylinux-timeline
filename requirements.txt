@@ -66,9 +66,9 @@ google-cloud-bigquery==3.1.0 \
     --hash=sha256:d2d6caf78d1c133e7ffd9b0b7e2d7df1f9b2f703de377497b96d9a74cfe8ec02 \
     --hash=sha256:d7cf136dccb6e754bc364553c7a92d31c90fbdb74d06f311a489588d548ac655
     # via -r requirements.in
-google-cloud-bigquery-storage==2.13.1 \
-    --hash=sha256:4f3845535c77f9271a03046438e43cfd56df575d0c5f2ee3362bf8760a0aba50 \
-    --hash=sha256:7a25148f635a04ca9ff568d47e64be275d3a4a3c90772524879e8f88f270d92d
+google-cloud-bigquery-storage==2.13.2 \
+    --hash=sha256:ac4ce734e805aca7e73a69617b14d31e690a113446136e92292a74e1d8b3e3b2 \
+    --hash=sha256:b3f72c66e6c92afdb8ba76b81cceba1969d217a205c35acb4eb1a5257b7fd21d
     # via google-cloud-bigquery
 google-cloud-core==2.3.1 \
     --hash=sha256:113ba4f492467d5bd442c8d724c1a25ad7384045c3178369038840ecdd19346c \
@@ -365,6 +365,7 @@ protobuf==3.20.1 \
     # via
     #   google-api-core
     #   google-cloud-bigquery
+    #   google-cloud-bigquery-storage
     #   googleapis-common-protos
     #   grpcio-status
     #   proto-plus
