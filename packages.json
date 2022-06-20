@@ -846,6 +846,7 @@
 "chturne-easysnmp",
 "cibuildwheel-autopypi-example",
 "cibuildwheel-autopypi-example-mayeut",
+"cibwtest",
 "cimageio",
 "ciostream",
 "ciphercore",
