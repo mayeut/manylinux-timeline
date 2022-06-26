@@ -180,9 +180,9 @@ grpcio==1.47.0 \
     #   google-api-core
     #   google-cloud-bigquery
     #   grpcio-status
-grpcio-status==1.46.3 \
-    --hash=sha256:5357dcd69e51ba3f7b86d57698bd44d2ef295528eb7219b237eb596183334d39 \
-    --hash=sha256:78442ac7d2813c56f9cc04f713efd7088596b10f88a4ddd09279211cc48402d5
+grpcio-status==1.47.0 \
+    --hash=sha256:2154fdb8aad20452488712be6879657b508115ca06139fde8897ea8e9bc79367 \
+    --hash=sha256:c9ce3213e84c6fd8801c31aca3ea4a6b3453eaa40b93a6c0a23ea8999808fa00
     # via google-api-core
 identify==2.5.1 \
     --hash=sha256:0dca2ea3e4381c435ef9c33ba100a78a9b40c0bab11189c7cf121f75815efeaa \
