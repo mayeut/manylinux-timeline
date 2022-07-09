@@ -2484,6 +2484,7 @@
 "low-index",
 "lp-sparsemap",
 "lpu",
+"lru-dict",
 "ls-trace",
 "lsm",
 "lsml",
