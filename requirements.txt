@@ -66,9 +66,9 @@ google-cloud-bigquery==3.2.0 \
     --hash=sha256:5ab006a2c422df5feb6a3ccdec2feb01066a33a12c92752f92efa9abf47acf35 \
     --hash=sha256:97fb4306e324cb86909ce32a9944e81d21fbcb28a780c5cdf01b6e4d47d4c322
     # via -r requirements.in
-google-cloud-bigquery-storage==2.14.0 \
-    --hash=sha256:80589d3d90d98d0c80a99d33a3cbd46a93cf4e0b70dde3f614f52a0965b148c5 \
-    --hash=sha256:b9dccb9bf698c178dec8157bd09fcd8e385430b1c9ef05c7312f0e4a59ebad95
+google-cloud-bigquery-storage==2.14.1 \
+    --hash=sha256:3ada498d288582eb706f0d660734c197ead85798caec3bb4fc435505890dceac \
+    --hash=sha256:9cec07689c455448b4db789aa60e759664d757eb066af2a35d414e5e00cf6fb8
     # via google-cloud-bigquery
 google-cloud-core==2.3.1 \
     --hash=sha256:113ba4f492467d5bd442c8d724c1a25ad7384045c3178369038840ecdd19346c \
