@@ -32,9 +32,9 @@ charset-normalizer==2.1.0 \
     --hash=sha256:5189b6f22b01957427f35b6a08d9a0bc45b46d3788ef5a92e978433c7a35f8a5 \
     --hash=sha256:575e708016ff3a5e3681541cb9d79312c416835686d054a23accb873b254f413
     # via requests
-distlib==0.3.4 \
-    --hash=sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b \
-    --hash=sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579
+distlib==0.3.5 \
+    --hash=sha256:a7f75737c70be3b25e2bee06288cec4e4c221de18455b2dd037fe2a795cab2fe \
+    --hash=sha256:b710088c59f06338ca514800ad795a132da19fda270e3ce4affc74abf955a26c
     # via virtualenv
 distro==1.7.0 \
     --hash=sha256:151aeccf60c216402932b52e40ee477a939f8d58898927378a02abbe852c1c39 \
