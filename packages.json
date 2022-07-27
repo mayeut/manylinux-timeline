@@ -5168,6 +5168,7 @@
 "trianglepy",
 "trisicell",
 "triton",
+"triton-library",
 "triton-model-analyzer",
 "tritonclient",
 "try-pybind11-olned",
