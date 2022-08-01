@@ -1170,7 +1170,6 @@
 "darwin-framework",
 "dask-gateway-server",
 "dask-ml",
-"data-cleansing",
 "datafusion",
 "datapackage-convert",
 "datapan",
