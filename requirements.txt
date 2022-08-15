@@ -44,9 +44,9 @@ feedparser==6.0.10 \
     --hash=sha256:27da485f4637ce7163cdeab13a80312b93b7d0c1b775bef4a47629a3110bca51 \
     --hash=sha256:79c257d526d13b944e965f6095700587f27388e50ea16fd245babe4dfae7024f
     # via lastversion
-filelock==3.7.1 \
-    --hash=sha256:37def7b658813cda163b56fc564cdc75e86d338246458c4c28ae84cabefa2404 \
-    --hash=sha256:3a0fd85166ad9dbab54c9aec96737b744106dc5f15c0b09a6744a445299fcf04
+filelock==3.8.0 \
+    --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
+    --hash=sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4
     # via virtualenv
 google-api-core[grpc]==2.8.1 \
     --hash=sha256:958024c6aa3460b08f35741231076a4dd9a4c819a6a39d44da9627febe8b28f0 \
