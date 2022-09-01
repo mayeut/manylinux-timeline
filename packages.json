@@ -859,6 +859,7 @@
 "cffi-demo",
 "cffsubr",
 "cflinkcpp",
+"cfn-guard-rs",
 "cfnmatch",
 "cfractions",
 "cftime",
