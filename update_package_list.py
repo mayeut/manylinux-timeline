@@ -98,7 +98,10 @@ def _update_top_packages(packages_set: set[str]) -> None:
 
 def _update_pypi_data(packages_set: set[str]) -> None:
     _LOGGER.info("pypi data: fetching packages")
-    query = 'SELECT name FROM wheels WHERE platform LIKE "%manylinux%" GROUP BY name;'
+    query = (
+        'SELECT package_name FROM wheels WHERE platform LIKE "%manylinux%" '
+        "GROUP BY package_name;"
+    )
     db_url = lastversion.latest(
         "https://github.com/sethmlarson/pypi-data",
         output_format="assets",
