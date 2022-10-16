@@ -4,5 +4,4 @@ lastversion
 numpy
 packaging
 pandas
-pre-commit
 requests
