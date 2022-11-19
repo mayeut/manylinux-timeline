@@ -22,6 +22,8 @@ POLICIES = {
     9: "manylinux_2_27",
     10: "manylinux_2_28",
     11: "manylinux_2_31",
+    12: "manylinux_2_34",
+    13: "manylinux_2_35",
 }
 
 
@@ -110,6 +112,14 @@ def update(path: Path, start: datetime, end: datetime):
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
         & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 31)))
     ).astype(int)
+    df["manylinux_2_34"] = (
+        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
+        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 34)))
+    ).astype(int)
+    df["manylinux_2_35"] = (
+        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
+        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 35)))
+    ).astype(int)
     df["policy"] = (
         df["manylinux1"]
         + df["manylinux2010"]
@@ -122,6 +132,8 @@ def update(path: Path, start: datetime, end: datetime):
         + df["manylinux_2_27"]
         + df["manylinux_2_28"]
         + df["manylinux_2_31"]
+        + df["manylinux_2_34"]
+        + df["manylinux_2_35"]
     )
     df.drop(
         columns=[
@@ -141,6 +153,8 @@ def update(path: Path, start: datetime, end: datetime):
             "manylinux_2_27",
             "manylinux_2_28",
             "manylinux_2_31",
+            "manylinux_2_34",
+            "manylinux_2_35",
         ],
         inplace=True,
     )
@@ -204,7 +218,8 @@ def update(path: Path, start: datetime, end: datetime):
         ("2.27",),
         ("2.28", "2.29", "2.30"),
         ("2.31", "2.32", "2.33"),
-        ("2.34", "2.35", "2.36"),
+        ("2.34",),
+        ("2.35", "2.36"),
     ]
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
@@ -226,7 +241,7 @@ def update(path: Path, start: datetime, end: datetime):
         glibc_version[versions[0]] = stats
     out["glibc_version"] = glibc_version
 
-    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
+    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
     python_version = dict[str, Union[list[str], list[float]]]()
     policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
     glibc_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()

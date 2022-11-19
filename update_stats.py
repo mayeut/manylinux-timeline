@@ -11,12 +11,22 @@ import utils
 
 _LOGGER = logging.getLogger(__name__)
 
-POLICIES = ("ml1", "ml2010", "ml2014", "ml_2_24", "ml_2_27", "ml_2_28", "ml_2_31")
+POLICIES = (
+    "ml1",
+    "ml2010",
+    "ml2014",
+    "ml_2_24",
+    "ml_2_27",
+    "ml_2_28",
+    "ml_2_31",
+    "ml_2_34",
+    "ml_2_35",
+)
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
 IMPL_X2 = ("cp27",)
 IMPL_CP3_FIRST = 5
-IMPL_CP3_LAST = 11
+IMPL_CP3_LAST = 12
 IMPL_PP3 = tuple(f"pp3{i}" for i in range(7, 9 + 1))
 # that's what is ultimately displayed
 IMPLEMENTATIONS = tuple(
