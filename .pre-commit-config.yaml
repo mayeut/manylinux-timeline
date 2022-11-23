@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 
 default_language_version:
-  python: python3.10
+  python: python3.11
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -23,7 +23,7 @@ repos:
   rev: v3.2.2
   hooks:
   - id: pyupgrade
-    args: ["--py310-plus"]
+    args: ["--py311-plus"]
 
 - repo: https://github.com/psf/black
   rev: 22.10.0
