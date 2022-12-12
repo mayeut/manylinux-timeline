@@ -200,9 +200,9 @@ idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
     # via requests
-lastversion==2.4.7 \
-    --hash=sha256:ef55cb2e35b521aa9f3fc4014b1070ffb6297b6190690c257bf803977140d4f0 \
-    --hash=sha256:fadc1c08220e90fb947488548ce94686f1787985efe4405afdb3b11827c99390
+lastversion==2.4.8 \
+    --hash=sha256:295edd562a6601aa3a1907c416da533bd265d84d42634e5e12624f45ab609678 \
+    --hash=sha256:dbb6f675bd4c124c888deff66b378cc0bf247638a951cf223f323ba148334fb8
     # via -r requirements.in
 lockfile==0.12.2 \
     --hash=sha256:6aed02de03cba24efabcd600b30540140634fc06cfa603822d508d5361e9f799 \
