@@ -1489,6 +1489,7 @@
 "dpnp",
 "dpsa4fl",
 "dpsa4fl-bindings",
+"dpsim",
 "dpss",
 "dqc",
 "dqclibs",
