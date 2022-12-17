@@ -2518,7 +2518,6 @@
 "jarowinkler",
 "jax-chacha-prng",
 "jax-finufft",
-"jax-xc",
 "jaxlib",
 "jdk4py",
 "jellyfish",
