@@ -407,9 +407,9 @@ python-dateutil==2.8.2 \
     #   google-cloud-bigquery
     #   lastversion
     #   pandas
-pytz==2022.6 \
-    --hash=sha256:222439474e9c98fced559f1709d89e6c9cbf8d79c794ff3eb9f8800064291427 \
-    --hash=sha256:e89512406b793ca39f5971bc999cc538ce125c0e51c27941bef4568b460095e2
+pytz==2022.7 \
+    --hash=sha256:7ccfae7b4b2c067464a6733c6261673fdb8fd1be905460396b97a073e9fa683a \
+    --hash=sha256:93007def75ae22f7cd991c84e02d434876818661f8df9ad5df9e950ff4e52cfd
     # via pandas
 pyyaml==6.0 \
     --hash=sha256:01b45c0191e6d66c470b6cf1b9531a771a83c1c4208272ead47a3ae4f2f603bf \
