@@ -24,7 +24,7 @@ jobs:
       run: python -m pip install nox
     - name: Get cache timestamp
       id: timestamp
-      run: echo "::set-output name=timestamp::$(nox -s timestamp 2>/dev/null)"
+      run: echo "timestamp=$(nox -s timestamp 2>/dev/null)" >> $GITHUB_OUTPUT
     - name: Setup cache
       uses: actions/cache@v3
       with:
