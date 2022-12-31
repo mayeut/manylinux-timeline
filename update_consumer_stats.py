@@ -5,7 +5,7 @@ from typing import Any, Union
 
 import numpy as np
 import pandas as pd
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 import utils
 
@@ -28,7 +28,10 @@ POLICIES = {
 
 
 def _get_major_minor(x):
-    version = Version(x)
+    try:
+        version = Version(x)
+    except InvalidVersion:
+        return "0.0"
     if version.major > 50:
         return "0.0"  # invalid version
     return f"{version.major}.{version.minor}"
