@@ -245,7 +245,14 @@ def update(path: Path, start: datetime, end: datetime):
     out["glibc_version"] = glibc_version
 
     python_versions_eol = ["2.7", "3.5", "3.6"]
-    python_versions = python_versions_eol + ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+    python_versions = python_versions_eol + [
+        "3.7",
+        "3.8",
+        "3.9",
+        "3.10",
+        "3.11",
+        "3.12",
+    ]
     python_version = dict[str, Union[list[str], list[float]]]()
     python_version_noneol = dict[str, Union[list[str], list[float]]]()
     policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
@@ -317,8 +324,12 @@ def update(path: Path, start: datetime, end: datetime):
                 stats.append(float(f"{100.0 * value:.2f}"))
             glibc_readiness_ver[versions[0]] = stats
 
-    python_version_noneol = {k: v for k, v in python_version.items() if k not in python_versions_eol}
-    glibc_readiness_noneol = {k: v for k, v in glibc_readiness.items() if k not in python_versions_eol}
+    python_version_noneol = {
+        k: v for k, v in python_version.items() if k not in python_versions_eol
+    }
+    glibc_readiness_noneol = {
+        k: v for k, v in glibc_readiness.items() if k not in python_versions_eol
+    }
 
     out["python_version"] = python_version
     out["python_version_noneol"] = python_version_noneol
