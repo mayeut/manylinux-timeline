@@ -242,8 +242,8 @@
         $("#package_count").text(data.package_count)
         load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false);
         load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
-        load_plot("consumer-python-noneol-version-plot", data.index, data.python_version, true, "%", "normal", false);
-        load_plot("consumer-glibc-noneol-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
+        load_plot("consumer-python-noneol-version-plot", data.index, data.python_version_noneol, true, "%", "normal", false);
+        load_plot("consumer-glibc-noneol-version-plot", data.index, data.glibc_version_noneol, true, "%", "reversed", true);
         load_plot("consumer-policy-readiness-2.7-plot", data.index, data.policy_readiness["2.7"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-2.7-plot", data.index, data.glibc_readiness["2.7"], true, "%", "reversed", true);
         load_plot("consumer-policy-readiness-3.5-plot", data.index, data.policy_readiness["3.5"], true, "%", "reversed", true);
