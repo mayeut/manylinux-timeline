@@ -244,7 +244,8 @@ def update(path: Path, start: datetime, end: datetime):
         glibc_version[versions[0]] = stats
     out["glibc_version"] = glibc_version
 
-    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+    python_versions_no_pep600_pip = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
+    python_versions = python_versions_no_pep600_pip + ["3.10", "3.11", "3.12"]
     python_version = dict[str, Union[list[str], list[float]]]()
     policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
     glibc_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
@@ -263,30 +264,33 @@ def update(path: Path, start: datetime, end: datetime):
 
         df_python_version = df[df["python_version"] == version]
 
-        df_policy = (
-            df_python_version[["policy", "num_downloads"]]
-            .groupby(["day", "policy"])
-            .aggregate(np.sum)
-        )
-        df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
-        df_policy_stats = df_policy / df_policy_all
-        policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
-        policy_readiness_ver["keys"] = list(
-            POLICIES[i] for i in range(len(POLICIES))[::-1]
-        )
-        policy_readiness[version] = policy_readiness_ver
-        for i in range(len(POLICIES))[::-1]:
-            policy = POLICIES[i]
-            stats = []
-            for day in out["index"]:
-                try:
-                    value = float(
-                        df_policy_stats.loc[(pd.to_datetime(day), i), "num_downloads"]
-                    )
-                except KeyError:
-                    value = 0.0
-                stats.append(float(f"{100.0 * value:.2f}"))
-            policy_readiness_ver[policy] = stats
+        if version in python_versions_no_pep600_pip:
+            df_policy = (
+                df_python_version[["policy", "num_downloads"]]
+                .groupby(["day", "policy"])
+                .aggregate(np.sum)
+            )
+            df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
+            df_policy_stats = df_policy / df_policy_all
+            policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
+            policy_readiness_ver["keys"] = list(
+                POLICIES[i] for i in range(len(POLICIES))[::-1]
+            )
+            policy_readiness[version] = policy_readiness_ver
+            for i in range(len(POLICIES))[::-1]:
+                policy = POLICIES[i]
+                stats = []
+                for day in out["index"]:
+                    try:
+                        value = float(
+                            df_policy_stats.loc[
+                                (pd.to_datetime(day), i), "num_downloads"
+                            ]
+                        )
+                    except KeyError:
+                        value = 0.0
+                    stats.append(float(f"{100.0 * value:.2f}"))
+                policy_readiness_ver[policy] = stats
 
         df_glibc = (
             df_python_version[["glibc_version", "num_downloads"]]
@@ -294,7 +298,7 @@ def update(path: Path, start: datetime, end: datetime):
             .aggregate(np.sum)
         )
         df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
-        df_glibc_stats = df_glibc / df_policy_all
+        df_glibc_stats = df_glibc / df_glibc_all
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
         glibc_readiness_ver["keys"] = list(v[0] for v in glibc_versions)
         glibc_readiness[version] = glibc_readiness_ver
