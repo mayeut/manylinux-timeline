@@ -26,6 +26,18 @@ POLICIES = {
     13: "manylinux_2_35",
 }
 
+PYTHON_EOL = {
+    "2.7": pd.to_datetime("2020-01-01"),
+    "3.5": pd.to_datetime("2020-09-13"),
+    "3.6": pd.to_datetime("2021-12-23"),
+    "3.7": pd.to_datetime("2023-06-27"),
+    "3.8": pd.to_datetime("2024-10-14"),
+    "3.9": pd.to_datetime("2025-10-05"),
+    "3.10": pd.to_datetime("2026-10-04"),
+    "3.11": pd.to_datetime("2027-10-24"),
+    "3.12": pd.to_datetime("2028-10-04"),
+}
+
 
 def _get_major_minor(x):
     try:
@@ -183,8 +195,18 @@ def update(path: Path, start: datetime, end: datetime):
     df = df.groupby(
         ["day", "python_version", "glibc_version", "policy"], as_index=False
     ).aggregate(np.sum)
+
+    # non EOL dataframe
+    df_non_eol = df.copy()
+    for k, v in PYTHON_EOL.items():
+        mask = (df_non_eol["python_version"] == k) & (df_non_eol["day"] >= v)
+        df_non_eol.loc[mask, "num_downloads"] = 0
+
     df.set_index("day", append=True, inplace=True)
     df = df.swaplevel()
+
+    df_non_eol.set_index("day", append=True, inplace=True)
+    df_non_eol = df_non_eol.swaplevel()
 
     # python version download stats
     df_python = (
@@ -194,6 +216,15 @@ def update(path: Path, start: datetime, end: datetime):
     )
     df_python_all = df_python.groupby(["day"]).aggregate(np.sum)
     df_python_stats = df_python / df_python_all
+
+    df_python_non_eol = (
+        df_non_eol[["python_version", "num_downloads"]]
+        .groupby(["day", "python_version"])
+        .aggregate(np.sum)
+    )
+    df_python_non_eol_all = df_python_non_eol.groupby(["day"]).aggregate(np.sum)
+    df_python_non_eol_stats = df_python_non_eol / df_python_non_eol_all
+
     # glibc version download stats
     df_glibc = (
         df[["glibc_version", "num_downloads"]]
@@ -202,6 +233,14 @@ def update(path: Path, start: datetime, end: datetime):
     )
     df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
     df_glibc_stats = df_glibc / df_glibc_all
+
+    df_glibc_non_eol = (
+        df_non_eol[["glibc_version", "num_downloads"]]
+        .groupby(["day", "glibc_version"])
+        .aggregate(np.sum)
+    )
+    df_glibc_non_eol_all = df_glibc_non_eol.groupby(["day"]).aggregate(np.sum)
+    df_glibc_non_eol_stats = df_glibc_non_eol / df_glibc_non_eol_all
 
     out: dict[str, Any] = {
         "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
@@ -227,10 +266,14 @@ def update(path: Path, start: datetime, end: datetime):
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
     glibc_version["keys"] = list(v[0] for v in glibc_versions)
+    glibc_version_non_eol = dict[str, Union[list[str], list[float]]]()
+    glibc_version_non_eol["keys"] = list(v[0] for v in glibc_versions)
     for versions in glibc_versions:
         stats = []
+        stats_non_eol = []
         for day in out["index"]:
             value = 0.0
+            value_non_eol = 0.0
             for version in versions:
                 try:
                     value += float(
@@ -240,15 +283,34 @@ def update(path: Path, start: datetime, end: datetime):
                     )
                 except KeyError:
                     pass
+                try:
+                    value_non_eol += float(
+                        df_glibc_non_eol_stats.loc[
+                            (pd.to_datetime(day), version), "num_downloads"
+                        ]
+                    )
+                except KeyError:
+                    pass
             stats.append(float(f"{100.0 * value:.2f}"))
+            stats_non_eol.append(float(f"{100.0 * value_non_eol:.2f}"))
         glibc_version[versions[0]] = stats
-    out["glibc_version"] = glibc_version
+        glibc_version_non_eol[versions[0]] = stats_non_eol
 
-    python_versions = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
-    python_version = dict[str, Union[list[str], list[float]]]()
-    policy_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
-    glibc_readiness = dict[str, dict[str, Union[list[str], list[float]]]]()
+    out["glibc_version"] = glibc_version
+    out["glibc_version_non_eol"] = glibc_version_non_eol
+
+    python_versions_no_pep600_pip = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
+    python_versions = python_versions_no_pep600_pip + ["3.10", "3.11", "3.12"]
+    python_version = dict[str, list[str] | list[float]]()
+    python_version_non_eol = dict[str, list[str] | list[float]]()
+    policy_readiness = dict[str, dict[str, list[str] | list[float]]]()
+    glibc_readiness = dict[str, dict[str, list[str] | list[float]]]()
     python_version["keys"] = python_versions
+    python_version_non_eol["keys"] = [
+        version
+        for version in python_versions
+        if PYTHON_EOL[version] > pd.to_datetime(start)
+    ]
     for version in python_versions:
         stats = []
         for day in out["index"]:
@@ -260,33 +322,49 @@ def update(path: Path, start: datetime, end: datetime):
                 value = 0.0
             stats.append(float(f"{100.0 * value:.1f}"))
         python_version[version] = stats
-
-        df_python_version = df[df["python_version"] == version]
-
-        df_policy = (
-            df_python_version[["policy", "num_downloads"]]
-            .groupby(["day", "policy"])
-            .aggregate(np.sum)
-        )
-        df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
-        df_policy_stats = df_policy / df_policy_all
-        policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
-        policy_readiness_ver["keys"] = list(
-            POLICIES[i] for i in range(len(POLICIES))[::-1]
-        )
-        policy_readiness[version] = policy_readiness_ver
-        for i in range(len(POLICIES))[::-1]:
-            policy = POLICIES[i]
+        if version in python_version_non_eol["keys"]:
             stats = []
             for day in out["index"]:
                 try:
                     value = float(
-                        df_policy_stats.loc[(pd.to_datetime(day), i), "num_downloads"]
+                        df_python_non_eol_stats.loc[
+                            (pd.to_datetime(day), version), "num_downloads"
+                        ]
                     )
                 except KeyError:
                     value = 0.0
-                stats.append(float(f"{100.0 * value:.2f}"))
-            policy_readiness_ver[policy] = stats
+                stats.append(float(f"{100.0 * value:.1f}"))
+            python_version_non_eol[version] = stats
+
+        df_python_version = df[df["python_version"] == version]
+
+        if version in python_versions_no_pep600_pip:
+            df_policy = (
+                df_python_version[["policy", "num_downloads"]]
+                .groupby(["day", "policy"])
+                .aggregate(np.sum)
+            )
+            df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
+            df_policy_stats = df_policy / df_policy_all
+            policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
+            policy_readiness_ver["keys"] = list(
+                POLICIES[i] for i in range(len(POLICIES))[::-1]
+            )
+            policy_readiness[version] = policy_readiness_ver
+            for i in range(len(POLICIES))[::-1]:
+                policy = POLICIES[i]
+                stats = []
+                for day in out["index"]:
+                    try:
+                        value = float(
+                            df_policy_stats.loc[
+                                (pd.to_datetime(day), i), "num_downloads"
+                            ]
+                        )
+                    except KeyError:
+                        value = 0.0
+                    stats.append(float(f"{100.0 * value:.2f}"))
+                policy_readiness_ver[policy] = stats
 
         df_glibc = (
             df_python_version[["glibc_version", "num_downloads"]]
@@ -294,7 +372,7 @@ def update(path: Path, start: datetime, end: datetime):
             .aggregate(np.sum)
         )
         df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
-        df_glibc_stats = df_glibc / df_policy_all
+        df_glibc_stats = df_glibc / df_glibc_all
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
         glibc_readiness_ver["keys"] = list(v[0] for v in glibc_versions)
         glibc_readiness[version] = glibc_readiness_ver
@@ -315,6 +393,7 @@ def update(path: Path, start: datetime, end: datetime):
             glibc_readiness_ver[versions[0]] = stats
 
     out["python_version"] = python_version
+    out["python_version_non_eol"] = python_version_non_eol
     out["policy_readiness"] = policy_readiness
     out["glibc_readiness"] = glibc_readiness
 
