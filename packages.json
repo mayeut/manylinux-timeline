@@ -5653,6 +5653,7 @@
 "spacy-experimental",
 "spacy-nightly",
 "spacy-pkuseg",
+"spacy-transformers",
 "spam",
 "spams-bin",
 "sparse-bundle-adjustment",
