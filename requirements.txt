@@ -281,9 +281,9 @@ idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
     # via requests
-lastversion==2.4.11 \
-    --hash=sha256:5b2fc99748ee85cdd6353bef0cfac044e1d0754d9fc31e1b336deba8a7deb826 \
-    --hash=sha256:5d954fa60775bd59e0f3f7b191c525e575136a77004ccd36a6319b079a8bd952
+lastversion==2.4.12 \
+    --hash=sha256:15519e72e592c592ff65b079ced15844a5bdcb917ff818ae01b3ee8f7e27b503 \
+    --hash=sha256:b533773ded8c3d410b6587d87983a75772535a21b85a0114d319ece20248510a
     # via -r requirements.in
 lockfile==0.12.2 \
     --hash=sha256:6aed02de03cba24efabcd600b30540140634fc06cfa603822d508d5361e9f799 \
