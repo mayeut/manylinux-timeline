@@ -6598,7 +6598,6 @@
 "tf-nightly",
 "tf-nightly-cpu",
 "tf-nightly-cpu-aws",
-"tf-nightly-gpu",
 "tf-nightly-xla-gpu",
 "tf-seal",
 "tf-sentencepiece",
