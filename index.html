@@ -191,7 +191,7 @@
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script>
     window.PLOTLYENV=window.PLOTLYENV || {};
-    function load_plot(id, index, series, stacked, ticksuffix, traceorder, show_cum_sum) {
+    function load_plot(id, index, series, stacked, ticksuffix, traceorder, show_cum_sum, color_map=undefined) {
         const colors = ["#636efa", "#ef553b", "#00cc96", "#ab63fa", "#ffa15a", "#19d3f3", "#ff6692", "#b6e880", "#ff97ff", "#fecb52", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#aec7e8",  "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5"];
         var global_parameters = {"mode": "lines", "orientation": "v", "showlegend": true, "x": index, "xaxis": "x", "yaxis": "y"};
 
@@ -213,8 +213,12 @@
                     return num + y[idx];
                 });
             }
+            var color_index = index;
+            if (color_map != undefined) {
+                color_index = color_map.indexOf(key);
+            }
             new_series = Object.assign({}, global_parameters);
-            new_series = Object.assign(new_series, {"y":y, "legendgroup": key, "name": key, "line": {"color": colors[index]}});
+            new_series = Object.assign(new_series, {"y":y, "legendgroup": key, "name": key, "line": {"color": colors[color_index]}});
             if (show_cum_sum) {
                 new_series = Object.assign(new_series, {"customdata": cum_sum, "hovertemplate": "%{y:.1f}% - %{customdata:.1f}% overall"})
             }
@@ -242,7 +246,7 @@
         $("#package_count").text(data.package_count)
         load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false);
         load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
-        load_plot("consumer-python-version-plot-non-eol", data.index, data.python_version_non_eol, true, "%", "normal", false);
+        load_plot("consumer-python-version-plot-non-eol", data.index, data.python_version_non_eol, true, "%", "normal", false, data.python_version.keys);
         load_plot("consumer-glibc-version-plot-non-eol", data.index, data.glibc_version_non_eol, true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.12-plot", data.index, data.glibc_readiness["3.12"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.11-plot", data.index, data.glibc_readiness["3.11"], true, "%", "reversed", true);
