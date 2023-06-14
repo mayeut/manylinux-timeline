@@ -1987,6 +1987,7 @@
 "fast-crossing",
 "fast-ctc-decode",
 "fast-diff-match-patch",
+"fast-edit-distance",
 "fast-geodist",
 "fast-histogram",
 "fast-intensity",
