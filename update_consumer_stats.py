@@ -15,15 +15,14 @@ POLICIES = {
     2: "manylinux2010",
     3: "manylinux2014",
     4: "manylinux_2_17",
-    5: "manylinux_2_19",
-    6: "manylinux_2_23",
-    7: "manylinux_2_24",
-    8: "manylinux_2_26",
-    9: "manylinux_2_27",
-    10: "manylinux_2_28",
-    11: "manylinux_2_31",
-    12: "manylinux_2_34",
-    13: "manylinux_2_35",
+    5: "manylinux_2_23",
+    6: "manylinux_2_24",
+    7: "manylinux_2_26",
+    8: "manylinux_2_27",
+    9: "manylinux_2_28",
+    10: "manylinux_2_31",
+    11: "manylinux_2_34",
+    12: "manylinux_2_35",
 }
 
 PYTHON_EOL = {
@@ -99,10 +98,6 @@ def update(path: Path, start: datetime, end: datetime):
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
         & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 17)))
     ).astype(int)
-    df["manylinux_2_19"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 19)))
-    ).astype(int)
     df["manylinux_2_23"] = (
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
         & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 23)))
@@ -140,7 +135,6 @@ def update(path: Path, start: datetime, end: datetime):
         + df["manylinux2010"]
         + df["manylinux2014"]
         + df["manylinux_2_17"]
-        + df["manylinux_2_19"]
         + df["manylinux_2_23"]
         + df["manylinux_2_24"]
         + df["manylinux_2_26"]
@@ -161,7 +155,6 @@ def update(path: Path, start: datetime, end: datetime):
             "manylinux2010",
             "manylinux2014",
             "manylinux_2_17",
-            "manylinux_2_19",
             "manylinux_2_23",
             "manylinux_2_24",
             "manylinux_2_26",
@@ -252,8 +245,7 @@ def update(path: Path, start: datetime, end: datetime):
     glibc_versions = [
         ("2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11"),
         ("2.12", "2.13", "2.14", "2.15", "2.16"),
-        ("2.17", "2.18"),
-        ("2.19", "2.20", "2.21", "2.22"),
+        ("2.17", "2.18", "2.19", "2.20", "2.21", "2.22"),
         ("2.23",),
         ("2.24", "2.25"),
         ("2.26",),
