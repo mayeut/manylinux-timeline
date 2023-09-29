@@ -40,7 +40,15 @@ def update_requirements(session: nox.Session) -> None:
 @nox.session(python=PYTHON_VERSION)
 def run(session: nox.Session) -> None:
     """Run manylinux-timeline."""
-    session.install("--require-hashes", "-r", "requirements.txt")
+    session.install(
+        "--only-binary",
+        ":all:",
+        "--no-binary",
+        "sgmllib3k",
+        "--require-hashes",
+        "-r",
+        "requirements.txt",
+    )
     session.run("python", "update.py", *session.posargs)
 
 

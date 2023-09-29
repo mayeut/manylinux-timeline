@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Union
 
-import numpy as np
 import pandas as pd
 from packaging.version import InvalidVersion, Version
 
@@ -170,7 +169,7 @@ def update(path: Path, start: datetime, end: datetime):
     df.drop(columns=["cpu"], inplace=True)
     df = df.groupby(
         ["day", "python_version", "glibc_version", "policy"], as_index=False
-    ).aggregate(np.sum)
+    ).aggregate("sum")
 
     # apply rolling window
     df = pd.pivot_table(
@@ -187,7 +186,7 @@ def update(path: Path, start: datetime, end: datetime):
     df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
         ["day", "python_version", "glibc_version", "policy"], as_index=False
-    ).aggregate(np.sum)
+    ).aggregate("sum")
 
     # non EOL dataframe
     df_non_eol = df.copy()
@@ -205,34 +204,34 @@ def update(path: Path, start: datetime, end: datetime):
     df_python = (
         df[["python_version", "num_downloads"]]
         .groupby(["day", "python_version"])
-        .aggregate(np.sum)
+        .aggregate("sum")
     )
-    df_python_all = df_python.groupby(["day"]).aggregate(np.sum)
+    df_python_all = df_python.groupby(["day"]).aggregate("sum")
     df_python_stats = df_python / df_python_all
 
     df_python_non_eol = (
         df_non_eol[["python_version", "num_downloads"]]
         .groupby(["day", "python_version"])
-        .aggregate(np.sum)
+        .aggregate("sum")
     )
-    df_python_non_eol_all = df_python_non_eol.groupby(["day"]).aggregate(np.sum)
+    df_python_non_eol_all = df_python_non_eol.groupby(["day"]).aggregate("sum")
     df_python_non_eol_stats = df_python_non_eol / df_python_non_eol_all
 
     # glibc version download stats
     df_glibc = (
         df[["glibc_version", "num_downloads"]]
         .groupby(["day", "glibc_version"])
-        .aggregate(np.sum)
+        .aggregate("sum")
     )
-    df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
+    df_glibc_all = df_glibc.groupby(["day"]).aggregate("sum")
     df_glibc_stats = df_glibc / df_glibc_all
 
     df_glibc_non_eol = (
         df_non_eol[["glibc_version", "num_downloads"]]
         .groupby(["day", "glibc_version"])
-        .aggregate(np.sum)
+        .aggregate("sum")
     )
-    df_glibc_non_eol_all = df_glibc_non_eol.groupby(["day"]).aggregate(np.sum)
+    df_glibc_non_eol_all = df_glibc_non_eol.groupby(["day"]).aggregate("sum")
     df_glibc_non_eol_stats = df_glibc_non_eol / df_glibc_non_eol_all
 
     out: dict[str, Any] = {
@@ -334,9 +333,9 @@ def update(path: Path, start: datetime, end: datetime):
             df_policy = (
                 df_python_version[["policy", "num_downloads"]]
                 .groupby(["day", "policy"])
-                .aggregate(np.sum)
+                .aggregate("sum")
             )
-            df_policy_all = df_policy.groupby(["day"]).aggregate(np.sum)
+            df_policy_all = df_policy.groupby(["day"]).aggregate("sum")
             df_policy_stats = df_policy / df_policy_all
             policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
             policy_readiness_ver["keys"] = list(
@@ -361,9 +360,9 @@ def update(path: Path, start: datetime, end: datetime):
         df_glibc = (
             df_python_version[["glibc_version", "num_downloads"]]
             .groupby(["day", "glibc_version"])
-            .aggregate(np.sum)
+            .aggregate("sum")
         )
-        df_glibc_all = df_glibc.groupby(["day"]).aggregate(np.sum)
+        df_glibc_all = df_glibc.groupby(["day"]).aggregate("sum")
         df_glibc_stats = df_glibc / df_glibc_all
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
         glibc_readiness_ver["keys"] = list(v[0] for v in glibc_versions)
