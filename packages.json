@@ -2314,7 +2314,6 @@
 "faust-cchardet",
 "faust-streaming",
 "faust-streaming-rocksdb",
-"fb-re2-wheels",
 "fbgemm-gpu",
 "fbgemm-gpu-cpu",
 "fbgemm-gpu-nightly",
