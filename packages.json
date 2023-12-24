@@ -5462,6 +5462,7 @@
 "power-grid-model",
 "power-instruction-analyzer",
 "powerboxes",
+"pozalabs-pydub",
 "ppafm",
 "ppca-rs",
 "ppmd-cffi",
