@@ -90,6 +90,14 @@
             </p>
         </div>
         <div class="col-sm-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 id="consumer-glibc-readiness-3.13">glibc readiness for python 3.13 (Preview)</h2>
+            <div><div id="consumer-glibc-readiness-3.13-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.12">glibc readiness for python 3.12</h2>
             <div><div id="consumer-glibc-readiness-3.12-plot" class="plotly-graph-div"></div></div>
         </div>
@@ -248,6 +256,7 @@
         load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
         load_plot("consumer-python-version-plot-non-eol", data.index, data.python_version_non_eol, true, "%", "normal", false, data.python_version.keys);
         load_plot("consumer-glibc-version-plot-non-eol", data.index, data.glibc_version_non_eol, true, "%", "reversed", true);
+        load_plot("consumer-glibc-readiness-3.13-plot", data.index, data.glibc_readiness["3.13"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.12-plot", data.index, data.glibc_readiness["3.12"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.11-plot", data.index, data.glibc_readiness["3.11"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.10-plot", data.index, data.glibc_readiness["3.10"], true, "%", "reversed", true);

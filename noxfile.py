@@ -52,6 +52,11 @@ def run(session: nox.Session) -> None:
     session.run("python", "update.py", *session.posargs)
 
 
+@nox.session(python=PYTHON_VERSION)
+def serve(session: nox.Session) -> None:
+    session.run("python", "-m", "http.server", "-d", "build")
+
+
 @nox.session(python=PYTHON_VERSION, venv_backend="none")
 def timestamp(session: nox.Session) -> None:
     """Get timestamp for PyPI package cache on GHA"""

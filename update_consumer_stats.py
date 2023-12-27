@@ -34,6 +34,7 @@ PYTHON_EOL = {
     "3.10": pd.to_datetime("2026-10-04"),
     "3.11": pd.to_datetime("2027-10-24"),
     "3.12": pd.to_datetime("2028-10-04"),
+    "3.13": pd.to_datetime("2029-10-01"),
 }
 
 
@@ -291,7 +292,9 @@ def update(path: Path, start: datetime, end: datetime):
     out["glibc_version_non_eol"] = glibc_version_non_eol
 
     python_versions_no_pep600_pip = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
-    python_versions = python_versions_no_pep600_pip + ["3.10", "3.11", "3.12"]
+    python_versions = python_versions_no_pep600_pip + [
+        v for v in PYTHON_EOL if v not in python_versions_no_pep600_pip
+    ]
     python_version = dict[str, list[str] | list[float]]()
     python_version_non_eol = dict[str, list[str] | list[float]]()
     policy_readiness = dict[str, dict[str, list[str] | list[float]]]()
