@@ -3691,7 +3691,6 @@
 "kmbio",
 "kmeans1d",
 "kmedoids",
-"kmedoids-debug",
 "kmer-mapper",
 "kmer-tools",
 "kmerdb",
