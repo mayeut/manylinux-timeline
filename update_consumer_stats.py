@@ -182,7 +182,11 @@ def update(path: Path, start: datetime, end: datetime):
         aggfunc="sum",
     )
     df = df.rolling(window=utils.CONSUMER_WINDOW_SIZE, min_periods=1).sum()
-    df = df.stack(list(range(df.columns.nlevels))).reset_index().fillna(0.0)
+    df = (
+        df.stack(list(range(df.columns.nlevels)), future_stack=True)
+        .reset_index()
+        .fillna(0.0)
+    )
     df.rename(columns={0: "num_downloads"}, inplace=True)
     df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
