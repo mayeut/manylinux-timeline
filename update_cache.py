@@ -39,8 +39,11 @@ def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
     cache_file = utils.get_release_cache_path(package)
     if cache_file.exists():
         with open(cache_file) as f:
-            info = json.load(f)
-            headers["If-None-Match"] = info["etag"]
+            try:
+                info = json.load(f)
+                headers["If-None-Match"] = info["etag"]
+            except json.JSONDecodeError:
+                _LOGGER.warning(f'"{package}": cache corrupted')
     response = requests.get(_build_url(package), headers=headers)
     try:
         response.raise_for_status()
