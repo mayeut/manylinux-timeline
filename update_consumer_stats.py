@@ -22,6 +22,8 @@ POLICIES = {
     10: "manylinux_2_31",
     11: "manylinux_2_34",
     12: "manylinux_2_35",
+    13: "manylinux_2_36",
+    14: "manylinux_2_39",
 }
 
 PYTHON_EOL = {
@@ -130,6 +132,14 @@ def update(path: Path, start: datetime, end: datetime):
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
         & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 35)))
     ).astype(int)
+    df["manylinux_2_36"] = (
+        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
+        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 36)))
+    ).astype(int)
+    df["manylinux_2_39"] = (
+        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
+        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 39)))
+    ).astype(int)
     df["policy"] = (
         df["manylinux1"]
         + df["manylinux2010"]
@@ -143,6 +153,8 @@ def update(path: Path, start: datetime, end: datetime):
         + df["manylinux_2_31"]
         + df["manylinux_2_34"]
         + df["manylinux_2_35"]
+        + df["manylinux_2_36"]
+        + df["manylinux_2_39"]
     )
     df.drop(
         columns=[
@@ -163,6 +175,8 @@ def update(path: Path, start: datetime, end: datetime):
             "manylinux_2_31",
             "manylinux_2_34",
             "manylinux_2_35",
+            "manylinux_2_36",
+            "manylinux_2_39",
         ],
         inplace=True,
     )
@@ -257,7 +271,9 @@ def update(path: Path, start: datetime, end: datetime):
         ("2.28", "2.29", "2.30"),
         ("2.31", "2.32", "2.33"),
         ("2.34",),
-        ("2.35", "2.36", "2.37", "2.38"),
+        ("2.35",),
+        ("2.36", "2.37", "2.38"),
+        ("2.39",),
     ]
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
