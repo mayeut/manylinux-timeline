@@ -13,8 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 
 POLICIES = (
     "ml1",
+    "ml_2_5",
     "ml2010",
+    "ml_2_12",
     "ml2014",
+    "ml_2_17",
     "ml_2_24",
     "ml_2_27",
     "ml_2_28",
