@@ -7,6 +7,7 @@ from enum import Enum
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from shutil import move
+from typing import Any
 
 import requests
 
@@ -32,6 +33,18 @@ def _build_url(package: str) -> str:
     return f"https://pypi.org/pypi/{package}/json"
 
 
+def _check_cache_valid(info: Any) -> bool:
+    # requires_python added
+    for release in info["releases"]:
+        for file in info["releases"][release]:
+            if "requires_python" not in file:
+                return False
+            break
+        break
+
+    return True
+
+
 def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
     _LOGGER.info(f'"{package}": begin update')
     headers = {"User-Agent": utils.USER_AGENT}
@@ -41,7 +54,8 @@ def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
         with open(cache_file) as f:
             try:
                 info = json.load(f)
-                headers["If-None-Match"] = info["etag"]
+                if _check_cache_valid(info):
+                    headers["If-None-Match"] = info["etag"]
             except json.JSONDecodeError:
                 _LOGGER.warning(f'"{package}": cache corrupted')
     response = requests.get(_build_url(package), headers=headers)
@@ -95,13 +109,23 @@ def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
             metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
             if "manylinux" not in metadata.platform:
                 continue
+            requires_python = file["requires_python"]
             new_files.append(
-                {"filename": filename, "upload_time": upload_date.isoformat()}
+                {
+                    "filename": filename,
+                    "upload_time": upload_date.isoformat(),
+                    "requires_python": requires_python,
+                }
             )
 
         if len(new_files) > 0:
             new_files.insert(
-                0, {"filename": "ut-1.zip", "upload_time": upload_date_min.isoformat()}
+                0,
+                {
+                    "filename": "ut-1.zip",
+                    "upload_time": upload_date_min.isoformat(),
+                    "requires_python": None,
+                },
             )
             info["releases"][release] = new_files
         else:
