@@ -14,21 +14,17 @@ POLICIES = {
     2: "manylinux2010",
     3: "manylinux2014",
     4: "manylinux_2_17",
-    5: "manylinux_2_23",
-    6: "manylinux_2_24",
-    7: "manylinux_2_26",
-    8: "manylinux_2_27",
-    9: "manylinux_2_28",
-    10: "manylinux_2_31",
-    11: "manylinux_2_34",
-    12: "manylinux_2_35",
-    13: "manylinux_2_36",
-    14: "manylinux_2_39",
+    5: "manylinux_2_26",
+    6: "manylinux_2_27",
+    7: "manylinux_2_28",
+    8: "manylinux_2_31",
+    9: "manylinux_2_34",
+    10: "manylinux_2_35",
+    11: "manylinux_2_36",
+    12: "manylinux_2_39",
 }
 
 PYTHON_EOL = {
-    "2.7": pd.to_datetime("2020-01-01"),
-    "3.5": pd.to_datetime("2020-09-13"),
     "3.6": pd.to_datetime("2021-12-23"),
     "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-14"),
@@ -64,6 +60,8 @@ def _load_df(path: Path, date: datetime) -> pd.DataFrame | None:
         },
     )
     df["day"] = pd.to_datetime(date)
+    # remove unneeded python version
+    df.query("python_version in @PYTHON_EOL", inplace=True)
     return df
 
 
@@ -99,14 +97,6 @@ def update(path: Path, start: datetime, end: datetime):
     df["manylinux_2_17"] = (
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
         & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 17)))
-    ).astype(int)
-    df["manylinux_2_23"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 23)))
-    ).astype(int)
-    df["manylinux_2_24"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 24)))
     ).astype(int)
     df["manylinux_2_26"] = (
         ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
@@ -145,8 +135,6 @@ def update(path: Path, start: datetime, end: datetime):
         + df["manylinux2010"]
         + df["manylinux2014"]
         + df["manylinux_2_17"]
-        + df["manylinux_2_23"]
-        + df["manylinux_2_24"]
         + df["manylinux_2_26"]
         + df["manylinux_2_27"]
         + df["manylinux_2_28"]
@@ -167,8 +155,6 @@ def update(path: Path, start: datetime, end: datetime):
             "manylinux2010",
             "manylinux2014",
             "manylinux_2_17",
-            "manylinux_2_23",
-            "manylinux_2_24",
             "manylinux_2_26",
             "manylinux_2_27",
             "manylinux_2_28",
@@ -263,9 +249,7 @@ def update(path: Path, start: datetime, end: datetime):
     glibc_versions = [
         ("2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11"),
         ("2.12", "2.13", "2.14", "2.15", "2.16"),
-        ("2.17", "2.18", "2.19", "2.20", "2.21", "2.22"),
-        ("2.23",),
-        ("2.24", "2.25"),
+        ("2.17", "2.18", "2.19", "2.20", "2.21", "2.22", "2.23", "2.24", "2.25"),
         ("2.26",),
         ("2.27",),
         ("2.28", "2.29", "2.30"),
@@ -311,7 +295,7 @@ def update(path: Path, start: datetime, end: datetime):
     out["glibc_version"] = glibc_version
     out["glibc_version_non_eol"] = glibc_version_non_eol
 
-    python_versions_no_pep600_pip = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
+    python_versions_no_pep600_pip = ["3.6", "3.7", "3.8", "3.9"]
     python_versions = python_versions_no_pep600_pip + [
         v for v in PYTHON_EOL if v not in python_versions_no_pep600_pip
     ]

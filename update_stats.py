@@ -27,15 +27,12 @@ POLICIES = (
 )
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
-IMPL_X2 = ("cp27",)
-IMPL_CP3_FIRST = 5
+IMPL_CP3_FIRST = 6
 IMPL_CP3_LAST = 13
-IMPL_PP3 = tuple(f"pp3{i}" for i in range(7, 9 + 1))
+IMPL_PP3 = tuple(f"pp3{i}" for i in range(7, 10 + 1))
 # that's what is ultimately displayed
 IMPLEMENTATIONS = tuple(
     itertools.chain(
-        ["any2", "py2"],
-        IMPL_X2,
         ["any3", "py3"],
         sorted(
             itertools.chain(
@@ -53,7 +50,7 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
         df[arch] = df.manylinux.str.contains(arch)
-    for version in itertools.chain(IMPL_X2, IMPL_PP3, ["py2", "py3", "abi3"]):
+    for version in itertools.chain(IMPL_PP3, ["py3", "abi3"]):
         df[version] = df.python.str.contains(version)
     df["cp32"] = df.python.str.contains("cp32")
     for i in range(3, IMPL_CP3_LAST + 1):
@@ -62,11 +59,6 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
         df[version] = df.python.str.contains(version) | (
             df["abi3"] & df[f"{version_prev}"]
         )
-    df["any2"] = (
-        df.python.str.contains("py2")
-        | df.python.str.contains("cp2")
-        | df.python.str.contains("pp2")
-    )
     df["any3"] = (
         df.python.str.contains("py3")
         | df.python.str.contains("cp3")

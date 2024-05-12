@@ -153,26 +153,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-3.5">Policy readiness for python 3.5 (EOL)</h2>
-            <div><div id="consumer-policy-readiness-3.5-plot" class="plotly-graph-div"></div></div>
-        </div>
-        <div class="col-sm-6">
-            <h2 id="consumer-glibc-readiness-3.5">glibc readiness for python 3.5 (EOL)</h2>
-            <div><div id="consumer-glibc-readiness-3.5-plot" class="plotly-graph-div"></div></div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-2.7">Policy readiness for python 2.7 (EOL)</h2>
-            <div><div id="consumer-policy-readiness-2.7-plot" class="plotly-graph-div"></div></div>
-        </div>
-        <div class="col-sm-6">
-            <h2 id="consumer-glibc-readiness-2.7">glibc readiness for python 2.7 (EOL)</h2>
-            <div><div id="consumer-glibc-readiness-2.7-plot" class="plotly-graph-div"></div></div>
-        </div>
-    </div>
-    <div class="row">
         <div class="col">
             <h2 id="general-info">General information</h2>
         </div>
@@ -268,10 +248,6 @@
         load_plot("consumer-glibc-readiness-3.7-plot", data.index, data.glibc_readiness["3.7"], true, "%", "reversed", true);
         load_plot("consumer-policy-readiness-3.6-plot", data.index, data.policy_readiness["3.6"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.6-plot", data.index, data.glibc_readiness["3.6"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-3.5-plot", data.index, data.policy_readiness["3.5"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.5-plot", data.index, data.glibc_readiness["3.5"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-2.7-plot", data.index, data.policy_readiness["2.7"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-2.7-plot", data.index, data.glibc_readiness["2.7"], true, "%", "reversed", true);
     }
     $.getJSON("producer-data.json")
         .done(function( json ) {
