@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import date
 
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
 
 import utils
@@ -45,6 +46,21 @@ def _parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
         parsed_filename = utils.WHEEL_INFO_RE.match(filename)
         if parsed_filename is None:
             continue
+        requires_python: SpecifierSet | None = None
+        if file["requires_python"]:
+            fixup_requires_python = file["requires_python"]
+            fixup_requires_python = fixup_requires_python.replace(".*", "")
+            fixup_requires_python = fixup_requires_python.replace("*", "")
+            fixup_requires_python = fixup_requires_python.replace('"', "")
+            fixup_requires_python = fixup_requires_python.replace("0<", "0,<")
+            fixup_requires_python = fixup_requires_python.replace("3<", "3,<")
+            try:
+                requires_python = SpecifierSet(fixup_requires_python)
+            except InvalidSpecifier:
+                specifier_set = file["requires_python"]
+                _LOGGER.warning(
+                    f'invalid requires_python "{specifier_set}" for wheel "{filename}"'
+                )
         metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
         for python in metadata.implementation.replace(",", ".").split("."):
             try:
@@ -52,6 +68,21 @@ def _parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             except ValueError:
                 _LOGGER.warning(f'ignoring python "{python}" for wheel "{filename}"')
                 continue
+            if python == "py3":
+                if requires_python is None:
+                    python = "py32"
+                else:
+                    for minor in range(2, 99):
+                        if f"3.{minor}" in requires_python:
+                            python = f"py3{minor}"
+                            break
+                if python == "py3":
+                    specifier_set = file["requires_python"]
+                    _LOGGER.warning(
+                        f'unresolved requires_python "{specifier_set}"'
+                        f' for wheel "{filename}"'
+                    )
+                    continue
             pythons.add(python)
             if metadata.abi == "abi3":
                 if not python.startswith("cp3"):

@@ -29,14 +29,16 @@ ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
 IMPL_CP3_FIRST = 6
 IMPL_CP3_LAST = 13
-IMPL_PP3 = tuple(f"pp3{i}" for i in range(7, 10 + 1))
+IMPL_PP3_FIRST = 7
+IMPL_PP3_LAST = 10
 # that's what is ultimately displayed
 IMPLEMENTATIONS = tuple(
     itertools.chain(
         ["any3", "py3"],
         sorted(
             itertools.chain(
-                IMPL_PP3, [f"cp3{i}" for i in range(IMPL_CP3_FIRST, IMPL_CP3_LAST + 1)]
+                [f"pp3{i}" for i in range(IMPL_PP3_FIRST, IMPL_PP3_LAST + 1)],
+                [f"cp3{i}" for i in range(IMPL_CP3_FIRST, IMPL_CP3_LAST + 1)],
             ),
             key=lambda x: (int(x[3:]), x[:3]),
         ),
@@ -50,15 +52,27 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
         df[arch] = df.manylinux.str.contains(arch)
-    for version in itertools.chain(IMPL_PP3, ["py3", "abi3"]):
+    for version in ["abi3", "py3"]:
         df[version] = df.python.str.contains(version)
+    df["py32"] = df.python.str.contains("py32")
     df["cp32"] = df.python.str.contains("cp32")
+    py_version_prev = "py32"
+    cp_version_prev = "cp32"
     for i in range(3, IMPL_CP3_LAST + 1):
-        version = f"cp3{i}"
-        version_prev = f"cp3{i - 1}"
-        df[version] = df.python.str.contains(version) | (
-            df["abi3"] & df[f"{version_prev}"]
+        py_version = f"py3{i}"
+        cp_version = f"cp3{i}"
+        df[py_version] = df.python.str.contains(py_version) | df[py_version_prev]
+        df[cp_version] = (
+            df.python.str.contains(cp_version)
+            | df[py_version]
+            | (df["abi3"] & df[cp_version_prev])
         )
+        py_version_prev = py_version
+        cp_version_prev = cp_version
+    for i in range(IMPL_PP3_FIRST, IMPL_PP3_LAST + 1):
+        py_version = f"py3{i}"
+        pp_version = f"pp3{i}"
+        df[pp_version] = df.python.str.contains(pp_version) | df[py_version]
     df["any3"] = (
         df.python.str.contains("py3")
         | df.python.str.contains("cp3")
