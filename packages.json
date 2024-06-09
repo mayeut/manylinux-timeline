@@ -6160,7 +6160,6 @@
 "polars-reverse-geocode",
 "polars-s2",
 "polars-talib",
-"polars-ts",
 "polars-u64-idx",
 "polars-xdt",
 "polarscnj",
