@@ -8330,6 +8330,7 @@
 "ruff-api",
 "rule30py",
 "ruleopt",
+"runai-streamer",
 "rundec",
 "runespoor",
 "runstats",
