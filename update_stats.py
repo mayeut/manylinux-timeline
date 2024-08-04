@@ -24,6 +24,7 @@ POLICIES = (
     "ml_2_31",
     "ml_2_34",
     "ml_2_35",
+    "ml_2_39",
 )
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
