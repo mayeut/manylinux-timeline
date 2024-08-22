@@ -7968,6 +7968,7 @@
 "pytomlpp",
 "pytorch-bigtable",
 "pytorch-directml",
+"pytorch-sparse-addons",
 "pytorch-triton-rocm",
 "pytorch3d",
 "pytorchltr",
