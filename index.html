@@ -193,15 +193,30 @@
         }
         var series_parameters = [];
         var cum_sum;
+        if (traceorder == 'normal') {
+            series.keys.forEach(function (key, index) {
+                var y = series[key]
+                if (cum_sum == undefined) {
+                    cum_sum = Array.from(y)
+                }
+                else {
+                    cum_sum = cum_sum.map(function (num, idx) {
+                        return num + y[idx];
+                    });
+                }
+            });
+        }
         series.keys.forEach(function (key, index) {
             var y = series[key]
-            if (cum_sum == undefined) {
-                cum_sum = Array.from(y)
-            }
-            else {
-                cum_sum = cum_sum.map(function (num, idx) {
-                    return num + y[idx];
-                });
+            if (traceorder == 'reversed') {
+                if (cum_sum == undefined) {
+                    cum_sum = Array.from(y)
+                }
+                else {
+                    cum_sum = cum_sum.map(function (num, idx) {
+                        return num + y[idx];
+                    });
+                }
             }
             var color_index = index;
             if (color_map != undefined) {
@@ -213,6 +228,11 @@
                 new_series = Object.assign(new_series, {"customdata": cum_sum, "hovertemplate": "%{y:.1f}% - %{customdata:.1f}% overall"})
             }
             series_parameters.push(new_series);
+            if (traceorder == 'normal') {
+                cum_sum = cum_sum.map(function (num, idx) {
+                    return num - y[idx];
+                });
+            }
         });
         if (ticksuffix == "%") {
             tickformat = ",.1f"
@@ -225,8 +245,8 @@
     function update_producer_data(data) {
         $("#last_update").text(data.last_update)
         $("#package_count").text(data.package_count)
-        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true, "%", "normal", false);
-        load_plot("highest-policy-plot", data.index, data.highest_policy, true, "%", "normal", false);
+        load_plot("lowest-policy-plot", data.index, data.lowest_policy, true, "%", "normal", true);
+        load_plot("highest-policy-plot", data.index, data.highest_policy, true, "%", "normal", true);
         load_plot("python-implementation-plot", data.index, data.implementation, false, "%", "normal", false);
         load_plot("architecture-plot", data.index, data.architecture, false, "%", "normal", false);
         load_plot("package-plot", data.index, data.package, false, "", "normal", false);
