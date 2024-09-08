@@ -33,6 +33,7 @@ PYTHON_EOL = {
     "3.11": pd.to_datetime("2027-10-24"),
     "3.12": pd.to_datetime("2028-10-04"),
     "3.13": pd.to_datetime("2029-10-01"),
+    "3.14": pd.to_datetime("2030-10-01"),
 }
 
 
