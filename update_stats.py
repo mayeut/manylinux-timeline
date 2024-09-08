@@ -24,6 +24,9 @@ POLICIES = (
     "ml_2_31",
     "ml_2_34",
     "ml_2_35",
+    "ml_2_36",
+    "ml_2_37",
+    "ml_2_38",
     "ml_2_39",
 )
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
@@ -116,7 +119,7 @@ def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.Da
 def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> list[float]:
     ts = df.xs(key=tuple(key), axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    return list(float(f"{100.0 * value:.1f}") for value in ts.sort_index().values)
+    return list(float(f"{100.0 * value:.2f}") for value in ts.sort_index().values)
 
 
 def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> list[int]:
