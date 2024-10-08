@@ -27,7 +27,7 @@ POLICIES = {
 PYTHON_EOL = {
     "3.6": pd.to_datetime("2021-12-23"),
     "3.7": pd.to_datetime("2023-06-27"),
-    "3.8": pd.to_datetime("2024-10-14"),
+    "3.8": pd.to_datetime("2024-10-07"),
     "3.9": pd.to_datetime("2025-10-05"),
     "3.10": pd.to_datetime("2026-10-04"),
     "3.11": pd.to_datetime("2027-10-24"),
