@@ -43,8 +43,6 @@ def run(session: nox.Session) -> None:
     session.install(
         "--only-binary",
         ":all:",
-        "--no-binary",
-        "sgmllib3k",
         "--require-hashes",
         "-r",
         "requirements.txt",

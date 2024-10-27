@@ -183,46 +183,42 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
     to_add = set()
     to_reprocess = set()
 
-    with ThreadPool(32) as pool:
-        count = 0
-        for package_status in pool.imap(
-            _package_update_imap, sorted(packages_set), chunksize=1
-        ):
+    try:
+        with ThreadPool(32) as pool:
+            for package_status in pool.imap(
+                _package_update_imap, sorted(packages_set), chunksize=1
+            ):
+                if package_status.etag is not None:
+                    new_etag_cache[package_status.name] = (
+                        package_status.etag,
+                        package_status.expect_cache,
+                    )
+                if package_status.status == Status.PROCESSED:
+                    pass
+                elif package_status.status == Status.REMOVED:
+                    to_remove.add(package_status.name)
+                    new_etag_cache[package_status.name] = ("", False)
+                else:
+                    assert package_status.status in {Status.MOVED, Status.ERROR}
+                    to_reprocess.add(package_status.name)
+
+        for package in sorted(to_reprocess):
+            package_status = _package_update(new_etag_cache, package, handle_moved=True)
             if package_status.etag is not None:
                 new_etag_cache[package_status.name] = (
                     package_status.etag,
                     package_status.expect_cache,
                 )
-            if package_status.status == Status.PROCESSED:
-                pass
-            elif package_status.status == Status.REMOVED:
+            if package_status.status == Status.REMOVED:
                 to_remove.add(package_status.name)
                 new_etag_cache[package_status.name] = ("", False)
-            else:
-                assert package_status.status in {Status.MOVED, Status.ERROR}
-                to_reprocess.add(package_status.name)
-            count += 1
-            if count & 511 == 0:
-                with etag_cache_path.open("w") as f:
-                    json.dump(new_etag_cache, f, sort_keys=True, indent=2)
-
-    for package in sorted(to_reprocess):
-        package_status = _package_update(new_etag_cache, package, handle_moved=True)
-        if package_status.etag is not None:
-            new_etag_cache[package_status.name] = (
-                package_status.etag,
-                package_status.expect_cache,
-            )
-        if package_status.status == Status.REMOVED:
-            to_remove.add(package_status.name)
-            new_etag_cache[package_status.name] = ("", False)
-        elif package_status.name != package:
-            to_remove.add(package)
-            new_etag_cache[package] = ("", False)
-            to_add.add(package_status.name)
-
-    with etag_cache_path.open("w") as f:
-        json.dump(new_etag_cache, f, sort_keys=True, indent=2)
+            elif package_status.name != package:
+                to_remove.add(package)
+                new_etag_cache[package] = ("", False)
+                to_add.add(package_status.name)
+    finally:
+        with etag_cache_path.open("w") as f:
+            json.dump(new_etag_cache, f, sort_keys=True, indent=2)
 
     to_remove.update(name for name in new_etag_cache if not new_etag_cache[name][1])
 
