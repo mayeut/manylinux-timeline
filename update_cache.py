@@ -143,7 +143,7 @@ def _package_update(
     )
 
 
-def update(packages: list[str]) -> list[str]:
+def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
     etag_cache_path = utils.CACHE_PATH / "etag_cache.json"
 
@@ -166,10 +166,11 @@ def update(packages: list[str]) -> list[str]:
     _LOGGER.info(f"Found {len(all_packages)} packages")
     packages_set = set(all_packages)
 
-    # remove packages without manylinux wheels
-    packages_set.difference_update(
-        name for name in etag_cache if not etag_cache[name][1]
-    )
+    if not all_pypi_packages:
+        # remove packages without manylinux wheels
+        packages_set.difference_update(
+            name for name in etag_cache if not etag_cache[name][1]
+        )
     # always add known packages, they'll be updated / removed if need be
     packages_set.update(name for name in etag_cache if etag_cache[name][1])
     packages_set.update(canonicalize_name(package) for package in packages)

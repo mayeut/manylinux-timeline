@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 from datetime import date, timedelta
 from pathlib import Path
 from shutil import copy, rmtree
@@ -31,6 +32,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Update manylinux timeline",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--all-pypi-packages",
+        action="store_true",
+        help="check all packages in PyPI.",
     )
     parser.add_argument(
         "-s",
@@ -64,6 +70,13 @@ if __name__ == "__main__":
     if start >= end:
         raise ValueError(f"{start} >= {end}")
 
+    if "GITHUB_EVENT_NAME" in os.environ:
+        event_name = os.environ["GITHUB_EVENT_NAME"]
+        today = date.today()
+        if event_name == "schedule" and today.isoweekday() == 1:
+            # check every PyPI packages every Monday
+            args.all_pypi_packages = True
+
     if utils.BUILD_PATH.exists():
         rmtree(utils.BUILD_PATH)
     utils.BUILD_PATH.mkdir()
@@ -81,7 +94,7 @@ if __name__ == "__main__":
     _LOGGER.debug(f"loaded {len(packages)} package names")
 
     if not args.skip_cache:
-        packages = update_cache.update(packages)
+        packages = update_cache.update(packages, args.all_pypi_packages)
     packages, rows = update_dataset.update(packages)
     with open(utils.ROOT_PATH / "packages.json", "w") as f:
         json.dump(packages, f, indent=0)
