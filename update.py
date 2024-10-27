@@ -1,7 +1,6 @@
 import argparse
 import json
 import logging
-import os
 from datetime import date, timedelta
 from pathlib import Path
 from shutil import copy, rmtree
@@ -10,7 +9,6 @@ import update_cache
 import update_consumer_data
 import update_consumer_stats
 import update_dataset
-import update_package_list
 import update_stats
 import utils
 
@@ -33,17 +31,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Update manylinux timeline",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "-t",
-        "--top-packages",
-        action="store_true",
-        help="check for new packages using manylinux wheels in top packages",
-    )
-    parser.add_argument(
-        "--sethmlarson-pypi-data",
-        action="store_true",
-        help="check for new packages using manylinux wheels in sethmlarson/pypi-data",
     )
     parser.add_argument(
         "-s",
@@ -92,25 +79,6 @@ if __name__ == "__main__":
     with open(utils.ROOT_PATH / "packages.json") as f:
         packages = json.load(f)
     _LOGGER.debug(f"loaded {len(packages)} package names")
-    skip_update_package_list = False
-    if "GITHUB_EVENT_NAME" in os.environ:
-        event_name = os.environ["GITHUB_EVENT_NAME"]
-        today = date.today()
-        if event_name != "schedule":
-            _LOGGER.info(f"skip package list update for event '{event_name}'")
-            skip_update_package_list = True
-        elif today.isoweekday() == 3 and 7 < today.day <= 14:
-            # use top_packages & sethmlarson_pypi_data one wednesday per month
-            args.top_packages = True
-            args.sethmlarson_pypi_data = True
-
-    if not skip_update_package_list:
-        packages = update_package_list.update(
-            packages,
-            args.top_packages,
-            args.sethmlarson_pypi_data,
-            args.bigquery_credentials,
-        )
 
     if not args.skip_cache:
         packages = update_cache.update(packages)

@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 import urllib.parse
@@ -6,10 +7,10 @@ from datetime import date, datetime
 from enum import Enum
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from shutil import move
 from typing import Any
 
 import requests
+from packaging.utils import canonicalize_name
 
 import utils
 
@@ -23,10 +24,12 @@ class Status(Enum):
     ERROR = 4
 
 
-@dataclass
+@dataclass(frozen=True)
 class PackageStatus:
     name: str
     status: Status
+    etag: str | None = None
+    expect_cache: bool = False
 
 
 def _build_url(package: str) -> str:
@@ -45,20 +48,22 @@ def _check_cache_valid(info: Any) -> bool:
     return True
 
 
-def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
+def _package_update(
+    etag_cache: dict[str, tuple[str, bool]], package: str, handle_moved: bool = False
+) -> PackageStatus:
     _LOGGER.info(f'"{package}": begin update')
     headers = {"User-Agent": utils.USER_AGENT}
     package_new_name = package
-    cache_file = utils.get_release_cache_path(package)
-    if cache_file.exists():
-        with open(cache_file) as f:
-            try:
-                info = json.load(f)
-                if _check_cache_valid(info):
-                    headers["If-None-Match"] = info["etag"]
-            except json.JSONDecodeError:
-                _LOGGER.warning(f'"{package}": cache corrupted')
-    response = requests.get(_build_url(package), headers=headers)
+    package_etag_cache = etag_cache.get(package, None)
+    if package_etag_cache is not None:
+        headers["If-None-Match"] = package_etag_cache[0]
+
+    try:
+        response = requests.get(_build_url(package), headers=headers)
+    except requests.exceptions.RequestException as e:
+        _LOGGER.error(f'"{package}": error "{e}" when retrieving info')
+        return PackageStatus(package, Status.ERROR)
+
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
@@ -74,18 +79,18 @@ def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
                 return PackageStatus(package, Status.MOVED)
             new_location = response_prev.headers["location"]
             uri = urllib.parse.urlparse(new_location)
-            package_new_name = Path(uri.path).parent.name
-            if _build_url(package_new_name) != new_location:
-                _LOGGER.warning(f'"{package}": unsupported relocation')
-                package_new_name = package
-            else:
-                _LOGGER.info(f'"{package}": new name "{package_new_name}"')
+            package_new_name = canonicalize_name(Path(uri.path).parent.name)
+            assert package_new_name != package
+            _LOGGER.info(f'"{package}": new name "{package_new_name}"')
             break
 
+    cache_file = utils.get_release_cache_path(package)
     if response.status_code == 304:
-        if package_new_name != package:
-            cache_file_new = utils.get_release_cache_path(package_new_name)
-            move(cache_file, cache_file_new)
+        assert package_etag_cache is not None
+        if package_new_name != package or (
+            package_etag_cache[1] and not cache_file.exists()
+        ):
+            return _package_update({}, package_new_name, handle_moved=handle_moved)
         return PackageStatus(package_new_name, Status.PROCESSED)
     elif package_new_name != package:
         cache_file = utils.get_release_cache_path(package_new_name)
@@ -130,34 +135,94 @@ def _package_update(package: str, handle_moved: bool = False) -> PackageStatus:
             info["releases"][release] = new_files
         else:
             info["releases"].pop(release)
-    with open(cache_file, "w") as f:
-        json.dump(info, f)
-    return PackageStatus(package_new_name, Status.PROCESSED)
+    if len(info["releases"]) > 0:
+        with open(cache_file, "w") as f:
+            json.dump(info, f)
+    return PackageStatus(
+        package_new_name, Status.PROCESSED, info["etag"], len(info["releases"]) > 0
+    )
 
 
 def update(packages: list[str]) -> list[str]:
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
-    packages_set = set(packages)
+    etag_cache_path = utils.CACHE_PATH / "etag_cache.json"
+
+    etag_cache: dict[str, tuple[str, bool]] = {}
+    if etag_cache_path.exists():
+        with etag_cache_path.open() as f:
+            etag_cache = json.load(f)
+
+    new_etag_cache = etag_cache.copy()
+
+    _LOGGER.info("Getting list of all PyPI packages ... ")
+    headers = {
+        "User-Agent": utils.USER_AGENT,
+        "Accept": "application/vnd.pypi.simple.v1+json",
+    }
+    response = requests.get("https://pypi.org/simple/", headers=headers)
+    response.raise_for_status()
+    data = response.json()["projects"]
+    all_packages = [canonicalize_name(project["name"]) for project in data]
+    _LOGGER.info(f"Found {len(all_packages)} packages")
+    packages_set = set(all_packages)
+
+    # remove packages without manylinux wheels
+    packages_set.difference_update(
+        name for name in etag_cache if not etag_cache[name][1]
+    )
+    # always add known packages, they'll be updated / removed if need be
+    packages_set.update(name for name in etag_cache if etag_cache[name][1])
+    packages_set.update(canonicalize_name(package) for package in packages)
+
+    _LOGGER.info(f"Updating cache for {len(packages_set)} packages")
+
+    _package_update_imap = functools.partial(_package_update, etag_cache)
+
     to_remove = set()
     to_add = set()
     to_reprocess = set()
 
     with ThreadPool(32) as pool:
-        for package_status in pool.imap(_package_update, sorted(packages), chunksize=1):
+        count = 0
+        for package_status in pool.imap(
+            _package_update_imap, sorted(packages_set), chunksize=1
+        ):
+            if package_status.etag is not None:
+                new_etag_cache[package_status.name] = (
+                    package_status.etag,
+                    package_status.expect_cache,
+                )
             if package_status.status == Status.PROCESSED:
                 pass
             elif package_status.status == Status.REMOVED:
                 to_remove.add(package_status.name)
+                new_etag_cache[package_status.name] = ("", False)
             else:
                 assert package_status.status in {Status.MOVED, Status.ERROR}
                 to_reprocess.add(package_status.name)
+            count += 1
+            if count & 511 == 0:
+                with etag_cache_path.open("w") as f:
+                    json.dump(new_etag_cache, f, sort_keys=True, indent=2)
 
     for package in sorted(to_reprocess):
-        package_status = _package_update(package, handle_moved=True)
+        package_status = _package_update(new_etag_cache, package, handle_moved=True)
+        if package_status.etag is not None:
+            new_etag_cache[package_status.name] = (
+                package_status.etag,
+                package_status.expect_cache,
+            )
         if package_status.status == Status.REMOVED:
             to_remove.add(package_status.name)
+            new_etag_cache[package_status.name] = ("", False)
         elif package_status.name != package:
             to_remove.add(package)
+            new_etag_cache[package] = ("", False)
             to_add.add(package_status.name)
+
+    with etag_cache_path.open("w") as f:
+        json.dump(new_etag_cache, f, sort_keys=True, indent=2)
+
+    to_remove.update(name for name in new_etag_cache if not new_etag_cache[name][1])
 
     return list(sorted((packages_set - to_remove) | to_add))
