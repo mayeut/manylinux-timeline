@@ -117,7 +117,11 @@ def _get_filter(
         "cython-2.7": "cython-3.6",  # no wheels below 3.6
         "opencv_python-3.6": "opencv_python-3.7",  # no wheels below 3.7
         "visualdl-2.7": "visualdl-3.0",  # pure wheel, no requires_python
-        "parallel_ssh-2.7": "parallel_ssh-3.0",  # pure wheel, no requires_python
+        "parallel_ssh-2.7": "parallel_ssh-3.6",  # pure wheel, no requires_python
+        "python_snappy-3.6": "python_snappy-3.8",  # pure wheel, no requires_python
+        "tslearn-3.6": "tslearn-3.8",  # pure wheel, no requires_python
+        "tensorrt-3.6": "tensorrt-3.8", # meta-packages, no requires_python
+        "cobra-2.7": "cobra-3.8",  # pure wheel, no requires_python
     }
     return overrides.get(result, result)
 
