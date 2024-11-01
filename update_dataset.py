@@ -34,7 +34,7 @@ def _filter_versions(package: str, info: dict) -> list[str]:
     return filtered
 
 
-def _parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
+def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
     upload_date = date.max.isoformat()
     pythons = set()
     manylinux = set()
@@ -111,7 +111,7 @@ def _package_update(package: str) -> list[utils.Row]:
     _LOGGER.debug(f'"{package}": using "{versions}"')
     rows = []
     for version in versions:
-        week, python, manylinux = _parse_version(info["releases"][version])
+        week, python, manylinux = parse_version(info["releases"][version])
         if python == "" or manylinux == "":
             continue
         rows.append(utils.Row(week, package, version, python, manylinux))

@@ -10,6 +10,7 @@ import update_cache
 import update_consumer_data
 import update_consumer_stats
 import update_dataset
+import update_filters
 import update_stats
 import utils
 
@@ -25,7 +26,7 @@ def check_file(value):
     return result
 
 
-if __name__ == "__main__":
+def main() -> None:
     default_end = date.today() - timedelta(days=1)
     default_start = default_end - timedelta(days=365 * 2)
 
@@ -37,6 +38,11 @@ if __name__ == "__main__":
         "--all-pypi-packages",
         action="store_true",
         help="check all packages in PyPI.",
+    )
+    parser.add_argument(
+        "--update-filters",
+        action="store_true",
+        help="check minimum python version for each of the top 8000 PyPI packages.",
     )
     parser.add_argument(
         "-s",
@@ -95,6 +101,7 @@ if __name__ == "__main__":
 
     if not args.skip_cache:
         packages = update_cache.update(packages, args.all_pypi_packages)
+
     packages, rows = update_dataset.update(packages)
     with open(utils.ROOT_PATH / "packages.json", "w") as f:
         json.dump(packages, f, indent=0)
@@ -104,3 +111,10 @@ if __name__ == "__main__":
     copy(utils.ROOT_PATH / "style.css", utils.BUILD_PATH)
     copy(utils.ROOT_PATH / "favicon.ico", utils.BUILD_PATH)
     copy(utils.ROOT_PATH / ".gitignore", utils.BUILD_PATH)
+
+    if args.update_filters:
+        update_filters.update()
+
+
+if __name__ == "__main__":
+    main()

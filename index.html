@@ -88,6 +88,10 @@
                 All manylinux wheel downloads from <a href="https://pypi.org/">PyPI</a> using pip are analysed each day to compute those statistics.
                 The data set is smoothed using a 1-month sliding window algorithm.
             </p>
+            <p>
+                Starting 2024-11-01, downloads using a python version not supported by the latest version of a package (based mostly on requires_python metadata) are excluded from the data set.
+                Overall download statistics per python version can be found on other websites, though, likely not restricted to manylinux wheels and/or Linux.
+            </p>
         </div>
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.14">glibc readiness for python 3.14 (Preview)</h2>
