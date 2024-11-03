@@ -434,7 +434,7 @@
 "casadi-2.7",
 "tensorflow_gpu-3.7",
 "pysimdjson-3.6",
-"healpy-3.9",
+"healpy-3.10",
 "hf_transfer-3.7",
 "coreforecast-3.9",
 "bsdiff4-3.6",
