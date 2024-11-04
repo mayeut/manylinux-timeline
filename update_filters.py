@@ -122,6 +122,9 @@ def _get_filter(
         "tslearn-3.6": "tslearn-3.8",  # pure wheel, no requires_python
         "tensorrt-3.6": "tensorrt-3.8",  # meta-packages, no requires_python
         "cobra-2.7": "cobra-3.8",  # pure wheel, no requires_python
+        "dtaidistance-3.5": "dtaidistance-3.7",  # no wheels below 3.7
+        "pyzstd-3.5": "pyzstd-3.9",  # no wheels below 3.9, wrong python_requires ?
+        "pycurl-3.5": "pycurl-3.8",  # no wheels below 3.8, wrong python_requires ?
     }
     return overrides.get(result, result)
 
