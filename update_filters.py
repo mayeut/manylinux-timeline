@@ -116,6 +116,9 @@ def _get_filter(
     overrides = {
         "cython-2.7": "cython-3.6",  # no wheels below 3.6
         "opencv_python-3.6": "opencv_python-3.7",  # no wheels below 3.7
+        "opencv_python_headless-3.6": "opencv_python_headless-3.7",
+        "opencv_contrib_python-3.6": "opencv_contrib_python-3.7",
+        "opencv_contrib_python_headless-3.6": "opencv_contrib_python_headless-3.7",
         "visualdl-2.7": "visualdl-3.0",  # pure wheel, no requires_python
         "parallel_ssh-2.7": "parallel_ssh-3.6",  # pure wheel, no requires_python
         "python_snappy-3.6": "python_snappy-3.8",  # pure wheel, no requires_python
@@ -125,6 +128,22 @@ def _get_filter(
         "dtaidistance-3.5": "dtaidistance-3.7",  # no wheels below 3.7
         "pyzstd-3.5": "pyzstd-3.9",  # no wheels below 3.9, wrong python_requires ?
         "pycurl-3.5": "pycurl-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "spacy-3.7": "spacy-3.9",  # no wheels below 3.9, wrong python_requires ?
+        "tensorflow_io-3.7": "tensorflow_io-3.9",  # no wheels below 3.9
+        "tensorflow_io_gcs_filesystem-3.7": "tensorflow_io_gcs_filesystem-3.9",
+        "dbt_extractor-3.7": "dbt_extractor-3.8",  # no wheels below 3.8
+        "jellyfish-3.7": "jellyfish-3.8",  # no wheels below 3.8
+        "uamqp-3.7": "uamqp-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "python_rapidjson-3.6": "python_rapidjson-3.8",  # no wheels below 3.8
+        "scs-3.7": "scs-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "backports_datetime_fromisoformat-3.1": "backports_datetime_fromisoformat-3.8",
+        "caio-3.7": "caio-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "pyorc-3.6": "pyorc-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "pysimdjson-3.6": "pysimdjson-3.9",  # no wheels below 3.9
+        "lagom-3.7": "lagom-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "fuzzyset2-3.6": "fuzzyset2-3.8",  # no wheels below 3.8
+        "couchbase-3.7": "couchbase-3.8",  # no wheels below 3.8
+        "qiskit_aer-3.7": "qiskit_aer-3.8",  # no wheels below 3.8
     }
     return overrides.get(result, result)
 
