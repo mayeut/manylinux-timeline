@@ -558,7 +558,7 @@
 "pi_heif-3.9",
 "wasmer_compiler_cranelift-3.7",
 "google_benchmark-3.8",
-"pennylane_lightning-3.9",
+"pennylane_lightning-3.10",
 "pyresidfp-3.9",
 "python_calamine-3.8",
 "traits-3.7",
