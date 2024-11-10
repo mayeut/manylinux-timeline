@@ -55,7 +55,7 @@
 "pymongo-3.8",
 "torch-3.8",
 "shapely-3.7",
-"websockets-3.8",
+"websockets-3.9",
 "tokenizers-3.7",
 "mysql_connector_python-3.9",
 "setproctitle-3.7",
