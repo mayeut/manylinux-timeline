@@ -259,7 +259,7 @@
 "lmdb-3.6",
 "nodejs_wheel_binaries-3.7",
 "python_bidi-3.8",
-"cvxpy-3.8",
+"cvxpy-3.9",
 "inflate64-3.8",
 "biopython-3.9",
 "jq-3.6",
