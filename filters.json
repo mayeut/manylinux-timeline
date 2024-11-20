@@ -308,7 +308,7 @@
 "opencv_contrib_python_headless-3.7",
 "aiokafka-3.9",
 "awkward-3.9",
-"awkward_cpp-3.8",
+"awkward_cpp-3.9",
 "apsw-3.9",
 "clarabel-3.7",
 "quantlib-3.8",
