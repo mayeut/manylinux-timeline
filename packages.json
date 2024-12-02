@@ -7198,6 +7198,7 @@
 "py-ed25519-bindings",
 "py-ed25519-zebra-bindings",
 "py-eth-pairing",
+"py-excel-form-extractor",
 "py-excel-rs",
 "py-fast-rsync",
 "py-framels",

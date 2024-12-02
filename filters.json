@@ -24,7 +24,7 @@
 "coverage-3.9",
 "rpds_py-3.9",
 "lxml-3.6",
-"propcache-3.8",
+"propcache-3.9",
 "msgpack-3.8",
 "pynacl-3.6",
 "psycopg2_binary-3.8",
