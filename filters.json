@@ -332,7 +332,7 @@
 "nvidia_curand_cu11-3.0",
 "clang_format-2.0",
 "nvidia_nvtx_cu11-3.0",
-"line_profiler-3.6",
+"line_profiler-3.8",
 "nvidia_nccl_cu11-3.0",
 "torchdata-3.9",
 "zeroconf-3.8",
