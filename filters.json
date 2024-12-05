@@ -89,7 +89,7 @@
 "numba-3.9",
 "time_machine-3.9",
 "llvmlite-3.9",
-"wandb-3.7",
+"wandb-3.8",
 "xxhash-3.7",
 "frozendict-3.6",
 "psycopg2-3.8",
