@@ -612,7 +612,7 @@
 "viztracer-3.9",
 "murmurhash2-3.6",
 "cityhash-3.6",
-"ormsgpack-3.8",
+"ormsgpack-3.9",
 "highspy-3.8",
 "dotnetcore2-3.0",
 "py_ed25519_zebra_bindings-3.9",
