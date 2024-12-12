@@ -346,7 +346,7 @@
 "brotlicffi-3.7",
 "kornia_rs-3.8",
 "tensorflow_io-3.9",
-"tensorstore-3.9",
+"tensorstore-3.10",
 "ibm_db-3.7",
 "azureml_dataprep_rslex-3.8",
 "statsforecast-3.9",
