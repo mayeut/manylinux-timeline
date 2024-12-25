@@ -39,7 +39,7 @@
 "matplotlib-3.10",
 "rapidfuzz-3.9",
 "black-3.9",
-"kiwisolver-3.8",
+"kiwisolver-3.10",
 "ruamel.yaml.clib-3.9",
 "fonttools-3.8",
 "cython-3.6",
