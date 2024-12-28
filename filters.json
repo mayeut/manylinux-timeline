@@ -148,7 +148,7 @@
 "pyproj-3.10",
 "oracledb-3.8",
 "pywavelets-3.10",
-"msgspec-3.8",
+"msgspec-3.9",
 "cmake-3.7",
 "mmh3-3.8",
 "duckdb-3.7",
