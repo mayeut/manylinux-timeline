@@ -507,7 +507,7 @@
 "pysimdjson-3.9",
 "cupy_cuda12x-3.9",
 "wasmer_compiler_cranelift-3.7",
-"embreex-3.6",
+"embreex-3.8",
 "pymunk-3.8",
 "opencc-3.8",
 "aim-3.7",
