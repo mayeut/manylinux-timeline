@@ -101,7 +101,7 @@
 "nvidia_nccl_cu12-3.0",
 "google_re2-3.8",
 "libcst-3.9",
-"triton-3.8",
+"triton-3.9",
 "opencv_python-3.7",
 "nodejs_wheel_binaries-3.7",
 "bitarray-3.6",
