@@ -67,7 +67,7 @@
 "mysql_connector_python-3.9",
 "watchdog-3.9",
 "uvloop-3.8",
-"lz4-3.8",
+"lz4-3.9",
 "argon2_cffi-3.7",
 "httptools-3.8",
 "pyodbc-3.8",
