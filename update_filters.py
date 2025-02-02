@@ -186,7 +186,9 @@ def update() -> None:
             cur = con.execute(query, (package,))
             res = cur.fetchone()
             cur.close()
-            assert res is not None
+            if res is None:
+                _LOGGER.warning("no result in pypi.db for %r", package)
+                continue
             python_requires = res[0]
 
             filter_ = _get_filter(info["releases"][version], python_requires)
