@@ -503,6 +503,7 @@
 "atomicity",
 "atomicl",
 "atomics",
+"atomicwriter",
 "atomicx",
 "atomix-base",
 "atomsciflow",
