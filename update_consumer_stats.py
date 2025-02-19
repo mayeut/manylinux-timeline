@@ -258,7 +258,7 @@ def update(path: Path, start: datetime, end: datetime):
         ("2.34",),
         ("2.35",),
         ("2.36", "2.37", "2.38"),
-        ("2.39", "2.40"),
+        ("2.39", "2.40", "2.41"),
     ]
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
