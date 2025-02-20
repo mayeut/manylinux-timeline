@@ -1703,7 +1703,7 @@
 "pymbusparser-3.7",
 "blokus_engine-3.7",
 "openvino_genai-3.9",
-"pycifrw-3.11",
+"pycifrw-3.10",
 "xw_base_14-3.7",
 "cached_ipaddress-3.8",
 "helics-3.8",
