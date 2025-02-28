@@ -30,7 +30,7 @@
 "coverage-3.9",
 "psycopg2_binary-3.8",
 "regex-3.8",
-"bcrypt-3.7",
+"bcrypt-3.8",
 "scikit_learn-3.9",
 "google_crc32c-3.9",
 "snowflake_connector_python-3.8",
