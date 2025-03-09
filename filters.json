@@ -510,7 +510,7 @@
 "spglib-3.9",
 "paddlepaddle-3.8",
 "stream_inflate-3.8",
-"coincurve-3.8",
+"coincurve-3.9",
 "stream_unzip-3.8",
 "labmaze-3.7",
 "mmhash3-3.6",
