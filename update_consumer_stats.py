@@ -8,25 +8,7 @@ from packaging.version import InvalidVersion, Version
 
 import utils
 
-POLICIES = {
-    0: "none",
-    1: "manylinux1",
-    2: "manylinux2010",
-    3: "manylinux2014",
-    4: "manylinux_2_17",
-    5: "manylinux_2_26",
-    6: "manylinux_2_27",
-    7: "manylinux_2_28",
-    8: "manylinux_2_31",
-    9: "manylinux_2_34",
-    10: "manylinux_2_35",
-    11: "manylinux_2_36",
-    12: "manylinux_2_39",
-}
-
 PYTHON_EOL = {
-    "3.6": pd.to_datetime("2021-12-23"),
-    "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-07"),
     "3.9": pd.to_datetime("2025-10-05"),
     "3.10": pd.to_datetime("2026-10-04"),
@@ -56,9 +38,9 @@ def _load_df(path: Path, date: datetime) -> pd.DataFrame | None:
         file,
         converters={
             "python_version": lambda x: _get_major_minor(x),
-            "pip_version": lambda x: _get_major_minor(x),
             "glibc_version": lambda x: _get_major_minor(x),
         },
+        usecols=["num_downloads", "python_version", "glibc_version"],
     )
     df["day"] = pd.to_datetime(date)
     # remove unneeded python version
@@ -76,108 +58,15 @@ def update(path: Path, start: datetime, end: datetime):
         date_ = date_ + timedelta(days=1)
 
     df = pd.concat(dataframes)
-
-    pip_version = df["pip_version"].str.split(".", n=2, expand=True)
-    df["pip_major"] = pd.to_numeric(pip_version[0])
-    df["pip_minor"] = pd.to_numeric(pip_version[1])
-    glibc_version = df["glibc_version"].str.split(".", n=2, expand=True)
-    df["glibc_major"] = pd.to_numeric(glibc_version[0])
-    df["glibc_minor"] = pd.to_numeric(glibc_version[1])
-    df["manylinux1"] = (
-        ((df.pip_major > 8) | ((df.pip_major == 8) & (df.pip_minor >= 1)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 5)))
-    ).astype(int)
-    df["manylinux2010"] = (
-        ((df.pip_major > 19) | ((df.pip_major == 19) & (df.pip_minor >= 0)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 12)))
-    ).astype(int)
-    df["manylinux2014"] = (
-        ((df.pip_major > 19) | ((df.pip_major == 19) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 17)))
-    ).astype(int)
-    df["manylinux_2_17"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 17)))
-    ).astype(int)
-    df["manylinux_2_26"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 26)))
-    ).astype(int)
-    df["manylinux_2_27"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 27)))
-    ).astype(int)
-    df["manylinux_2_28"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 28)))
-    ).astype(int)
-    df["manylinux_2_31"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 31)))
-    ).astype(int)
-    df["manylinux_2_34"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 34)))
-    ).astype(int)
-    df["manylinux_2_35"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 35)))
-    ).astype(int)
-    df["manylinux_2_36"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 36)))
-    ).astype(int)
-    df["manylinux_2_39"] = (
-        ((df.pip_major > 20) | ((df.pip_major == 20) & (df.pip_minor >= 3)))
-        & ((df.glibc_major > 2) | ((df.glibc_major == 2) & (df.glibc_minor >= 39)))
-    ).astype(int)
-    df["policy"] = (
-        df["manylinux1"]
-        + df["manylinux2010"]
-        + df["manylinux2014"]
-        + df["manylinux_2_17"]
-        + df["manylinux_2_26"]
-        + df["manylinux_2_27"]
-        + df["manylinux_2_28"]
-        + df["manylinux_2_31"]
-        + df["manylinux_2_34"]
-        + df["manylinux_2_35"]
-        + df["manylinux_2_36"]
-        + df["manylinux_2_39"]
-    )
-    df.drop(
-        columns=[
-            "pip_version",
-            "pip_major",
-            "pip_minor",
-            "glibc_major",
-            "glibc_minor",
-            "manylinux1",
-            "manylinux2010",
-            "manylinux2014",
-            "manylinux_2_17",
-            "manylinux_2_26",
-            "manylinux_2_27",
-            "manylinux_2_28",
-            "manylinux_2_31",
-            "manylinux_2_34",
-            "manylinux_2_35",
-            "manylinux_2_36",
-            "manylinux_2_39",
-        ],
-        inplace=True,
-    )
-    df = df[(df["cpu"] == "x86_64") | (df["cpu"] == "i686")]
-    df.drop(columns=["cpu"], inplace=True)
     df = df.groupby(
-        ["day", "python_version", "glibc_version", "policy"], as_index=False
+        ["day", "python_version", "glibc_version"], as_index=False
     ).aggregate("sum")
 
     # apply rolling window
     df = pd.pivot_table(
         df,
         index="day",
-        columns=["python_version", "glibc_version", "policy"],
+        columns=["python_version", "glibc_version"],
         values="num_downloads",
         fill_value=0,
         aggfunc="sum",
@@ -191,7 +80,7 @@ def update(path: Path, start: datetime, end: datetime):
     df.rename(columns={0: "num_downloads"}, inplace=True)
     df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
-        ["day", "python_version", "glibc_version", "policy"], as_index=False
+        ["day", "python_version", "glibc_version"], as_index=False
     ).aggregate("sum")
 
     # non EOL dataframe
@@ -248,9 +137,8 @@ def update(path: Path, start: datetime, end: datetime):
     # combine some versions to remove some of the less used ones
     # but still accounting for the smaller one
     glibc_versions = [
-        ("2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11"),
-        ("2.12", "2.13", "2.14", "2.15", "2.16"),
-        ("2.17", "2.18", "2.19", "2.20", "2.21", "2.22", "2.23", "2.24", "2.25"),
+        tuple(f"2.{minor}" for minor in range(5, 17)),
+        tuple(f"2.{minor}" for minor in range(17, 26)),
         ("2.26",),
         ("2.27",),
         ("2.28", "2.29", "2.30"),
@@ -296,13 +184,9 @@ def update(path: Path, start: datetime, end: datetime):
     out["glibc_version"] = glibc_version
     out["glibc_version_non_eol"] = glibc_version_non_eol
 
-    python_versions_no_pep600_pip = ["3.6", "3.7", "3.8", "3.9"]
-    python_versions = python_versions_no_pep600_pip + [
-        v for v in PYTHON_EOL if v not in python_versions_no_pep600_pip
-    ]
+    python_versions = [v for v in PYTHON_EOL]
     python_version = dict[str, list[str] | list[float]]()
     python_version_non_eol = dict[str, list[str] | list[float]]()
-    policy_readiness = dict[str, dict[str, list[str] | list[float]]]()
     glibc_readiness = dict[str, dict[str, list[str] | list[float]]]()
     python_version["keys"] = python_versions
     python_version_non_eol["keys"] = [
@@ -336,35 +220,6 @@ def update(path: Path, start: datetime, end: datetime):
             python_version_non_eol[version] = stats
 
         df_python_version = df[df["python_version"] == version]
-
-        if version in python_versions_no_pep600_pip:
-            df_policy = (
-                df_python_version[["policy", "num_downloads"]]
-                .groupby(["day", "policy"])
-                .aggregate("sum")
-            )
-            df_policy_all = df_policy.groupby(["day"]).aggregate("sum")
-            df_policy_stats = df_policy / df_policy_all
-            policy_readiness_ver = dict[str, Union[list[str], list[float]]]()
-            policy_readiness_ver["keys"] = list(
-                POLICIES[i] for i in range(len(POLICIES))[::-1]
-            )
-            policy_readiness[version] = policy_readiness_ver
-            for i in range(len(POLICIES))[::-1]:
-                policy = POLICIES[i]
-                stats = []
-                for day in out["index"]:
-                    try:
-                        value = float(
-                            df_policy_stats.loc[
-                                (pd.to_datetime(day), i), "num_downloads"
-                            ]
-                        )
-                    except KeyError:
-                        value = 0.0
-                    stats.append(float(f"{100.0 * value:.2f}"))
-                policy_readiness_ver[policy] = stats
-
         df_glibc = (
             df_python_version[["glibc_version", "num_downloads"]]
             .groupby(["day", "glibc_version"])
@@ -379,11 +234,11 @@ def update(path: Path, start: datetime, end: datetime):
             stats = []
             for day in out["index"]:
                 value = 0.0
-                for glibc_version in versions:
+                for glibc_version_ in versions:
                     try:
                         value += float(
                             df_glibc_stats.loc[
-                                (pd.to_datetime(day), glibc_version), "num_downloads"
+                                (pd.to_datetime(day), glibc_version_), "num_downloads"
                             ]
                         )
                     except KeyError:
@@ -393,8 +248,7 @@ def update(path: Path, start: datetime, end: datetime):
 
     out["python_version"] = python_version
     out["python_version_non_eol"] = python_version_non_eol
-    out["policy_readiness"] = policy_readiness
     out["glibc_readiness"] = glibc_readiness
 
-    with open(utils.CONSUMER_DATA_PATH, "w") as f:
+    with utils.CONSUMER_DATA_PATH.open("w") as f:
         json.dump(out, f, separators=(",", ":"))

@@ -28,7 +28,7 @@ def _update_consumer_data(path: Path, bigquery_credentials: Path | None) -> None
     filters = []
     for filter_ in json.loads(utils.ROOT_PATH.joinpath("filters.json").read_text()):
         name, python_version = filter_.split("-")
-        major, minor = python_version.split(".")
+        major, minor = max(tuple(int(p) for p in python_version.split(".")), (3, 8))
         filter_condition = (
             f'  else if (fn.startsWith("{name}-")) '
             f"{{ major = {major}; minor = {minor}; }}"
@@ -41,13 +41,12 @@ CREATE TEMP FUNCTION check_min_python_version(filename STRING, python_version ST
 RETURNS BOOL
 LANGUAGE js
 AS r"""
-  var major = 2;
-  var minor = 0;
+  var major = 3;
+  var minor = 8;
   const fn = filename.toLowerCase();
   if (false) {{ }}
 {"\n".join(filters)}
 
-  if ((major == 2) && (minor == 0)) return true;
   const parts = /^(?<major>\d+)\.(?<minor>\d+).*/.exec(python_version);
   if (!parts) return true;
   python_major = parseInt(parts.groups["major"], 10);
@@ -56,19 +55,18 @@ AS r"""
          ((python_major == major) && (python_minor >= minor));
 """;
 
-SELECT t0.cpu, t0.num_downloads, t0.python_version, t0.pip_version, t0.glibc_version
+SELECT t0.cpu, t0.num_downloads, t0.python_version, t0.glibc_version
 FROM (SELECT COUNT(*) AS num_downloads,
 REGEXP_EXTRACT(details.python, r"^([^\.]+\.[^\.]+)") as python_version,
-REGEXP_EXTRACT(details.installer.version, r"^([^\.]+\.[^\.]+)") AS pip_version,
 REGEXP_EXTRACT(details.distro.libc.version, r"^([^\.]+\.[^\.]+)") AS glibc_version,
 details.cpu FROM bigquery-public-data.pypi.file_downloads WHERE
 timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND
 TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND
-details.installer.name = "pip" AND details.system.name = "Linux" AND
+details.system.name = "Linux" AND
 details.distro.libc.lib = "glibc" AND
 REGEXP_CONTAINS(file.filename, r"-manylinux([0-9a-zA-Z_]+)\.whl") AND
 check_min_python_version(file.filename, details.python)
-GROUP BY pip_version, python_version, glibc_version, details.cpu
+GROUP BY python_version, glibc_version, details.cpu
 ORDER BY num_downloads DESC) AS t0;
 '''
 

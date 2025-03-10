@@ -79,12 +79,6 @@
             <h2 id="consumer-about">About consumer statistics</h2>
             <p>This section shows consumer readiness for a given policy.</p>
             <p>
-                Before Python 3.10, support for a policy was a combination of glibc version (as denoted in the policy name for PEP600)
-                and pip version. As of Python 3.10, the default pip is always capable of PEP600 based manylinux wheels.
-                Before that, the pip version available (without manually upgrading) depends on the Python version
-                and/or the Linux distribution being used. At least the Python version is explicit in this section.
-            </p>
-            <p>
                 All manylinux wheel downloads from <a href="https://pypi.org/">PyPI</a> using pip are analysed each day to compute those statistics.
                 The data set is smoothed using a 1-month sliding window algorithm.
             </p>
@@ -120,42 +114,12 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-3.9">Policy readiness for python 3.9</h2>
-            <div><div id="consumer-policy-readiness-3.9-plot" class="plotly-graph-div"></div></div>
-        </div>
-        <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.9">glibc readiness for python 3.9</h2>
             <div><div id="consumer-glibc-readiness-3.9-plot" class="plotly-graph-div"></div></div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-3.8">Policy readiness for python 3.8 (EOL)</h2>
-            <div><div id="consumer-policy-readiness-3.8-plot" class="plotly-graph-div"></div></div>
         </div>
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.8">glibc readiness for python 3.8 (EOL)</h2>
             <div><div id="consumer-glibc-readiness-3.8-plot" class="plotly-graph-div"></div></div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-3.7">Policy readiness for python 3.7 (EOL)</h2>
-            <div><div id="consumer-policy-readiness-3.7-plot" class="plotly-graph-div"></div></div>
-        </div>
-        <div class="col-sm-6">
-            <h2 id="consumer-glibc-readiness-3.7">glibc readiness for python 3.7 (EOL)</h2>
-            <div><div id="consumer-glibc-readiness-3.7-plot" class="plotly-graph-div"></div></div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-policy-readiness-3.6">Policy readiness for python 3.6 (EOL)</h2>
-            <div><div id="consumer-policy-readiness-3.6-plot" class="plotly-graph-div"></div></div>
-        </div>
-        <div class="col-sm-6">
-            <h2 id="consumer-glibc-readiness-3.6">glibc readiness for python 3.6 (EOL)</h2>
-            <div><div id="consumer-glibc-readiness-3.6-plot" class="plotly-graph-div"></div></div>
         </div>
     </div>
     <div class="row">
@@ -267,14 +231,8 @@
         load_plot("consumer-glibc-readiness-3.12-plot", data.index, data.glibc_readiness["3.12"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.11-plot", data.index, data.glibc_readiness["3.11"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.10-plot", data.index, data.glibc_readiness["3.10"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-3.9-plot", data.index, data.policy_readiness["3.9"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.9-plot", data.index, data.glibc_readiness["3.9"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-3.8-plot", data.index, data.policy_readiness["3.8"], true, "%", "reversed", true);
         load_plot("consumer-glibc-readiness-3.8-plot", data.index, data.glibc_readiness["3.8"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-3.7-plot", data.index, data.policy_readiness["3.7"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.7-plot", data.index, data.glibc_readiness["3.7"], true, "%", "reversed", true);
-        load_plot("consumer-policy-readiness-3.6-plot", data.index, data.policy_readiness["3.6"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.6-plot", data.index, data.glibc_readiness["3.6"], true, "%", "reversed", true);
     }
     $.getJSON("producer-data.json")
         .done(function( json ) {
