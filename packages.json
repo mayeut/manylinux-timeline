@@ -3494,6 +3494,7 @@
 "gaussianfft",
 "gazebo-yarp-synchronizer",
 "gb-io",
+"gbase8sdb",
 "gbdc",
 "gblur",
 "gc-count",
