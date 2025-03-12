@@ -78,8 +78,10 @@ def _get_filter(
     if not names:
         return None
 
-    assert len(names) == 1
     name = names.pop()
+    if len(names) > 0:
+        _LOGGER.warning(f"ignoring names {list(names)} for {name!r}")
+
     python = "2.0"
 
     def _get_min_python(spec_sets: set[SpecifierSet]):
@@ -120,12 +122,12 @@ def _get_filter(
         "opencv_contrib_python-3.6": "opencv_contrib_python-3.7",
         "opencv_contrib_python_headless-3.6": "opencv_contrib_python_headless-3.7",
         "visualdl-2.7": "visualdl-3.0",  # pure wheel, no requires_python
-        "parallel_ssh-2.7": "parallel_ssh-3.6",  # pure wheel, no requires_python
+        "parallel_ssh-3.6": "parallel_ssh-3.8",  # pure wheel, no requires_python
         "python_snappy-3.6": "python_snappy-3.8",  # pure wheel, no requires_python
         "tslearn-3.6": "tslearn-3.8",  # pure wheel, no requires_python
         "tensorrt-3.6": "tensorrt-3.8",  # meta-packages, no requires_python
         "cobra-2.7": "cobra-3.8",  # pure wheel, no requires_python
-        "dtaidistance-3.5": "dtaidistance-3.7",  # no wheels below 3.7
+        "dtaidistance-3.8": "dtaidistance-3.10",  # no wheels below 3.10
         "pyzstd-3.5": "pyzstd-3.9",  # no wheels below 3.9, wrong python_requires ?
         "pycurl-3.5": "pycurl-3.8",  # no wheels below 3.8, wrong python_requires ?
         "spacy-3.7": "spacy-3.9",  # no wheels below 3.9, wrong python_requires ?
