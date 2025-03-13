@@ -80,7 +80,10 @@ def _get_filter(
 
     name = names.pop()
     if len(names) > 0:
-        _LOGGER.warning(f"ignoring names {list(names)} for {name!r}")
+        names.add(name)
+        name = sorted(names)[0]
+        names.remove(name)
+        _LOGGER.warning(f"ignoring names {sorted(names)} for {name!r}")
 
     python = "2.0"
 
@@ -122,6 +125,7 @@ def _get_filter(
         "opencv_contrib_python-3.6": "opencv_contrib_python-3.7",
         "opencv_contrib_python_headless-3.6": "opencv_contrib_python_headless-3.7",
         "visualdl-2.7": "visualdl-3.0",  # pure wheel, no requires_python
+        "parallel_ssh-2.7": "parallel_ssh-3.8",  # pure wheel, no requires_python
         "parallel_ssh-3.6": "parallel_ssh-3.8",  # pure wheel, no requires_python
         "python_snappy-3.6": "python_snappy-3.8",  # pure wheel, no requires_python
         "tslearn-3.6": "tslearn-3.8",  # pure wheel, no requires_python
@@ -146,12 +150,14 @@ def _get_filter(
         "fuzzyset2-3.6": "fuzzyset2-3.8",  # no wheels below 3.8
         "couchbase-3.7": "couchbase-3.8",  # no wheels below 3.8
         "qiskit_aer-3.7": "qiskit_aer-3.8",  # no wheels below 3.8
+        "tokenizers-3.7": "tokenizers-3.9",  # no wheels below 3.9
+        "safetensors-3.7": "safetensors-3.8",  # no wheels below 3.8
     }
     return overrides.get(result, result)
 
 
 def update() -> None:
-    pypi_data_version = "2024.11.14"
+    pypi_data_version = "2025.03.12"
     pypi_data_cache = utils.CACHE_PATH / f"pypi-{pypi_data_version}.db"
     if not pypi_data_cache.exists():
         _LOGGER.info("pypi data: download")
