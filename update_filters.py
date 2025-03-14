@@ -170,7 +170,7 @@ def update() -> None:
         _LOGGER.info("pypi data: decompressing")
         pypi_data_cache.write_bytes(gzip.decompress(response.content))
     response = requests.get(
-        "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json"
+        "https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min.json"
     )
     response.raise_for_status()
     top_packages_data = response.json()
