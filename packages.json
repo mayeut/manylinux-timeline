@@ -10159,6 +10159,7 @@
 "ruff-api",
 "rule30py",
 "ruleopt",
+"rumdl",
 "runai-model-streamer",
 "runai-model-streamer-s3",
 "runai-streamer",
