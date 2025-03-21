@@ -489,7 +489,7 @@
 "couchbase-3.8",
 "pytensor-3.10",
 "swig-2.0",
-"lingua_language_detector-3.8",
+"lingua_language_detector-3.10",
 "usd_core-3.6",
 "jax_cuda12_plugin-3.10",
 "cityhash-3.6",
