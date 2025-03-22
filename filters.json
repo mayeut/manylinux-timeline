@@ -655,7 +655,7 @@
 "pyside2-2.7",
 "tree_sitter_c_sharp-3.9",
 "glcontext-3.8",
-"cx_freeze-3.8",
+"cx_freeze-3.9",
 "saxonche-3.8",
 "arm_pyart-3.9",
 "clvm_rs-3.8",
