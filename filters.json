@@ -208,7 +208,7 @@
 "imageio_ffmpeg-3.9",
 "pygit2-3.10",
 "xformers-3.9",
-"osqp-3.6",
+"osqp-3.8",
 "bitsandbytes-3.8",
 "cytoolz-3.8",
 "catboost-3.7",
