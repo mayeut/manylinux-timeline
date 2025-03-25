@@ -47,7 +47,7 @@
 "black-3.9",
 "websockets-3.9",
 "tornado-3.8",
-"orjson-3.8",
+"orjson-3.9",
 "pendulum-3.8",
 "pyzmq-3.8",
 "pyrsistent-3.8",
