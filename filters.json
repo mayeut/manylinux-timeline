@@ -1097,7 +1097,7 @@
 "pyats.utils-3.8",
 "pyats.easypy-3.8",
 "pyats.aereport-3.8",
-"color_operations-3.8",
+"color_operations-3.9",
 "opengeode_geosciences-3.9",
 "pyats.topology-3.8",
 "pyats.aetest-3.8",
