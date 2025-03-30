@@ -493,7 +493,7 @@
 "usd_core-3.6",
 "jax_cuda12_plugin-3.10",
 "cityhash-3.6",
-"imagecodecs-3.9",
+"imagecodecs-3.10",
 "jax_cuda12_pjrt-3.0",
 "hidapi-3.6",
 "nmslib-2.7",
