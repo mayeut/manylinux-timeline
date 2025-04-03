@@ -152,6 +152,7 @@ def _get_filter(
         "qiskit_aer-3.7": "qiskit_aer-3.8",  # no wheels below 3.8
         "tokenizers-3.7": "tokenizers-3.9",  # no wheels below 3.9
         "safetensors-3.7": "safetensors-3.8",  # no wheels below 3.8
+        "tensorflow_gpu-3.7": "tensorflow_gpu-3.9",  # replaced by tensorflow
     }
     return overrides.get(result, result)
 
