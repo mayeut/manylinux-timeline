@@ -121,7 +121,7 @@
 "ddtrace-3.8",
 "onnxruntime-3.10",
 "duckdb-3.7",
-"blis-3.6",
+"blis-3.10",
 "thinc-3.9",
 "mmh3-3.9",
 "preshed-3.6",
