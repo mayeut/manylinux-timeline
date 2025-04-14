@@ -220,7 +220,7 @@
 "imageio_ffmpeg-3.9",
 "bitsandbytes-3.8",
 "memray-3.7",
-"catboost-3.7",
+"catboost-3.8",
 "urwid-3.8",
 "pygit2-3.10",
 "rustworkx-3.9",
