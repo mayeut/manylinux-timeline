@@ -21,7 +21,7 @@
 "frozenlist-3.8",
 "pillow-3.9",
 "scipy-3.10",
-"greenlet-3.7",
+"greenlet-3.9",
 "propcache-3.9",
 "rpds_py-3.9",
 "lxml-3.6",
