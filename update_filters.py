@@ -159,7 +159,7 @@ def _get_filter(
 
 
 def update() -> None:
-    pypi_data_version = "2025.03.12"
+    pypi_data_version = "2025.04.25"
     pypi_data_cache = utils.CACHE_PATH / f"pypi-{pypi_data_version}.db"
     if not pypi_data_cache.exists():
         _LOGGER.info("pypi data: download")
