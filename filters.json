@@ -45,7 +45,7 @@
 "zstandard-3.8",
 "contourpy-3.10",
 "websockets-3.9",
-"cython-3.6",
+"cython-3.8",
 "ruamel.yaml.clib-3.9",
 "tornado-3.8",
 "dulwich-3.9",
