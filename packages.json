@@ -2906,6 +2906,7 @@
 "etcpak",
 "etebase",
 "eth-bip32",
+"eth-portfolio-temp",
 "ethash",
 "ether-addr",
 "ethereum-serpent-augur-temp",
