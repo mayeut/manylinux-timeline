@@ -606,7 +606,7 @@
 "ast_grep_cli-3.0",
 "rejson-3.6",
 "minify_html-3.8",
-"pyreadstat-3.8",
+"pyreadstat-3.10",
 "aiocsv-3.8",
 "cwcwidth-3.9",
 "lap-3.7",
