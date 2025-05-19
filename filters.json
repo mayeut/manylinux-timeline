@@ -64,7 +64,7 @@
 "pyrsistent-3.8",
 "debugpy-3.8",
 "lz4-3.9",
-"jiter-3.8",
+"jiter-3.9",
 "pycryptodomex-2.7",
 "setproctitle-3.8",
 "mysql_connector_python-3.9",
