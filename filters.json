@@ -218,7 +218,7 @@
 "clickhouse_driver-3.7",
 "biotite-3.11",
 "python_box-3.9",
-"bitsandbytes-3.8",
+"bitsandbytes-3.9",
 "cytoolz-3.8",
 "backports_datetime_fromisoformat-3.8",
 "sasl-3.5",
