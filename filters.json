@@ -272,7 +272,7 @@
 "onnxruntime_gpu-3.10",
 "tensorstore-3.10",
 "rtree-3.9",
-"ortools-3.8",
+"ortools-3.9",
 "python_rapidjson-3.8",
 "bottleneck-3.9",
 "ctranslate2-3.9",
