@@ -1,6 +1,6 @@
 [
 "charset_normalizer-3.7",
-"numpy-3.10",
+"numpy-3.11",
 "pyyaml-3.8",
 "pydantic-3.9",
 "cryptography-3.7",
@@ -772,7 +772,7 @@
 "dimod-3.9",
 "asv-3.7",
 "starlark_pyo3-3.9",
-"editdistpy-3.8",
+"editdistpy-3.9",
 "power_grid_model-3.11",
 "zxing_cpp-3.6",
 "ax_platform-3.10",
