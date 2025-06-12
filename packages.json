@@ -7309,6 +7309,7 @@
 "openbtmixing",
 "opencamlib",
 "opencc",
+"opencc-jieba-pyo3",
 "opencc-py",
 "opencc-pyo3",
 "openchecks",
