@@ -1762,6 +1762,7 @@
 "coreforecast",
 "coreir",
 "coremltools",
+"corenn-py",
 "coreset-sc",
 "coresets",
 "corgea-cli",
