@@ -352,7 +352,7 @@
 "tree_sitter_javascript-3.9",
 "uuid_utils-3.9",
 "sktime-3.9",
-"pyahocorasick-3.8",
+"pyahocorasick-3.9",
 "decord-3.0",
 "elastic_apm-3.6",
 "tensorflow_addons-3.9",
