@@ -571,7 +571,7 @@
 "py_bip39_bindings-3.8",
 "tmtools-3.8",
 "rocksdict-3.7",
-"eccodes-3.8",
+"eccodes-3.9",
 "tensorflow_gpu-3.9",
 "ast_grep_cli-3.0",
 "libipld-3.8",
