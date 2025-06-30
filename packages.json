@@ -3833,6 +3833,7 @@
 "gattlib-py",
 "gaussian-proc",
 "gaussian-splatting",
+"gaussian-splatting-mcmc",
 "gaussianblur",
 "gaussianfft",
 "gaxkey",

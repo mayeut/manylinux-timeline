@@ -538,7 +538,7 @@
 "htseq-3.8",
 "tensorflow_decision_forests-3.9",
 "implicit-3.6",
-"paddlepaddle-3.8",
+"paddlepaddle-3.9",
 "nmslib-2.7",
 "ast_grep_py-3.8",
 "intel_openmp-2.0",
