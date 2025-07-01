@@ -477,6 +477,7 @@
 "cartopy-3.10",
 "ada_url-3.9",
 "pyomo-3.9",
+"mpi4py-3.8",
 "arro3_core-3.9",
 "zipfile_deflate64-3.6",
 "embreex-3.8",
