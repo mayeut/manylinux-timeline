@@ -133,27 +133,24 @@ def _get_filter(
         "cobra-2.7": "cobra-3.8",  # pure wheel, no requires_python
         "dtaidistance-3.8": "dtaidistance-3.10",  # no wheels below 3.10
         "pyzstd-3.5": "pyzstd-3.9",  # no wheels below 3.9, wrong python_requires ?
-        "pycurl-3.5": "pycurl-3.8",  # no wheels below 3.8, wrong python_requires ?
-        "spacy-3.7": "spacy-3.9",  # no wheels below 3.9, wrong python_requires ?
+        "pycurl-3.5": "pycurl-3.9",  # no wheels below 3.9, wrong python_requires ?
         "tensorflow_io-3.7": "tensorflow_io-3.9",  # no wheels below 3.9
         "tensorflow_io_gcs_filesystem-3.7": "tensorflow_io_gcs_filesystem-3.9",
-        "dbt_extractor-3.7": "dbt_extractor-3.8",  # no wheels below 3.8
-        "jellyfish-3.7": "jellyfish-3.8",  # no wheels below 3.8
         "uamqp-3.7": "uamqp-3.8",  # no wheels below 3.8, wrong python_requires ?
         "python_rapidjson-3.6": "python_rapidjson-3.8",  # no wheels below 3.8
-        "scs-3.7": "scs-3.8",  # no wheels below 3.8, wrong python_requires ?
         "backports_datetime_fromisoformat-3.1": "backports_datetime_fromisoformat-3.8",
-        "caio-3.7": "caio-3.8",  # no wheels below 3.8, wrong python_requires ?
-        "pyorc-3.6": "pyorc-3.8",  # no wheels below 3.8, wrong python_requires ?
-        "pysimdjson-3.6": "pysimdjson-3.9",  # no wheels below 3.9
-        "lagom-3.7": "lagom-3.8",  # no wheels below 3.8, wrong python_requires ?
+        "pyorc-3.6": "pyorc-3.9",  # no wheels below 3.9
+        "lagom-3.7": "lagom-3.9",  # no wheels below 3.9
         "fuzzyset2-3.6": "fuzzyset2-3.8",  # no wheels below 3.8
-        "couchbase-3.7": "couchbase-3.8",  # no wheels below 3.8
-        "qiskit_aer-3.7": "qiskit_aer-3.8",  # no wheels below 3.8
+        "couchbase-3.7": "couchbase-3.9",  # no wheels below 3.9
+        "qiskit_aer-3.7": "qiskit_aer-3.9",  # no wheels below 3.9
         "tokenizers-3.7": "tokenizers-3.9",  # no wheels below 3.9
         "safetensors-3.7": "safetensors-3.8",  # no wheels below 3.8
         "tensorflow_gpu-3.7": "tensorflow_gpu-3.9",  # replaced by tensorflow
         "blis-3.6": "blis-3.10",  # no wheels below 3.10, wrong python_requires ?
+        "murmurhash-3.6": "murmurhash-3.9",  # no wheels below 3.9
+        "preshed-3.6": "preshed-3.9",  # no wheels below 3.9
+        "duckdb-3.7": "duckdb-3.9",  # no wheels below 3.9
     }
     return overrides.get(result, result)
 
