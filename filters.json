@@ -288,7 +288,7 @@
 "ortools-3.9",
 "urwid-3.8",
 "pygeohash-3.8",
-"simsimd-3.7",
+"simsimd-3.8",
 "cvxpy-3.9",
 "clang_format-2.0",
 "tree_sitter_python-3.9",
