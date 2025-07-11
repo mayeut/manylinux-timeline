@@ -649,7 +649,7 @@
 "onnxsim-3.7",
 "pylibmc-3.6",
 "pyroscope_io-2.0",
-"econml-3.8",
+"econml-3.9",
 "pyqtwebengine-3.8",
 "chiavdf-3.9",
 "scipy_openblas32-3.7",
