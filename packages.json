@@ -13853,6 +13853,7 @@
 "wandb-zc",
 "wappalyzers",
 "warp-lang",
+"warpconvnet",
 "warpctc-pytorch",
 "warpctc-pytorch10-cpu",
 "warpctc-pytorch10-cuda100",
