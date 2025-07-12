@@ -8660,6 +8660,8 @@
 "pxr-kind-dev",
 "pxr-plug",
 "pxr-plug-dev",
+"pxr-sdf",
+"pxr-sdf-dev",
 "pxr-tbb",
 "pxr-tbb-dev",
 "pxr-tf",
