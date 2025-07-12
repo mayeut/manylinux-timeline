@@ -1,8 +1,9 @@
+import dataclasses
 import json
 import logging
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Union, cast
 
 import pandas as pd
 from packaging.utils import canonicalize_name
@@ -96,17 +97,22 @@ def _load_df(
     return df
 
 
+@dataclasses.dataclass
+class SupportDates:
+    supported: date = date.min
+    not_supported: list[date] = dataclasses.field(default_factory=list)
+
+
 def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
-    result = {}
+    result: dict[str, dict[str, date]] = {}
     for package in packages:
         cache_file = utils.get_release_cache_path(package)
         if not cache_file.exists():
             result[package] = {version: date.max for version in PYTHON_EOL}
             continue
         info = json.loads(cache_file.read_text())
-        package_result = {
-            version: {"supported": date.min, "not_supported": []}
-            for version in PYTHON_EOL
+        package_result: dict[str, SupportDates] = {
+            version: SupportDates() for version in PYTHON_EOL
         }
         only_prerelease = True
         for release in info["releases"]:
@@ -155,18 +161,18 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
             supported_set = {f"{python[2]}.{python[3:]}" for python in pythons}
             for key in PYTHON_EOL:
                 if key in supported_set:
-                    package_result[key]["supported"] = max(
-                        package_result[key]["supported"], upload_date
+                    package_result[key].supported = max(
+                        package_result[key].supported, upload_date
                     )
                 else:
-                    package_result[key]["not_supported"].append(upload_date)
+                    package_result[key].not_supported.append(upload_date)
         if package == "soundfile":
             package = package
         result[package] = {}
         previous_date = date.min
         for key in PYTHON_EOL:
-            if package_result[key]["supported"] == date.min:
-                if len(package_result[key]["not_supported"]) == 0:
+            if package_result[key].supported == date.min:
+                if len(package_result[key].not_supported) == 0:
                     if package not in {
                         "carbonara-pyvex",
                         "libaio-bins",
@@ -179,13 +185,13 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                         _LOGGER.warning(f"{package}: assume python {key} supported")
                     result[package][key] = date.max
                 else:
-                    result[package][key] = min(package_result[key]["not_supported"])
+                    result[package][key] = min(package_result[key].not_supported)
             else:
-                package_result[key]["not_supported"].append(date.max)
+                package_result[key].not_supported.append(date.max)
                 result[package][key] = min(
                     filter(
-                        lambda x: x > package_result[key]["supported"],
-                        package_result[key]["not_supported"],
+                        lambda x: x > package_result[key].supported,
+                        package_result[key].not_supported,
                     )
                 )
             result[package][key] = previous_date = max(
@@ -383,7 +389,7 @@ def update(packages: list[str], path: Path, start: date, end: date):
         df_glibc_all = df_glibc.groupby(["day"]).aggregate("sum")
         df_glibc_stats = df_glibc / df_glibc_all
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
-        glibc_readiness_ver["keys"] = list(glibc_version["keys"])
+        glibc_readiness_ver["keys"] = cast(list[str], list(glibc_version["keys"]))
         glibc_readiness[version] = glibc_readiness_ver
         for versions in glibc_versions:
             for suffix in ("", "-nsw"):
@@ -405,22 +411,25 @@ def update(packages: list[str], path: Path, start: date, end: date):
                 glibc_readiness_ver[f"{versions[0]}{suffix}"] = stats
     # remove all zeros "-nsw" entries
     for key in list(python_version["keys"]):
+        assert isinstance(key, str)
         if not key.endswith("-nsw"):
             continue
         if all(value == 0.0 for value in python_version[key]):
-            python_version["keys"].remove(key)
+            python_version["keys"].remove(key)  # type: ignore
             python_version.pop(key)
             glibc_readiness_ver = glibc_readiness[key.rstrip("-nsw")]
             for glibc_key in list(glibc_readiness_ver["keys"]):
+                assert isinstance(glibc_key, str)
                 if glibc_key.endswith("-nsw"):
-                    glibc_readiness_ver["keys"].remove(glibc_key)
+                    glibc_readiness_ver["keys"].remove(glibc_key)  # type: ignore
                     glibc_readiness_ver.pop(glibc_key)
 
     for key in list(python_version_non_eol["keys"]):
+        assert isinstance(key, str)
         if not key.endswith("-nsw"):
             continue
         if all(value == 0.0 for value in python_version_non_eol[key]):
-            python_version_non_eol["keys"].remove(key)
+            python_version_non_eol["keys"].remove(key)  # type: ignore
             python_version_non_eol.pop(key)
 
     out["python_version"] = python_version
