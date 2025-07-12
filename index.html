@@ -235,16 +235,16 @@
         load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false);
         load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
         load_plot("consumer-python-version-plot-non-eol", data.index, data.python_version_non_eol, true, "%", "normal", false, data.python_version.keys);
-        load_plot("consumer-glibc-version-plot-non-eol", data.index, data.glibc_version_non_eol, true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.14-plot", data.index, data.glibc_readiness["3.14"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.13-plot", data.index, data.glibc_readiness["3.13"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.12-plot", data.index, data.glibc_readiness["3.12"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.11-plot", data.index, data.glibc_readiness["3.11"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.10-plot", data.index, data.glibc_readiness["3.10"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.9-plot", data.index, data.glibc_readiness["3.9"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.8-plot", data.index, data.glibc_readiness["3.8"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.7-plot", data.index, data.glibc_readiness["3.7"], true, "%", "reversed", true);
-        load_plot("consumer-glibc-readiness-3.6-plot", data.index, data.glibc_readiness["3.6"], true, "%", "reversed", true);
+        load_plot("consumer-glibc-version-plot-non-eol", data.index, data.glibc_version_non_eol, true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.14-plot", data.index, data.glibc_readiness["3.14"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.13-plot", data.index, data.glibc_readiness["3.13"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.12-plot", data.index, data.glibc_readiness["3.12"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.11-plot", data.index, data.glibc_readiness["3.11"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.10-plot", data.index, data.glibc_readiness["3.10"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.9-plot", data.index, data.glibc_readiness["3.9"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.8-plot", data.index, data.glibc_readiness["3.8"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.7-plot", data.index, data.glibc_readiness["3.7"], true, "%", "reversed", true, data.glibc_version.keys);
+        load_plot("consumer-glibc-readiness-3.6-plot", data.index, data.glibc_readiness["3.6"], true, "%", "reversed", true, data.glibc_version.keys);
     }
     $.getJSON("producer-data.json")
         .done(function( json ) {

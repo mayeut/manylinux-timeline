@@ -10,7 +10,6 @@ import update_cache
 import update_consumer_data
 import update_consumer_stats
 import update_dataset
-import update_filters
 import update_stats
 import utils
 
@@ -97,7 +96,9 @@ def main() -> None:
     update_consumer_data.update(
         packages, utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
     )
-    update_consumer_stats.update(utils.ROOT_PATH / "consumer_data", start, end)
+    update_consumer_stats.update(
+        packages, utils.ROOT_PATH / "consumer_data", start, end
+    )
 
     if not args.skip_cache:
         packages = update_cache.update(packages, args.all_pypi_packages)
@@ -111,9 +112,6 @@ def main() -> None:
     copy(utils.ROOT_PATH / "style.css", utils.BUILD_PATH)
     copy(utils.ROOT_PATH / "favicon.ico", utils.BUILD_PATH)
     copy(utils.ROOT_PATH / ".gitignore", utils.BUILD_PATH)
-
-    if args.update_filters:
-        update_filters.update()
 
 
 if __name__ == "__main__":
