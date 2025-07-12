@@ -9,6 +9,8 @@ from packaging.version import InvalidVersion, Version
 import utils
 
 PYTHON_EOL = {
+    "3.6": pd.to_datetime("2021-12-23"),
+    "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-07"),
     "3.9": pd.to_datetime("2025-10-05"),
     "3.10": pd.to_datetime("2026-10-04"),
@@ -32,6 +34,9 @@ def _get_major_minor(x):
 def _load_df(path: Path, date: datetime) -> pd.DataFrame | None:
     folder = path / date.strftime("%Y") / date.strftime("%m")
     file = folder / f"{date.strftime('%d')}.csv"
+    file_xz = file.with_suffix(".csv.xz")
+    if file_xz.exists():
+        file = file_xz
     if not file.exists():
         return None
     df = pd.read_csv(

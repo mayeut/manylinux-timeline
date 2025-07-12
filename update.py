@@ -88,16 +88,16 @@ def main() -> None:
     utils.BUILD_PATH.mkdir()
     utils.CACHE_PATH.mkdir(exist_ok=True)
 
-    _LOGGER.debug("updating consumer data")
-    update_consumer_data.update(
-        utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
-    )
-    update_consumer_stats.update(utils.ROOT_PATH / "consumer_data", start, end)
-
     _LOGGER.debug("loading package list")
     with open(utils.ROOT_PATH / "packages.json") as f:
-        packages = json.load(f)
+        packages: list[str] = json.load(f)
     _LOGGER.debug(f"loaded {len(packages)} package names")
+
+    _LOGGER.debug("updating consumer data")
+    update_consumer_data.update(
+        packages, utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
+    )
+    update_consumer_stats.update(utils.ROOT_PATH / "consumer_data", start, end)
 
     if not args.skip_cache:
         packages = update_cache.update(packages, args.all_pypi_packages)
