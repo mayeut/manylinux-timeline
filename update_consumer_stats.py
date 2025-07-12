@@ -176,6 +176,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                     if package not in {
                         "carbonara-pyvex",
                         "libaio-bins",
+                        "ms-ivy",
                         "nighres",
                         "oneqloud-polynomials",
                         "sciunit2",
