@@ -34,7 +34,7 @@ POLICIES = (
 )
 ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l")
 # python implementations are a bit more complicated...
-IMPL_CP3_FIRST = 8
+IMPL_CP3_FIRST = 6
 IMPL_CP3_LAST = 14
 IMPL_PP3_FIRST = 8
 IMPL_PP3_LAST = 11

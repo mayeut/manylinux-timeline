@@ -49,6 +49,8 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
         requires_python: SpecifierSet | None = None
         if file["requires_python"]:
             fixup_requires_python = file["requires_python"]
+            if fixup_requires_python in {"==3.10.4", "==3.10.5"}:
+                fixup_requires_python = "==3.10"
             fixup_requires_python = fixup_requires_python.replace(".*", "")
             fixup_requires_python = fixup_requires_python.replace("*", "")
             fixup_requires_python = fixup_requires_python.replace('"', "")
@@ -63,10 +65,43 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                 )
         metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
         for python in metadata.implementation.replace(",", ".").split("."):
+            if python.startswith("graalpy"):
+                python = f"gp{python[7:]}"
+            elif python.startswith("pyston"):
+                python = f"pt{python[6:]}"
             try:
                 int(python[2:])
             except ValueError:
-                _LOGGER.warning(f'ignoring python "{python}" for wheel "{filename}"')
+                if not filename.startswith(
+                    (
+                        "pyswEOS-0",
+                        "coremltools-0",
+                        "gm-3.0.11",
+                        "colesbury_c_extension-0.0.1-nogil39",
+                        "pyarmor.mini-1.",
+                        "simplex_solver-3.0.18-37-",
+                        "voxec-0.4.1-cp$mm-",
+                    )
+                ):
+                    _LOGGER.warning(
+                        f'ignoring python "{python}" for wheel "{filename}"'
+                    )
+                continue
+            if python.startswith(("cp", "pp", "gp", "pt")) and len(python) < 4:
+                # minor is missing
+                if not filename.startswith(
+                    (
+                        "mxlite_sdk-0.2.3-",
+                        "mesh_to_depth-0.1.1-",
+                        "pyarmor.mini-1.",
+                        "pyomexmeta-1.2.3-",
+                        "pyswEOS-0",
+                        "simplex_solver-3.0.",
+                    )
+                ):
+                    _LOGGER.warning(
+                        f'ignoring python "{python}" for wheel "{filename}"'
+                    )
                 continue
             if python == "py3":
                 if requires_python is None:
@@ -78,17 +113,21 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                             break
                 if python == "py3":
                     specifier_set = file["requires_python"]
-                    _LOGGER.warning(
-                        f'unresolved requires_python "{specifier_set}"'
-                        f' for wheel "{filename}"'
-                    )
+                    if not filename.startswith(("kaldi_active_grammar-0", "pyswEOS-")):
+                        _LOGGER.warning(
+                            f'unresolved requires_python "{specifier_set}"'
+                            f' for wheel "{filename}"'
+                        )
                     continue
             pythons.add(python)
             if metadata.abi == "abi3":
                 if not python.startswith("cp3"):
-                    _LOGGER.warning(
-                        f'ignoring python "{python}-abi3" for wheel "{filename}"'
-                    )
+                    if not filename.startswith(
+                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
+                    ):
+                        _LOGGER.warning(
+                            f'ignoring python "{python}-abi3" for wheel "{filename}"'
+                        )
                     continue
                 # Add abi3 to know that cp3? > {python} are supported
                 pythons.add("ab3")
