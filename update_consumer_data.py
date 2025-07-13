@@ -19,7 +19,7 @@ def _update_consumer_data(
 ) -> None:
     today = datetime.fromisocalendar(*datetime.now(timezone.utc).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
-    # table_suffix = "2025-07-08"
+    # table_suffix = "2025-06-14"
     folder = path / table_suffix[0:4] / table_suffix[5:7]
     folder.mkdir(parents=True, exist_ok=True)
     file = folder / f"{table_suffix[8:10]}.csv.xz"
@@ -50,11 +50,9 @@ def _update_consumer_data(
     csv_rows = []
     # we need to split packages otherwise the project clustering does not kick-in...
     for project_start in range(0, len(packages), packages_step):
-        # let's assume filtering on Linux is not necessary  since we're filtering on glibc:
+        # let's assume filtering on Linux is not necessary since we're filtering on glibc:
         #   details.system.name = "Linux" AND
-        # filtering on filename is quite costly, let's filter on file type instead:
-        #   REGEXP_CONTAINS(file.filename, r"-manylinux([0-9a-zA-Z_]+)\.whl")
-        #   file.type = "bdist_wheel"
+        # filtering on filename is quite costly but nothing we can do...
         query = rf"""
 SELECT t0.cpu, t0.num_downloads, t0.python_version, t0.glibc_version, t0.project
 FROM (SELECT COUNT(*) AS num_downloads,
@@ -65,7 +63,7 @@ timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND
 TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND
 project IN {tuple(packages[project_start:project_start+packages_step])} AND
 details.distro.libc.lib = "glibc" AND
-file.type = "bdist_wheel"
+REGEXP_CONTAINS(file.filename, r"-manylinux([0-9a-zA-Z_]+)\.whl")
 GROUP BY python_version, glibc_version, details.cpu, project
 ORDER BY num_downloads DESC) AS t0;
 """
