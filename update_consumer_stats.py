@@ -1,6 +1,8 @@
 import dataclasses
+import functools
 import json
 import logging
+import multiprocessing
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Union, cast
@@ -104,6 +106,7 @@ class SupportDates:
 
 
 def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
+    _LOGGER.info("building wheel support map")
     result: dict[str, dict[str, date]] = {}
     for package in packages:
         cache_file = utils.get_release_cache_path(package)
@@ -202,17 +205,25 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     return result
 
 
-def update(packages: list[str], path: Path, start: date, end: date):
-    date_ = start - utils.CONSUMER_WINDOW_SIZE
-    dataframes = []
-    wheel_support_map = _build_wheel_support_map(packages)
+def date_iterator(start: date, end: date):
+    date_ = start
     while date_ < end:
-        df = _load_df(wheel_support_map, path, date_)
-        if df is not None:
-            dataframes.append(df)
+        yield date_
         date_ = date_ + timedelta(days=1)
 
+
+def update(packages: list[str], path: Path, start: date, end: date):
+    wheel_support_map = _build_wheel_support_map(packages)
+
+    _LOGGER.info("loading data")
+    with multiprocessing.Pool() as pool:
+        _load_df_partial = functools.partial(_load_df, wheel_support_map, path)
+        dataframes = pool.map(_load_df_partial, date_iterator(start - utils.CONSUMER_WINDOW_SIZE, end), chunksize=7)
+    dataframes = filter(lambda x: x is not None, dataframes)
     df = pd.concat(dataframes)
+
+    _LOGGER.info("computing statistics")
+
     df = df.groupby(
         ["day", "python_version", "python_version2", "glibc_version"], as_index=False
     ).aggregate("sum")
