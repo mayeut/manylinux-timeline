@@ -39,11 +39,6 @@ def main() -> None:
         help="check all packages in PyPI.",
     )
     parser.add_argument(
-        "--update-filters",
-        action="store_true",
-        help="check minimum python version for each of the top 8000 PyPI packages.",
-    )
-    parser.add_argument(
         "-s",
         "--start",
         default=default_start,
