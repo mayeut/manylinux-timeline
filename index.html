@@ -55,6 +55,29 @@
         </div>
     </div>
     <div class="row">
+        <div class="col">
+            <h2 id="consumer-about">About consumer statistics</h2>
+            <p>This section shows consumer readiness for a given policy.</p>
+            <p>
+                All manylinux wheel downloads from <a href="https://pypi.org/">PyPI</a> using pip are analysed each day to compute those statistics.
+                The data set is smoothed using a 1-month sliding window algorithm.
+            </p>
+            <p>
+                Before 2024-11-01, all manylinux wheel downloads were accounted for, without distinction w.r.t the level of support for those wheels.<br>
+                Between 2024-11-01 & 2025-05-22, downloads using a python version not supported by the latest version of a package (based mostly on requires_python metadata) were excluded from the data set.<br>
+                Starting 2025-05-22, all downloads are accounted for again and a different mechanism is used to determine if a download uses a supported wheel or not (<code>-nsw</code> suffix when <code>Both</code> is checked below) based on what wheels are provided by the latest version of each package.
+            </p>
+            <p>
+                Not Supported Wheel option: <input type="radio" id="nsw-include" name="nsw-choice" checked /><label for="nsw-include">Include</label>&nbsp;<input type="radio" id="nsw-exclude" name="nsw-choice"/><label for="nsw-exclude">Exclude</label>&nbsp;<input type="radio" id="nsw-both" name="nsw-choice"/><label for="nsw-both">Both</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2 id="consumer-overall">Overall statistics</h2>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-python-version">Python version (All)</h2>
             <div><div id="consumer-python-version-plot" class="plotly-graph-div"></div></div>
@@ -75,61 +98,56 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">
-            <h2 id="consumer-about">About consumer statistics</h2>
-            <p>This section shows consumer readiness for a given policy.</p>
-            <p>
-                All manylinux wheel downloads from <a href="https://pypi.org/">PyPI</a> using pip are analysed each day to compute those statistics.
-                The data set is smoothed using a 1-month sliding window algorithm.
-            </p>
-            <p>
-                Starting 2024-11-01, downloads using a python version not supported by the latest version of a package (based mostly on requires_python metadata) are excluded from the data set.
-                Overall download statistics per python version can be found on other websites, though, likely not restricted to manylinux wheels and/or Linux.
-            </p>
+        <div class="col">
+            <h2 id="consumer-per-python">Per python version statistics</h2>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.14">glibc readiness for python 3.14 (Preview)</h2>
             <div><div id="consumer-glibc-readiness-3.14-plot" class="plotly-graph-div"></div></div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.13">glibc readiness for python 3.13</h2>
             <div><div id="consumer-glibc-readiness-3.13-plot" class="plotly-graph-div"></div></div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.12">glibc readiness for python 3.12</h2>
             <div><div id="consumer-glibc-readiness-3.12-plot" class="plotly-graph-div"></div></div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.11">glibc readiness for python 3.11</h2>
             <div><div id="consumer-glibc-readiness-3.11-plot" class="plotly-graph-div"></div></div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.10">glibc readiness for python 3.10</h2>
             <div><div id="consumer-glibc-readiness-3.10-plot" class="plotly-graph-div"></div></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
+         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.9">glibc readiness for python 3.9</h2>
             <div><div id="consumer-glibc-readiness-3.9-plot" class="plotly-graph-div"></div></div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.8">glibc readiness for python 3.8 (EOL)</h2>
             <div><div id="consumer-glibc-readiness-3.8-plot" class="plotly-graph-div"></div></div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.7">glibc readiness for python 3.7 (EOL)</h2>
             <div><div id="consumer-glibc-readiness-3.7-plot" class="plotly-graph-div"></div></div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-6">
             <h2 id="consumer-glibc-readiness-3.6">glibc readiness for python 3.6 (EOL)</h2>
             <div><div id="consumer-glibc-readiness-3.6-plot" class="plotly-graph-div"></div></div>
+        </div>
+        <div class="col-sm-6">
         </div>
     </div>
     <div class="row">
@@ -169,11 +187,57 @@
         else {
             global_parameters = Object.assign(global_parameters, {"type": "scattergl"});
         }
+        const check_nsw = (element) => element.endsWith("-nsw");
+        const has_nsw = series.keys.some(check_nsw);
+
+
+        var series_ = JSON.parse(JSON.stringify(series)); /* deep copy */
+        if (has_nsw && !document.getElementById("nsw-both").checked) {
+            if (document.getElementById("nsw-include").checked) {
+                series_.keys.forEach(function (key, index) {
+                    const nsw_key = key + "-nsw";
+                    if (nsw_key in series_) {
+                        var y = series_[nsw_key]
+                        series_[key] = series_[key].map(function (num, idx) {
+                            return num + y[idx];
+                        });
+                    }
+                });
+            }
+            else {
+                var nsw_scale;
+                series_.keys.forEach(function (key, index) {
+                    if (!check_nsw(key)) {
+                        var y = series_[key]
+                        if (nsw_scale == undefined) {
+                            nsw_scale = Array.from(y)
+                        }
+                        else {
+                            nsw_scale = nsw_scale.map(function (num, idx) {
+                                return num + y[idx];
+                            });
+                        }
+                    }
+                });
+                if (nsw_scale != undefined) {
+                    nsw_scale = nsw_scale.map(function (num, idx) {
+                        return 100.0 / (Math.max(num, 0.01));
+                    });
+                    series_.keys.forEach(function (key, index) {
+                        series_[key] = series_[key].map(function (num, idx) {
+                            return num * nsw_scale[idx];
+                        });
+                    });
+                }
+            }
+            series_.keys = series_.keys.filter((element) => !element.endsWith("-nsw"));
+        }
+
         var series_parameters = [];
         var cum_sum;
         if (traceorder == 'normal') {
-            series.keys.forEach(function (key, index) {
-                var y = series[key]
+            series_.keys.forEach(function (key, index) {
+                var y = series_[key]
                 if (cum_sum == undefined) {
                     cum_sum = Array.from(y)
                 }
@@ -184,8 +248,8 @@
                 }
             });
         }
-        series.keys.forEach(function (key, index) {
-            var y = series[key]
+        series_.keys.forEach(function (key, index) {
+            var y = series_[key]
             if (traceorder == 'reversed') {
                 if (cum_sum == undefined) {
                     cum_sum = Array.from(y)
@@ -232,8 +296,8 @@
     function update_consumer_data(data) {
         $("#last_update").text(data.last_update)
         $("#package_count").text(data.package_count)
-        load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false);
-        load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true);
+        load_plot("consumer-python-version-plot", data.index, data.python_version, true, "%", "normal", false, data.python_version.keys);
+        load_plot("consumer-glibc-version-plot", data.index, data.glibc_version, true, "%", "reversed", true, data.glibc_version.keys);
         load_plot("consumer-python-version-plot-non-eol", data.index, data.python_version_non_eol, true, "%", "normal", false, data.python_version.keys);
         load_plot("consumer-glibc-version-plot-non-eol", data.index, data.glibc_version_non_eol, true, "%", "reversed", true, data.glibc_version.keys);
         load_plot("consumer-glibc-readiness-3.14-plot", data.index, data.glibc_readiness["3.14"], true, "%", "reversed", true, data.glibc_version.keys);
@@ -258,6 +322,9 @@
     $.getJSON("consumer-data.json")
         .done(function( json ) {
             update_consumer_data(json);
+            $("[name='nsw-choice']").on( "change", function() {
+              update_consumer_data(json);
+            } );
         })
         .fail(function( jqxhr, textStatus, error ) {
             var err = textStatus + ", " + error;

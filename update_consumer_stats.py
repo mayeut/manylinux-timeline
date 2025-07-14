@@ -27,6 +27,9 @@ PYTHON_EOL = {
     "3.13": pd.to_datetime("2029-10-01"),
     "3.14": pd.to_datetime("2030-10-01"),
 }
+# don't rewrite glibc_version on newer glibc, this doesn't help with
+# reading the graphs without much added information
+GLIBC_NSW_MAX_VERSION = Version("2.31")
 
 
 def _get_major_minor(x):
@@ -68,6 +71,11 @@ def _load_df(
 
         def _get_supported_wheel(row, *, src_column: str) -> str:
             value = row[src_column]
+            if (
+                src_column == "glibc_version"
+                and Version(value) >= GLIBC_NSW_MAX_VERSION
+            ):
+                return value
             project = wheel_support_map.get(row["project"])
             if project is None:
                 _LOGGER.warning(f"{project} not found in wheel_support_map")
@@ -218,8 +226,12 @@ def update(packages: list[str], path: Path, start: date, end: date):
     _LOGGER.info("loading data")
     with multiprocessing.Pool() as pool:
         _load_df_partial = functools.partial(_load_df, wheel_support_map, path)
-        dataframes = pool.map(_load_df_partial, date_iterator(start - utils.CONSUMER_WINDOW_SIZE, end), chunksize=7)
-    dataframes = filter(lambda x: x is not None, dataframes)
+        dataframes = pool.map(
+            _load_df_partial,
+            date_iterator(start - utils.CONSUMER_WINDOW_SIZE, end),
+            chunksize=7,
+        )
+    dataframes = list(filter(lambda x: x is not None, dataframes))
     df = pd.concat(dataframes)
 
     _LOGGER.info("computing statistics")
@@ -317,12 +329,17 @@ def update(packages: list[str], path: Path, start: date, end: date):
     glibc_versions = glibc_versions[::-1]
     glibc_version = dict[str, Union[list[str], list[float]]]()
     glibc_version["keys"] = list(
-        f"{v[0]}{suffix}" for v in glibc_versions for suffix in ("", "-nsw")
+        f"{v[0]}{suffix}"
+        for v in glibc_versions
+        for suffix in ("", "-nsw")
+        if suffix != "-nsw" or Version(v[0]) < GLIBC_NSW_MAX_VERSION
     )
     glibc_version_non_eol = dict[str, Union[list[str], list[float]]]()
     glibc_version_non_eol["keys"] = glibc_version["keys"]
     for versions in glibc_versions:
         for suffix in ("", "-nsw"):
+            if suffix == "-nsw" and Version(versions[0]) >= GLIBC_NSW_MAX_VERSION:
+                continue
             stats = []
             stats_non_eol = []
             for day in out["index"]:
@@ -405,6 +422,8 @@ def update(packages: list[str], path: Path, start: date, end: date):
         glibc_readiness[version] = glibc_readiness_ver
         for versions in glibc_versions:
             for suffix in ("", "-nsw"):
+                if suffix == "-nsw" and Version(versions[0]) >= GLIBC_NSW_MAX_VERSION:
+                    continue
                 stats = []
                 for day in out["index"]:
                     value = 0.0
