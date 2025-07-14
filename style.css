@@ -7,7 +7,7 @@ p {
     text-align: justify;
 }
 
-h1, h2, p.footer {
+h1, h2, h3, h4, p.footer {
     text-align: center;
 }
 
