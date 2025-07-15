@@ -40,7 +40,7 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "[bot] Update packages.json / consumer_data on ${{ steps.timestamp.outputs.timestamp }}"
-        file_pattern: packages.json consumer_data/**/*.csv
+        file_pattern: packages.json consumer_data/**/*.csv*
     - name: Deploy to GitHub Pages
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       uses: JamesIves/github-pages-deploy-action@v4
