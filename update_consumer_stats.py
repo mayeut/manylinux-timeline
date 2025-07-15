@@ -315,7 +315,8 @@ def update(packages: list[str], path: Path, start: date, end: date):
     # combine some versions to remove some of the less used ones
     # but still accounting for the smaller one
     glibc_versions = [
-        tuple(f"2.{minor}" for minor in range(5, 17)),
+        tuple(f"2.{minor}" for minor in range(5, 12)),
+        tuple(f"2.{minor}" for minor in range(12, 17)),
         tuple(f"2.{minor}" for minor in range(17, 26)),
         ("2.26",),
         ("2.27",),
