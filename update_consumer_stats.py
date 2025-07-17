@@ -27,6 +27,28 @@ PYTHON_EOL = {
     "3.13": pd.to_datetime("2029-10-01"),
     "3.14": pd.to_datetime("2030-10-01"),
 }
+
+# combine some glibc versions to remove some of the less used ones
+# but still accounting for the smaller one
+GLIBC_GROUPS = [
+    tuple(f"2.{minor}" for minor in range(5, 12)),
+    tuple(f"2.{minor}" for minor in range(12, 17)),
+    tuple(f"2.{minor}" for minor in range(17, 26)),
+    ("2.26",),
+    ("2.27",),
+    ("2.28", "2.29", "2.30"),
+    ("2.31", "2.32", "2.33"),
+    ("2.34",),
+    ("2.35",),
+    ("2.36", "2.37", "2.38"),
+    ("2.39", "2.40", "2.41"),
+]
+GLIBC_REMAP = {
+    glibc_version: glibc_versions[0]
+    for glibc_versions in GLIBC_GROUPS
+    for glibc_version in glibc_versions
+}
+
 # don't rewrite glibc_version on newer glibc, this doesn't help with
 # reading the graphs without much added information
 GLIBC_NSW_MAX_VERSION = Version("2.31")
@@ -58,7 +80,7 @@ def _load_df(
         file,
         converters={
             "python_version": lambda x: _get_major_minor(x),
-            "glibc_version": lambda x: _get_major_minor(x),
+            "glibc_version": lambda x: GLIBC_REMAP.get(_get_major_minor(x), "0.0"),
             "project": lambda x: str(canonicalize_name(x)),
         },
         usecols=usecols,
@@ -312,62 +334,44 @@ def update(packages: list[str], path: Path, start: date, end: date):
         "index": list(d.date().isoformat() for d in df_python_all.index),
     }
 
-    # combine some versions to remove some of the less used ones
-    # but still accounting for the smaller one
-    glibc_versions = [
-        tuple(f"2.{minor}" for minor in range(5, 12)),
-        tuple(f"2.{minor}" for minor in range(12, 17)),
-        tuple(f"2.{minor}" for minor in range(17, 26)),
-        ("2.26",),
-        ("2.27",),
-        ("2.28", "2.29", "2.30"),
-        ("2.31", "2.32", "2.33"),
-        ("2.34",),
-        ("2.35",),
-        ("2.36", "2.37", "2.38"),
-        ("2.39", "2.40", "2.41"),
-    ]
-    glibc_versions = glibc_versions[::-1]
+    glibc_versions = list(x[0] for x in GLIBC_GROUPS[::-1])
     glibc_version = dict[str, Union[list[str], list[float]]]()
     glibc_version["keys"] = list(
-        f"{v[0]}{suffix}"
+        f"{v}{suffix}"
         for v in glibc_versions
         for suffix in ("", "-nsw")
-        if suffix != "-nsw" or Version(v[0]) < GLIBC_NSW_MAX_VERSION
+        if suffix != "-nsw" or Version(v) < GLIBC_NSW_MAX_VERSION
     )
     glibc_version_non_eol = dict[str, Union[list[str], list[float]]]()
     glibc_version_non_eol["keys"] = glibc_version["keys"]
-    for versions in glibc_versions:
+    for version in glibc_versions:
         for suffix in ("", "-nsw"):
-            if suffix == "-nsw" and Version(versions[0]) >= GLIBC_NSW_MAX_VERSION:
+            if suffix == "-nsw" and Version(version) >= GLIBC_NSW_MAX_VERSION:
                 continue
+            version_suffix = f"{version}{suffix}"
             stats = []
             stats_non_eol = []
             for day in out["index"]:
-                value = 0.0
-                value_non_eol = 0.0
-                for version in versions:
-                    version_suffix = f"{version}{suffix}"
-                    try:
-                        value += float(
-                            df_glibc_stats.loc[
-                                (pd.to_datetime(day), version_suffix), "num_downloads"
-                            ]
-                        )
-                    except KeyError:
-                        pass
-                    try:
-                        value_non_eol += float(
-                            df_glibc_non_eol_stats.loc[
-                                (pd.to_datetime(day), version_suffix), "num_downloads"
-                            ]
-                        )
-                    except KeyError:
-                        pass
+                try:
+                    value = float(
+                        df_glibc_stats.loc[
+                            (pd.to_datetime(day), version_suffix), "num_downloads"
+                        ]
+                    )
+                except KeyError:
+                    value = 0.0
+                try:
+                    value_non_eol = float(
+                        df_glibc_non_eol_stats.loc[
+                            (pd.to_datetime(day), version_suffix), "num_downloads"
+                        ]
+                    )
+                except KeyError:
+                    value_non_eol = 0.0
                 stats.append(float(f"{100.0 * value:.2f}"))
                 stats_non_eol.append(float(f"{100.0 * value_non_eol:.2f}"))
-            glibc_version[f"{versions[0]}{suffix}"] = stats
-            glibc_version_non_eol[f"{versions[0]}{suffix}"] = stats_non_eol
+            glibc_version[f"{version}{suffix}"] = stats
+            glibc_version_non_eol[f"{version}{suffix}"] = stats_non_eol
 
     out["glibc_version"] = glibc_version
     out["glibc_version_non_eol"] = glibc_version_non_eol
@@ -421,26 +425,24 @@ def update(packages: list[str], path: Path, start: date, end: date):
         glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
         glibc_readiness_ver["keys"] = cast(list[str], list(glibc_version["keys"]))
         glibc_readiness[version] = glibc_readiness_ver
-        for versions in glibc_versions:
+        for version_ in glibc_versions:
             for suffix in ("", "-nsw"):
-                if suffix == "-nsw" and Version(versions[0]) >= GLIBC_NSW_MAX_VERSION:
+                if suffix == "-nsw" and Version(version_) >= GLIBC_NSW_MAX_VERSION:
                     continue
+                version_suffix = f"{version_}{suffix}"
                 stats = []
                 for day in out["index"]:
-                    value = 0.0
-                    for glibc_version_ in versions:
-                        version_suffix = f"{glibc_version_}{suffix}"
-                        try:
-                            value += float(
-                                df_glibc_stats.loc[
-                                    (pd.to_datetime(day), version_suffix),
-                                    "num_downloads",
-                                ]
-                            )
-                        except KeyError:
-                            pass
+                    try:
+                        value = float(
+                            df_glibc_stats.loc[
+                                (pd.to_datetime(day), version_suffix),
+                                "num_downloads",
+                            ]
+                        )
+                    except KeyError:
+                        value = 0.0
                     stats.append(float(f"{100.0 * value:.2f}"))
-                glibc_readiness_ver[f"{versions[0]}{suffix}"] = stats
+                glibc_readiness_ver[f"{version_}{suffix}"] = stats
     # remove all zeros "-nsw" entries
     for key in list(python_version["keys"]):
         assert isinstance(key, str)
