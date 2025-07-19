@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import date
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
@@ -8,6 +9,7 @@ from packaging.version import InvalidVersion, Version
 import utils
 
 _LOGGER = logging.getLogger(__name__)
+_FREE_THREADED_ABI = re.compile(r"cp3(1[3-9]|[2-9][0-9])t")
 
 
 def _filter_versions(package: str, info: dict) -> list[str]:
@@ -69,6 +71,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                 python = f"gp{python[7:]}"
             elif python.startswith("pyston"):
                 python = f"pt{python[6:]}"
+
             try:
                 int(python[2:])
             except ValueError:
@@ -87,6 +90,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         f'ignoring python "{python}" for wheel "{filename}"'
                     )
                 continue
+
             if python.startswith(("cp", "pp", "gp", "pt")) and len(python) < 4:
                 # minor is missing
                 if not filename.startswith(
@@ -103,7 +107,16 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         f'ignoring python "{python}" for wheel "{filename}"'
                     )
                 continue
+
             if python == "py3":
+                if metadata.abi != "none":
+                    if not filename.startswith(
+                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
+                    ):
+                        _LOGGER.warning(
+                            f"unsupported abi {metadata.abi!r} for wheel {filename!r}"
+                        )
+                    continue
                 if requires_python is None:
                     python = "py32"
                 else:
@@ -115,11 +128,12 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     specifier_set = file["requires_python"]
                     if not filename.startswith(("kaldi_active_grammar-0", "pyswEOS-")):
                         _LOGGER.warning(
-                            f'unresolved requires_python "{specifier_set}"'
-                            f' for wheel "{filename}"'
+                            f"unresolved requires_python {specifier_set!r} "
+                            f"for wheel {filename!r}"
                         )
                     continue
             pythons.add(python)
+
             if metadata.abi == "abi3":
                 if not python.startswith("cp3"):
                     if not filename.startswith(
@@ -131,10 +145,16 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     continue
                 # Add abi3 to know that cp3? > {python} are supported
                 pythons.add("ab3")
+            elif _FREE_THREADED_ABI.match(metadata.abi) or python.startswith("py3"):
+                pythons.add("ft3")
+
         manylinux.add(metadata.platform)
+
     python_list = list(pythons)
     python_list.sort(key=lambda x: (int(x[2:]), x[0:2]))
-    python_str = ".".join(python_list).replace("ab3", "abi3")
+    python_str = ".".join(python_list)
+    python_str = python_str.replace("ab3", "abi3")
+    python_str = python_str.replace("ft3", "free-threaded")
     manylinux_str = ".".join(sorted(manylinux)).replace("anylinux", "l")
     return date.fromisoformat(upload_date), python_str, manylinux_str
 

@@ -49,7 +49,7 @@ IMPLEMENTATIONS = tuple(
             ),
             key=lambda x: (int(x[3:]), x[:3]),
         ),
-        ["abi3"],
+        ["abi3", "free-threaded"],
     )
 )
 
@@ -59,7 +59,7 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
         df[arch] = df.manylinux.str.contains(arch)
-    for version in ["abi3", "py3"]:
+    for version in ["abi3", "py3", "free-threaded"]:
         df[version] = df.python.str.contains(version)
     df["py32"] = df.python.str.contains("py32")
     df["cp32"] = df.python.str.contains("cp32")
