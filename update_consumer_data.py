@@ -64,7 +64,7 @@ timestamp BETWEEN TIMESTAMP("{table_suffix} 00:00:00 UTC") AND
 TIMESTAMP("{table_suffix} 23:59:59.999999 UTC") AND
 project IN {tuple(packages[project_start:project_start+packages_step])} AND
 details.distro.libc.lib = "glibc" AND
-REGEXP_CONTAINS(file.filename, r"-manylinux([0-9a-zA-Z_]+)\.whl")
+REGEXP_CONTAINS(file.filename, r"(?:-|\.)manylinux[^-\.]+\.(?:[^-\.]+\.)*whl$")
 GROUP BY python_version, glibc_version, details.cpu, project
 ORDER BY num_downloads DESC) AS t0;
 """
