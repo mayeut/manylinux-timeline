@@ -237,7 +237,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
 
 def date_iterator(start: date, end: date):
     date_ = start
-    while date_ < end:
+    while date_ <= end:
         yield date_
         date_ = date_ + timedelta(days=1)
 

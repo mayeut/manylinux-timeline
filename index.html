@@ -73,6 +73,7 @@
                 Before 2024-11-01, all manylinux wheel downloads were accounted for, without distinction w.r.t the level of support for those wheels.<br>
                 Between 2024-11-01 & 2025-05-22, downloads using a python version not supported by the latest version of a package (based mostly on requires_python metadata) were excluded from the data set.<br>
                 Starting 2025-05-22, all downloads are accounted for again and a different mechanism is used to determine if a download uses a supported wheel or not (<code>-nsw</code> suffix when <code>Both</code> is checked below) based on what wheels are provided by the latest version of each package.
+                There was an issue with the regex used to filter manylinux wheels before 2025-07-09 which explains the change in trends around this date.
             </p>
             <p>
                 Not Supported Wheel option:<br><input type="radio" id="nsw-include" name="nsw-choice" checked /><label for="nsw-include">Include</label>&nbsp;<input type="radio" id="nsw-exclude" name="nsw-choice"/><label for="nsw-exclude">Exclude</label>&nbsp;<input type="radio" id="nsw-both" name="nsw-choice"/><label for="nsw-both">Both</label>
