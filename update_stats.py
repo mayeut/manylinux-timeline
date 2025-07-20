@@ -45,7 +45,7 @@ ARCHITECTURES: Final[tuple[ArchitectureName, ...]] = typing.get_args(Architectur
 PackageStatsName = Literal["total", "analysis"]
 
 # python implementations are a bit more complicated...
-IMPL_CP3_FIRST: Final[int] = 6
+IMPL_CP3_FIRST: Final[int] = 7
 IMPL_CP3_LAST: Final[int] = 15
 IMPL_PP3_FIRST: Final[int] = 8
 IMPL_PP3_LAST: Final[int] = 11

@@ -20,7 +20,6 @@ import utils
 _LOGGER = logging.getLogger(__name__)
 
 PYTHON_EOL: Final[dict[str, pd.Timestamp]] = {
-    "3.6": pd.to_datetime("2021-12-23"),
     "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-07"),
     "3.9": pd.to_datetime("2025-10-31"),
@@ -35,8 +34,7 @@ PYTHON_EOL: Final[dict[str, pd.Timestamp]] = {
 # combine some glibc versions to remove some of the less used ones
 # but still accounting for the smaller one
 GLIBC_GROUPS: Final[tuple[tuple[str, ...], ...]] = (
-    tuple(f"2.{minor}" for minor in range(5, 12)),
-    tuple(f"2.{minor}" for minor in range(12, 17)),
+    tuple(f"2.{minor}" for minor in range(5, 17)),
     tuple(f"2.{minor}" for minor in range(17, 26)),
     ("2.26",),
     ("2.27",),

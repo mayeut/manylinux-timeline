@@ -156,8 +156,6 @@
             <div><div id="consumer-glibc-readiness-3.7-plot" class="plotly-graph-div"></div></div>
         </div>
         <div class="col-sm-6">
-            <h4 id="consumer-glibc-readiness-3.6">glibc readiness for python 3.6 (EOL)</h4>
-            <div><div id="consumer-glibc-readiness-3.6-plot" class="plotly-graph-div"></div></div>
         </div>
     </div>
     <div class="row">
@@ -319,7 +317,6 @@
         load_plot("consumer-glibc-readiness-3.9-plot", data.index, data.glibc_readiness["3.9"], true, "%", "reversed", true, data.glibc_version.keys);
         load_plot("consumer-glibc-readiness-3.8-plot", data.index, data.glibc_readiness["3.8"], true, "%", "reversed", true, data.glibc_version.keys);
         load_plot("consumer-glibc-readiness-3.7-plot", data.index, data.glibc_readiness["3.7"], true, "%", "reversed", true, data.glibc_version.keys);
-        load_plot("consumer-glibc-readiness-3.6-plot", data.index, data.glibc_readiness["3.6"], true, "%", "reversed", true, data.glibc_version.keys);
     }
     $.getJSON("producer-data.json")
         .done(function( json ) {
