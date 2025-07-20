@@ -100,7 +100,7 @@ def _load_df(
                 return value
             project = wheel_support_map.get(row["project"])
             if project is None:
-                _LOGGER.warning(f"{project} not found in wheel_support_map")
+                _LOGGER.warning(f"{row['project']!r} not found in wheel_support_map")
                 return value
             max_date = project[row["python_version"]]
             if date_ < max_date:
