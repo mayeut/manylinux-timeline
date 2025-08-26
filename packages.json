@@ -9063,6 +9063,7 @@
 "py-evalexpr",
 "py-excel-form-extractor",
 "py-excel-rs",
+"py-fake-useragent",
 "py-fast-rsync",
 "py-framels",
 "py-glfw-redux",
