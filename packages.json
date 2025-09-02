@@ -13310,6 +13310,7 @@
 "tensorflow-io-gcs-filesystem-nightly",
 "tensorflow-io-nightly",
 "tensorflow-io-plugin-gs-nightly",
+"tensorflow-jhs-addon",
 "tensorflow-lattice",
 "tensorflow-lattice-gpu",
 "tensorflow-mri",
