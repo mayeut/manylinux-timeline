@@ -3532,6 +3532,8 @@
 "fastlbp",
 "fastlcs",
 "fastlevenshtein",
+"fastlisaresponse-cuda11x",
+"fastlisaresponse-cuda12x",
 "fastlmmclib",
 "fastlogging",
 "fastlr",
