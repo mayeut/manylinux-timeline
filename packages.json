@@ -8807,6 +8807,7 @@
 "petra-grid",
 "petrelic",
 "petsc-ts",
+"pf-bindings-python",
 "pfapack",
 "pflow",
 "pflw",
