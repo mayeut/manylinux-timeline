@@ -1397,6 +1397,7 @@
 "cerebras-pytorch",
 "cerebras-sdk",
 "cereggii",
+"cerelink",
 "ceresdb-client",
 "cerializer",
 "certbot-dns-multi",
