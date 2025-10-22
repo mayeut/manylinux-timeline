@@ -6498,6 +6498,7 @@
 "locustdb",
 "log-count-util",
 "log-lammps-reader",
+"log-surgeon-ffi",
 "loganek-python-manylinux-demo",
 "logbook",
 "logdecomp",
