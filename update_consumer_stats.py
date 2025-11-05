@@ -3,10 +3,12 @@ import functools
 import json
 import logging
 import multiprocessing
-from collections.abc import Generator
 from datetime import UTC, date, datetime, timedelta
-from pathlib import Path
-from typing import Any, Final, cast
+from typing import TYPE_CHECKING, Any, Final, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from pathlib import Path
 
 import pandas as pd
 from packaging.utils import canonicalize_name

@@ -3,10 +3,13 @@ import itertools
 import json
 import logging
 import typing
-from collections.abc import Iterable
 from datetime import UTC, date, datetime, timedelta
-from pathlib import Path
 from typing import Final, Literal
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
 
 import numpy as np
 import pandas as pd
