@@ -162,7 +162,7 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
     response = requests.get("https://pypi.org/simple/", headers=headers)
     response.raise_for_status()
     data = response.json()["projects"]
-    all_packages = [canonicalize_name(project["name"]) for project in data]
+    all_packages: list[str] = [canonicalize_name(project["name"]) for project in data]
     _LOGGER.info(f"Found {len(all_packages)} packages")
     packages_set = set(all_packages)
 
@@ -179,9 +179,9 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
 
     _package_update_imap = functools.partial(_package_update, etag_cache)
 
-    to_remove = set()
-    to_add = set()
-    to_reprocess = set()
+    to_remove: set[str] = set()
+    to_add: set[str] = set()
+    to_reprocess: set[str] = set()
 
     try:
         with ThreadPool(32) as pool:

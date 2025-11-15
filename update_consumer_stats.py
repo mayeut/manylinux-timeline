@@ -305,7 +305,7 @@ def date_iterator(start: date, end: date):
         date_ = date_ + timedelta(days=1)
 
 
-def update(packages: list[str], path: Path, start: date, end: date):
+def update(packages: list[str], path: Path, start: date, end: date) -> None:
     wheel_support_map = _build_wheel_support_map(packages)
 
     _LOGGER.info("loading data")

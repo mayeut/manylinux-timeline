@@ -16,7 +16,7 @@ import utils
 _LOGGER = logging.getLogger(__name__)
 
 
-def check_file(value):
+def check_file(value) -> Path | None:
     if value is None:
         return None
     result = Path(value)
