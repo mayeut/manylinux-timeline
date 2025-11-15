@@ -234,6 +234,67 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                 previous_date, result[package][key]
             )
 
+    removed_packages = {
+        "aiohappyeyeball": date(2025, 10, 27),
+        "bitemporal-timeseries": date(2025, 8, 20),
+        "clogsec": date(2025, 11, 12),
+        "colorinal": date(2025, 7, 27),
+        "cryalg": date(2025, 9, 24),
+        "feature-engineering-rs": date(2025, 11, 15),
+        "flowty": date(2025, 10, 7),
+        "entityframe": date(2025, 8, 30),
+        "gamspy-conopt4": date(2025, 9, 4),
+        "gamspy-sbb": date(2025, 10, 7),
+        "genimtools": date(2025, 9, 19),
+        "grapapy": date(2025, 10, 2),  # single release, source only
+        "kring": date(2025, 7, 19),
+        "libintx-cu128": date(2025, 10, 20),
+        "libmemmod": date(2025, 9, 9),
+        "libp2p-pyrust": date(2025, 10, 2),
+        "lib-ppca": date(2025, 9, 24),
+        "llama-summarizer": date(2025, 7, 31),
+        "mchp-gpio-ctl": date(2025, 10, 14),
+        "mosec-tiinfer": date(2025, 9, 2),
+        "mrapids": date(2025, 9, 4),
+        "nobodywhopython": date(2025, 10, 27),  # single release, windows only
+        "obtest": date(2025, 9, 26),
+        "ompl-genesis": date(2025, 11, 11),
+        "oven-mlir": date(2025, 9, 21),
+        "perforatedai-freemium": date(2025, 9, 18),
+        "pgn-extract-wg": date(2025, 9, 4),
+        "phoneshift": date(2025, 9, 4),
+        "pisalt": date(2025, 8, 4),
+        "pivtools-cli": date(2025, 11, 11),
+        "pycoatl": date(2025, 7, 22),
+        "pygments-richstyle": date(2025, 11, 15),
+        "pyorbbec": date(2025, 9, 15),
+        "qlip-algorithms": date(2025, 10, 15),
+        "qlip-core": date(2025, 10, 15),
+        "qlip-serve-generator": date(2025, 9, 9),
+        "rs-catch-22": date(2025, 11, 15),
+        "rustivig": date(2025, 10, 8),
+        "silentpy": date(2025, 9, 19),  # single release, source only
+        "synaptik-core-beta": date(2025, 10, 16),
+        "tesseractpkg": date(2025, 11, 11),  # single release, pure wheel only
+        "testtesttest000001": date(2025, 11, 15),
+        "thestage-elastic-models": date(2025, 10, 15),
+        "thestage-license": date(2025, 10, 15),
+        "torcharrow": date(2025, 9, 6),
+        "tzuping-algo": date(2025, 8, 28),
+        "usb-monitor-utils-lib": date(2025, 9, 11),
+        "uuid32-utils":  date(2025, 7, 25),
+        "uuid64-utils":  date(2025, 7, 25),
+        "whisper-cpp-python-smr": date(2025, 7, 31),
+        "zlgcan-driver": date(2025, 8, 4),
+    }
+    for package, removed_date in removed_packages.items():
+        if package in result:
+            _LOGGER.warning(f"{package}: has been re-added")
+            continue
+        result[package] = {}
+        for key in PYTHON_EOL:
+            result[package][key] = removed_date
+
     return result
 
 

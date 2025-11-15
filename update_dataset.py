@@ -84,6 +84,8 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "pyarmor.mini-1.",
                         "simplex_solver-3.0.18-37-",
                         "voxec-0.4.1-cp$mm-",
+                        "pyarmor_mini-2.0-",
+                        "simplex_solver-3.1.0-39-",
                     )
                 ):
                     _LOGGER.warning(
