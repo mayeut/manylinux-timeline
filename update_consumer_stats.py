@@ -282,8 +282,8 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "torcharrow": date(2025, 9, 6),
         "tzuping-algo": date(2025, 8, 28),
         "usb-monitor-utils-lib": date(2025, 9, 11),
-        "uuid32-utils":  date(2025, 7, 25),
-        "uuid64-utils":  date(2025, 7, 25),
+        "uuid32-utils": date(2025, 7, 25),
+        "uuid64-utils": date(2025, 7, 25),
         "whisper-cpp-python-smr": date(2025, 7, 31),
         "zlgcan-driver": date(2025, 8, 4),
     }
