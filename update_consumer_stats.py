@@ -4,9 +4,9 @@ import json
 import logging
 import multiprocessing
 from collections.abc import Generator
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Final, Union, cast
+from typing import Any, Final, cast
 
 import pandas as pd
 from packaging.utils import canonicalize_name
@@ -97,14 +97,11 @@ def _load_df(
         def _get_supported_wheel(row: Any, *, src_column: str) -> str:
             value = row[src_column]
             assert isinstance(value, str)
-            if (
-                src_column == "glibc_version"
-                and Version(value) >= GLIBC_NSW_MAX_VERSION
-            ):
+            if src_column == "glibc_version" and Version(value) >= GLIBC_NSW_MAX_VERSION:
                 return value
             project = wheel_support_map.get(row["project"])
             if project is None:
-                _LOGGER.warning(f"{row['project']!r} not found in wheel_support_map")
+                _LOGGER.warning("%r not found in wheel_support_map", row["project"])
                 return value
             max_date = project[row["python_version"]]
             if date_ < max_date:
@@ -113,12 +110,8 @@ def _load_df(
                 return f"{value}-nsw"  # no supported wheel
             return f"{value}-nsw"  # no supported wheel
 
-        df["python_version2"] = df.apply(
-            _get_supported_wheel, axis=1, src_column="python_version"
-        )
-        df["glibc_version"] = df.apply(
-            _get_supported_wheel, axis=1, src_column="glibc_version"
-        )
+        df["python_version2"] = df.apply(_get_supported_wheel, axis=1, src_column="python_version")
+        df["glibc_version"] = df.apply(_get_supported_wheel, axis=1, src_column="glibc_version")
 
         df = (
             df.drop(["project"], axis=1)
@@ -145,7 +138,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     for package in packages:
         cache_file = utils.get_release_cache_path(package)
         if not cache_file.exists():
-            result[package] = {version: date.max for version in PYTHON_EOL}
+            result[package] = dict.fromkeys(PYTHON_EOL, date.max)
             continue
         info = json.loads(cache_file.read_text())
         package_result: dict[str, SupportDates] = {
@@ -159,12 +152,12 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                     only_prerelease = False
                     break
             except InvalidVersion as e:
-                _LOGGER.warning(f'"{package}": {e}')
+                _LOGGER.warning('"%s": %s', package, e)
         for release, release_files in info["releases"].items():
             try:
                 version_pep = Version(release)
                 if version_pep.is_prerelease and not only_prerelease:
-                    _LOGGER.debug(f'"{package}": ignore pre-release {release}')
+                    _LOGGER.debug('"%s": ignore pre-release %s', package, release)
                     continue
             except InvalidVersion:
                 pass
@@ -178,18 +171,14 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                 continue
             if pythons[0] == "abi3":
                 del pythons[0]  # remove the tag & replace with supported versions
-                cp3_start = next(
-                    python for python in pythons if python.startswith("cp3")
-                )
+                cp3_start = next(python for python in pythons if python.startswith("cp3"))
                 start_minor = int(cp3_start[3:])
                 for key in PYTHON_EOL:
                     key_minor = int(key[2:])
                     if key_minor > start_minor:
                         pythons.append(f"cp3{key_minor}")
             if any(python.startswith("py3") for python in pythons):
-                py3_start = next(
-                    python for python in pythons if python.startswith("py3")
-                )
+                py3_start = next(python for python in pythons if python.startswith("py3"))
                 start_minor = int(py3_start[3:])
                 for key in PYTHON_EOL:
                     key_minor = int(key[2:])
@@ -198,13 +187,9 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
             supported_set = {f"{python[2]}.{python[3:]}" for python in pythons}
             for key in PYTHON_EOL:
                 if key in supported_set:
-                    package_result[key].supported = max(
-                        package_result[key].supported, upload_date
-                    )
+                    package_result[key].supported = max(package_result[key].supported, upload_date)
                 else:
                     package_result[key].not_supported.append(upload_date)
-        if package == "soundfile":
-            package = package
         result[package] = {}
         previous_date = date.min
         for key in PYTHON_EOL:
@@ -220,7 +205,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                         "simuvex",
                         "tesseract-python",
                     }:
-                        _LOGGER.warning(f"{package}: assume python {key} supported")
+                        _LOGGER.warning("%r: assume python %s supported", package, key)
                     result[package][key] = date.max
                 else:
                     result[package][key] = min(package_result[key].not_supported)
@@ -232,9 +217,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                         package_result[key].not_supported,
                     )
                 )
-            result[package][key] = previous_date = max(
-                previous_date, result[package][key]
-            )
+            result[package][key] = previous_date = max(previous_date, result[package][key])
 
     removed_packages: Final[dict[str, date]] = {
         "aiohappyeyeball": date(2025, 10, 27),
@@ -291,7 +274,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     }
     for package, removed_date in removed_packages.items():
         if package in result:
-            _LOGGER.warning(f"{package}: has been re-added")
+            _LOGGER.warning("%r: has been re-added", package)
             continue
         result[package] = {}
         for key in PYTHON_EOL:
@@ -337,11 +320,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
         aggfunc="sum",
     )
     df = df.rolling(window=utils.CONSUMER_WINDOW_SIZE, min_periods=1).sum()
-    df = (
-        df.stack(list(range(df.columns.nlevels)), future_stack=True)
-        .reset_index()
-        .fillna(0.0)
-    )
+    df = df.stack(list(range(df.columns.nlevels)), future_stack=True).reset_index().fillna(0.0)
     df.rename(columns={0: "num_downloads"}, inplace=True)
     df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
@@ -379,9 +358,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
 
     # glibc version download stats
     df_glibc = (
-        df[["glibc_version", "num_downloads"]]
-        .groupby(["day", "glibc_version"])
-        .aggregate("sum")
+        df[["glibc_version", "num_downloads"]].groupby(["day", "glibc_version"]).aggregate("sum")
     )
     df_glibc_all = df_glibc.groupby(["day"]).aggregate("sum")
     df_glibc_stats = df_glibc / df_glibc_all
@@ -395,19 +372,19 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
     df_glibc_non_eol_stats = df_glibc_non_eol / df_glibc_non_eol_all
 
     out: dict[str, Any] = {
-        "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
-        "index": list(d.date().isoformat() for d in df_python_all.index),
+        "last_update": datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
+        "index": [d.date().isoformat() for d in df_python_all.index],
     }
 
-    glibc_versions = list(x[0] for x in GLIBC_GROUPS[::-1])
-    glibc_version = dict[str, Union[list[str], list[float]]]()
-    glibc_version["keys"] = list(
+    glibc_versions = [x[0] for x in GLIBC_GROUPS[::-1]]
+    glibc_version = dict[str, list[str] | list[float]]()
+    glibc_version["keys"] = [
         f"{v}{suffix}"
         for v in glibc_versions
         for suffix in ("", "-nsw")
         if suffix != "-nsw" or Version(v) < GLIBC_NSW_MAX_VERSION
-    )
-    glibc_version_non_eol = dict[str, Union[list[str], list[float]]]()
+    ]
+    glibc_version_non_eol = dict[str, list[str] | list[float]]()
     glibc_version_non_eol["keys"] = glibc_version["keys"]
     for version in glibc_versions:
         for suffix in ("", "-nsw"):
@@ -419,9 +396,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
             for day in out["index"]:
                 try:
                     value = float(
-                        df_glibc_stats.loc[
-                            (pd.to_datetime(day), version_suffix), "num_downloads"
-                        ]
+                        df_glibc_stats.loc[(pd.to_datetime(day), version_suffix), "num_downloads"]
                     )
                 except KeyError:
                     value = 0.0
@@ -455,9 +430,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
         stats = []
         for day in out["index"]:
             try:
-                value = float(
-                    df_python_stats.loc[(pd.to_datetime(day), version), "num_downloads"]
-                )
+                value = float(df_python_stats.loc[(pd.to_datetime(day), version), "num_downloads"])
             except KeyError:
                 value = 0.0
             stats.append(float(f"{100.0 * value:.1f}"))
@@ -467,9 +440,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
             for day in out["index"]:
                 try:
                     value = float(
-                        df_python_non_eol_stats.loc[
-                            (pd.to_datetime(day), version), "num_downloads"
-                        ]
+                        df_python_non_eol_stats.loc[(pd.to_datetime(day), version), "num_downloads"]
                     )
                 except KeyError:
                     value = 0.0
@@ -487,8 +458,8 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
         )
         df_glibc_all = df_glibc.groupby(["day"]).aggregate("sum")
         df_glibc_stats = df_glibc / df_glibc_all
-        glibc_readiness_ver = dict[str, Union[list[str], list[float]]]()
-        glibc_readiness_ver["keys"] = cast(list[str], list(glibc_version["keys"]))
+        glibc_readiness_ver = dict[str, list[str] | list[float]]()
+        glibc_readiness_ver["keys"] = cast("list[str]", list(glibc_version["keys"]))
         glibc_readiness[version] = glibc_readiness_ver
         for version_ in glibc_versions:
             for suffix in ("", "-nsw"):

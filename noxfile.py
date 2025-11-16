@@ -57,8 +57,8 @@ def serve(session: nox.Session) -> None:
 
 
 @nox.session(python=PYTHON_VERSION, venv_backend="none")
-def timestamp(session: nox.Session) -> None:
+def timestamp(session: nox.Session) -> None:  # noqa: ARG001
     """Get timestamp for PyPI package cache on GHA"""
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime  # noqa: PLC0415
 
-    print(datetime.now(timezone.utc).isoformat())
+    print(datetime.now(UTC).isoformat())

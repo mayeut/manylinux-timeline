@@ -11,7 +11,7 @@ CACHE_PATH = ROOT_PATH / "cache"
 RELEASE_INFO_PATH = CACHE_PATH / "info"
 PRODUCER_WINDOW_SIZE = timedelta(days=182)
 CONSUMER_WINDOW_SIZE = timedelta(days=28)
-USER_AGENT = "manylinux-timeline/1.0 " "(https://github.com/mayeut/manylinux-timeline)"
+USER_AGENT = "manylinux-timeline/1.0 (https://github.com/mayeut/manylinux-timeline)"
 
 
 class Row(NamedTuple):

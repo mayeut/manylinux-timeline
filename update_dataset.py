@@ -15,12 +15,12 @@ _FREE_THREADED_ABI: Final[re.Pattern[str]] = re.compile(r"cp3(1[3-9]|[2-9][0-9])
 
 def _filter_versions(package: str, info: dict[str, Any]) -> list[str]:
     candidate_versions = []
-    for version in info["releases"].keys():
+    for version in info["releases"]:
         try:
             version_pep = Version(version)
             candidate_versions.append((version, version_pep))
         except InvalidVersion as e:
-            _LOGGER.warning(f'"{package}": {e}')
+            _LOGGER.warning('"%s": %s', package, e)
 
     candidate_versions.sort(key=lambda x: x[1], reverse=True)
     filtered = []
@@ -64,10 +64,11 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             except InvalidSpecifier:
                 specifier_set = file["requires_python"]
                 _LOGGER.warning(
-                    f'invalid requires_python "{specifier_set}" for wheel "{filename}"'
+                    'invalid requires_python "%s" for wheel "%s"', specifier_set, filename
                 )
         metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
-        for python in metadata.implementation.replace(",", ".").split("."):
+        for python_ in metadata.implementation.replace(",", ".").split("."):
+            python = python_
             if python.startswith("graalpy"):
                 python = f"gp{python[7:]}"
             elif python.startswith("pyston"):
@@ -89,9 +90,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "simplex_solver-3.1.0-39-",
                     )
                 ):
-                    _LOGGER.warning(
-                        f'ignoring python "{python}" for wheel "{filename}"'
-                    )
+                    _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
 
             if python.startswith(("cp", "pp", "gp", "pt")) and len(python) < 4:
@@ -106,9 +105,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "simplex_solver-3.0.",
                     )
                 ):
-                    _LOGGER.warning(
-                        f'ignoring python "{python}" for wheel "{filename}"'
-                    )
+                    _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
 
             if python == "py3":
@@ -116,9 +113,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     if not filename.startswith(
                         ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
                     ):
-                        _LOGGER.warning(
-                            f"unsupported abi {metadata.abi!r} for wheel {filename!r}"
-                        )
+                        _LOGGER.warning("unsupported abi %r for wheel %r", metadata.abi, filename)
                     continue
                 if requires_python is None:
                     python = "py32"
@@ -131,8 +126,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     specifier_set = file["requires_python"]
                     if not filename.startswith(("kaldi_active_grammar-0", "pyswEOS-")):
                         _LOGGER.warning(
-                            f"unresolved requires_python {specifier_set!r} "
-                            f"for wheel {filename!r}"
+                            "unresolved requires_python %r for wheel %r", specifier_set, filename
                         )
                     continue
             pythons.add(python)
@@ -143,7 +137,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
                     ):
                         _LOGGER.warning(
-                            f'ignoring python "{python}-abi3" for wheel "{filename}"'
+                            'ignoring python "%s-abi3" for wheel "%s"', python, filename
                         )
                     continue
                 # Add abi3 to know that cp3? > {python} are supported
@@ -166,26 +160,26 @@ def _package_update(package: str) -> list[utils.Row]:
     cache_file = utils.get_release_cache_path(package)
     if not cache_file.exists():
         return []
-    with open(cache_file) as f:
+    with cache_file.open() as f:
         info = json.load(f)
 
     versions = _filter_versions(package, info)
-    _LOGGER.debug(f'"{package}": using "{versions}"')
+    _LOGGER.debug('"%s": using "%s"', package, versions)
     rows = []
     for version in versions:
         week, python, manylinux = parse_version(info["releases"][version])
         if python == "" or manylinux == "":
             continue
         rows.append(utils.Row(week, package, version, python, manylinux))
-    if len(versions) and not len(rows):
-        _LOGGER.warning(f'"{package}": no manylinux wheel in "{versions}"')
+    if len(versions) and not rows:
+        _LOGGER.warning('"%s": no manylinux wheel in "%s"', package, versions)
     return rows
 
 
 def update(packages: list[str]) -> tuple[list[str], list[utils.Row]]:
     rows = []
     for package in packages:
-        _LOGGER.info(f'"{package}": begin dataset creation')
+        _LOGGER.info('"%s": begin dataset creation', package)
         rows.extend(_package_update(package))
-        _LOGGER.debug(f'"{package}": end dataset creation')
-    return list(sorted({r.package for r in rows})), rows
+        _LOGGER.debug('"%s": end dataset creation', package)
+    return sorted({r.package for r in rows}), rows

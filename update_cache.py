@@ -51,28 +51,27 @@ def _check_cache_valid(info: Any) -> bool:
 def _package_update(
     etag_cache: dict[str, tuple[str, bool]], package: str, handle_moved: bool = False
 ) -> PackageStatus:
-    _LOGGER.info(f'"{package}": begin update')
+    _LOGGER.info('"%s": begin update', package)
     headers = {"User-Agent": utils.USER_AGENT}
     package_new_name = package
-    package_etag_cache = etag_cache.get(package, None)
+    package_etag_cache = etag_cache.get(package)
     if package_etag_cache is not None:
         headers["If-None-Match"] = package_etag_cache[0]
 
     try:
         response = requests.get(_build_url(package), headers=headers)
     except requests.exceptions.RequestException as e:
-        _LOGGER.error(f'"{package}": error "{e}" when retrieving info')
+        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)
         return PackageStatus(package, Status.ERROR)
 
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if response.status_code == 404:
-            _LOGGER.warning(f'"{package}": not available on PyPI anymore')
+            _LOGGER.warning('"%s": not available on PyPI anymore', package)
             return PackageStatus(package, Status.REMOVED)
-        else:
-            _LOGGER.error(f'"{package}": error "{e}" when retrieving info')
-            return PackageStatus(package, Status.ERROR)
+        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)
+        return PackageStatus(package, Status.ERROR)
     for response_prev in response.history[::-1]:
         if response_prev.status_code == 301:
             if not handle_moved:
@@ -81,18 +80,16 @@ def _package_update(
             uri = urllib.parse.urlparse(new_location)
             package_new_name = canonicalize_name(Path(uri.path).parent.name)
             assert package_new_name != package
-            _LOGGER.info(f'"{package}": new name "{package_new_name}"')
+            _LOGGER.info('"%s": new name "%s"', package, package_new_name)
             break
 
     cache_file = utils.get_release_cache_path(package)
     if response.status_code == 304:
         assert package_etag_cache is not None
-        if package_new_name != package or (
-            package_etag_cache[1] and not cache_file.exists()
-        ):
+        if package_new_name != package or (package_etag_cache[1] and not cache_file.exists()):
             return _package_update({}, package_new_name, handle_moved=handle_moved)
         return PackageStatus(package_new_name, Status.PROCESSED)
-    elif package_new_name != package:
+    if package_new_name != package:
         cache_file = utils.get_release_cache_path(package_new_name)
 
     info = response.json()
@@ -109,7 +106,7 @@ def _package_update(
                 continue
             parsed_filename = utils.WHEEL_INFO_RE.match(filename)
             if parsed_filename is None:
-                _LOGGER.warning(f'"{package}":invalid wheel name "{filename}"')
+                _LOGGER.warning('"%s":invalid wheel name "%s"', package, filename)
                 continue  # invalid name
             metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
             if "manylinux" not in metadata.platform:
@@ -136,7 +133,7 @@ def _package_update(
         else:
             info["releases"].pop(release)
     if len(info["releases"]) > 0:
-        with open(cache_file, "w") as f:
+        with cache_file.open("w") as f:
             json.dump(info, f)
     return PackageStatus(
         package_new_name, Status.PROCESSED, info["etag"], len(info["releases"]) > 0
@@ -163,19 +160,17 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
     response.raise_for_status()
     data = response.json()["projects"]
     all_packages: list[str] = [canonicalize_name(project["name"]) for project in data]
-    _LOGGER.info(f"Found {len(all_packages)} packages")
+    _LOGGER.info("Found %d packages", len(all_packages))
     packages_set = set(all_packages)
 
     if not all_pypi_packages:
         # remove packages without manylinux wheels
-        packages_set.difference_update(
-            name for name in etag_cache if not etag_cache[name][1]
-        )
+        packages_set.difference_update(name for name in etag_cache if not etag_cache[name][1])
     # always add known packages, they'll be updated / removed if need be
     packages_set.update(name for name in etag_cache if etag_cache[name][1])
     packages_set.update(canonicalize_name(package) for package in packages)
 
-    _LOGGER.info(f"Updating cache for {len(packages_set)} packages")
+    _LOGGER.info("Updating cache for %d packages", len(packages_set))
 
     _package_update_imap = functools.partial(_package_update, etag_cache)
 
@@ -222,4 +217,4 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
 
     to_remove.update(name for name in new_etag_cache if not new_etag_cache[name][1])
 
-    return list(sorted((packages_set - to_remove) | to_add))
+    return sorted((packages_set - to_remove) | to_add)

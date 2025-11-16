@@ -19,26 +19,12 @@ repos:
   - id: forbid-new-submodules
   - id: trailing-whitespace
 
-- repo: https://github.com/asottile/pyupgrade
-  rev: v3.21.1
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.14.4
   hooks:
-  - id: pyupgrade
-    args: ["--py313-plus"]
-
-- repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 25.11.0
-  hooks:
-  - id: black
-
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.3.0
-  hooks:
-  - id: flake8
-
-- repo: https://github.com/PyCQA/isort
-  rev: 7.0.0
-  hooks:
-  - id: isort
+  - id: ruff-check
+    args: ["--fix", "--show-fixes"]
+  - id: ruff-format
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v1.18.2

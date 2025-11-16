@@ -2,7 +2,7 @@ import argparse
 import json
 import logging
 import os
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from shutil import copy, rmtree
 
@@ -26,7 +26,8 @@ def check_file(value: str | os.PathLike[str] | None) -> Path | None:
 
 
 def main() -> None:
-    default_end = date.today() - timedelta(days=1)
+    today = datetime.now(UTC).date()
+    default_end = today - timedelta(days=1)
     default_start = default_end - timedelta(days=365 * 2)
 
     parser = argparse.ArgumentParser(
@@ -54,9 +55,7 @@ def main() -> None:
         type=check_file,
         help="path to bigquery credentials (enables bigquery)",
     )
-    parser.add_argument(
-        "-v", "--verbosity", action="count", help="increase output verbosity"
-    )
+    parser.add_argument("-v", "--verbosity", action="count", help="increase output verbosity")
     args = parser.parse_args()
 
     logging.basicConfig(level=30 - 10 * min(args.verbosity or 0, 2))
@@ -64,15 +63,13 @@ def main() -> None:
     end: date = args.end
     if end > default_end:
         end = default_end
-        _LOGGER.warning(
-            f"end date ({args.end}) adjusted to the default end " f"date ({end})"
-        )
+        _LOGGER.warning("end date (%s) adjusted to the default end date (%s)", args.end, end)
     if start >= end:
-        raise ValueError(f"{start} >= {end}")
+        msg = f"start date ({start}) is after end date ({end})"
+        raise ValueError(msg)
 
     if "GITHUB_EVENT_NAME" in os.environ:
         event_name = os.environ["GITHUB_EVENT_NAME"]
-        today = date.today()
         if event_name == "schedule" and today.isoweekday() == 1:
             # check every PyPI packages every Monday
             args.all_pypi_packages = True
@@ -83,23 +80,21 @@ def main() -> None:
     utils.CACHE_PATH.mkdir(exist_ok=True)
 
     _LOGGER.debug("loading package list")
-    with open(utils.ROOT_PATH / "packages.json") as f:
+    with utils.ROOT_PATH.joinpath("packages.json").open() as f:
         packages: list[str] = json.load(f)
-    _LOGGER.debug(f"loaded {len(packages)} package names")
+    _LOGGER.debug("loaded %d package names", len(packages))
 
     _LOGGER.debug("updating consumer data")
     update_consumer_data.update(
         packages, utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
     )
-    update_consumer_stats.update(
-        packages, utils.ROOT_PATH / "consumer_data", start, end
-    )
+    update_consumer_stats.update(packages, utils.ROOT_PATH / "consumer_data", start, end)
 
     if not args.skip_cache:
         packages = update_cache.update(packages, args.all_pypi_packages)
 
     packages, rows = update_dataset.update(packages)
-    with open(utils.ROOT_PATH / "packages.json", "w") as f:
+    with utils.ROOT_PATH.joinpath("packages.json").open("w") as f:
         json.dump(packages, f, indent=0)
         f.write("\n")
     update_stats.update(rows, start, end)

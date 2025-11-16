@@ -2,7 +2,7 @@ import itertools
 import json
 import logging
 from collections.abc import Iterable
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Final
 
 import numpy as np
@@ -63,9 +63,7 @@ IMPLEMENTATIONS: Final[tuple[str, ...]] = tuple(
 )
 
 
-def _get_range_dataframe(
-    df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp
-) -> pd.DataFrame:
+def _get_range_dataframe(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
@@ -81,9 +79,7 @@ def _get_range_dataframe(
         cp_version = f"cp3{i}"
         df[py_version] = df.python.str.contains(py_version) | df[py_version_prev]
         df[cp_version] = (
-            df.python.str.contains(cp_version)
-            | df[py_version]
-            | (df["abi3"] & df[cp_version_prev])
+            df.python.str.contains(cp_version) | df[py_version] | (df["abi3"] & df[cp_version_prev])
         )
         py_version_prev = py_version
         cp_version_prev = cp_version
@@ -119,33 +115,26 @@ def _get_rolling_dataframe(
         rolling_dfs.append(df_window)
         index.append(current)
         current -= step
-    index_as_str = list(d.date().isoformat() for d in index[::-1])
+    index_as_str = [d.date().isoformat() for d in index[::-1]]
     return index_as_str, pd.concat(rolling_dfs).sort_values("day")
 
 
 def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.DataFrame:
-    columns_ = list(columns)
-    values = full_dataframe.value_counts(subset=["day"] + columns_, sort=False)
-    df_with_count = values.unstack(columns_, fill_value=0.0)
+    values = full_dataframe.value_counts(subset=["day", *columns], sort=False)
+    df_with_count = values.unstack(columns, fill_value=0.0)
     return df_with_count.apply(lambda x: x / np.sum(x), axis=1)
 
 
-def _get_stats(
-    df: pd.DataFrame, key: Iterable[bool], level: Iterable[str]
-) -> list[float]:
+def _get_stats(df: pd.DataFrame, key: Iterable[bool], level: Iterable[str]) -> list[float]:
     ts = df.xs(key=tuple(key), axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    return list(float(f"{100.0 * value:.2f}") for value in ts.sort_index().values)
+    return [float(f"{100.0 * value:.2f}") for value in ts.sort_index().values]
 
 
 def _get_total_packages(
     df: pd.DataFrame, start_date: pd.Timestamp, end_date: pd.Timestamp
 ) -> list[int]:
-    ts = (
-        df.sort_values("day")
-        .drop_duplicates("package")
-        .value_counts(subset=["day"], sort=False)
-    )
+    ts = df.sort_values("day").drop_duplicates("package").value_counts(subset=["day"], sort=False)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
     offset = timedelta(days=1)
     stop = max(pd.to_datetime(ts.index.values[-1]), end_date) + offset
@@ -153,12 +142,12 @@ def _get_total_packages(
     ts = ts.cumsum().resample("1d").ffill()
     ts.index += offset
     ts = ts[(ts.index >= start_date) & (ts.index <= end_date)]
-    return list(int(value) for value in ts.sort_index().values)
+    return [int(value) for value in ts.sort_index().values]
 
 
 def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
     out = {
-        "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
+        "last_update": datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
         "package_count": 0,
         "index": [],
         "lowest_policy": {},
@@ -177,13 +166,8 @@ def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
         df, start_date, end_date
     )
     df = _get_range_dataframe(df, start_date, end_date)
-    out["package_count"] = int(
-        df[["package"]].drop_duplicates().agg("count")["package"]
-    )
-    _LOGGER.info(
-        f"update dataframe using a {utils.PRODUCER_WINDOW_SIZE.days} days "
-        "sliding window"
-    )
+    out["package_count"] = int(df[["package"]].drop_duplicates().agg("count")["package"])
+    _LOGGER.info("update dataframe using a %d days sliding window", utils.PRODUCER_WINDOW_SIZE.days)
     out["index"], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
     _LOGGER.info("compute statistics")
@@ -221,5 +205,5 @@ def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
             impl_df, key=[True], level=[impl]
         )
 
-    with open(utils.PRODUCER_DATA_PATH, "w") as f:
+    with utils.PRODUCER_DATA_PATH.open("w") as f:
         json.dump(out, f, separators=(",", ":"))
