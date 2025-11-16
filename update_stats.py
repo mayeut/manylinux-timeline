@@ -2,7 +2,8 @@ import itertools
 import json
 import logging
 from collections.abc import Iterable
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from typing import Final
 
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ import utils
 
 _LOGGER = logging.getLogger(__name__)
 
-POLICIES = (
+POLICIES: Final[tuple[str, ...]] = (
     "ml1",
     "ml_2_5",
     "ml2010",
@@ -32,14 +33,22 @@ POLICIES = (
     "ml_2_40",
     "ml_2_41",
 )
-ARCHITECTURES = ("x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l", "riscv64")
+ARCHITECTURES: Final[tuple[str, ...]] = (
+    "x86_64",
+    "i686",
+    "aarch64",
+    "ppc64le",
+    "s390x",
+    "armv7l",
+    "riscv64",
+)
 # python implementations are a bit more complicated...
-IMPL_CP3_FIRST = 6
-IMPL_CP3_LAST = 15
-IMPL_PP3_FIRST = 8
-IMPL_PP3_LAST = 11
+IMPL_CP3_FIRST: Final[int] = 6
+IMPL_CP3_LAST: Final[int] = 15
+IMPL_PP3_FIRST: Final[int] = 8
+IMPL_PP3_LAST: Final[int] = 11
 # that's what is ultimately displayed
-IMPLEMENTATIONS = tuple(
+IMPLEMENTATIONS: Final[tuple[str, ...]] = tuple(
     itertools.chain(
         ["any3", "py3"],
         sorted(
@@ -54,7 +63,9 @@ IMPLEMENTATIONS = tuple(
 )
 
 
-def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
+def _get_range_dataframe(
+    df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp
+) -> pd.DataFrame:
     for policy in POLICIES:
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
@@ -91,7 +102,7 @@ def _get_range_dataframe(df: pd.DataFrame, start, end) -> pd.DataFrame:
 
 
 def _get_rolling_dataframe(
-    df: pd.DataFrame, start_date, end_date
+    df: pd.DataFrame, start_date: pd.Timestamp, end_date: pd.Timestamp
 ) -> tuple[list[str], pd.DataFrame]:
     current = end_date
     step = timedelta(days=1)
@@ -119,13 +130,17 @@ def _get_stats_df(full_dataframe: pd.DataFrame, columns: Iterable[str]) -> pd.Da
     return df_with_count.apply(lambda x: x / np.sum(x), axis=1)
 
 
-def _get_stats(df: pd.DataFrame, key, level: Iterable[str]) -> list[float]:
+def _get_stats(
+    df: pd.DataFrame, key: Iterable[bool], level: Iterable[str]
+) -> list[float]:
     ts = df.xs(key=tuple(key), axis=1, level=level).apply(np.sum, axis=1)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
     return list(float(f"{100.0 * value:.2f}") for value in ts.sort_index().values)
 
 
-def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> list[int]:
+def _get_total_packages(
+    df: pd.DataFrame, start_date: pd.Timestamp, end_date: pd.Timestamp
+) -> list[int]:
     ts = (
         df.sort_values("day")
         .drop_duplicates("package")
@@ -138,10 +153,10 @@ def _get_total_packages(df: pd.DataFrame, start_date, end_date) -> list[int]:
     ts = ts.cumsum().resample("1d").ffill()
     ts.index += offset
     ts = ts[(ts.index >= start_date) & (ts.index <= end_date)]
-    return ts.sort_index().values.tolist()
+    return list(int(value) for value in ts.sort_index().values)
 
 
-def update(rows, start, end):
+def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
     out = {
         "last_update": datetime.now(timezone.utc).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
         "package_count": 0,
@@ -158,7 +173,9 @@ def update(rows, start, end):
     _LOGGER.info("create main data frame")
     df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
     df["day"] = pd.to_datetime(df["day"])
-    out["package"]["total"] = _get_total_packages(df, start_date, end_date)
+    out["package"]["total"] = _get_total_packages(  # type: ignore[index]
+        df, start_date, end_date
+    )
     df = _get_range_dataframe(df, start_date, end_date)
     out["package_count"] = int(
         df[["package"]].drop_duplicates().agg("count")["package"]
@@ -172,33 +189,37 @@ def update(rows, start, end):
     _LOGGER.info("compute statistics")
     ts = rolling_df.value_counts(subset=["day"], sort=False)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    out["package"]["analysis"] = ts.sort_index().values.tolist()
+    out["package"]["analysis"] = ts.sort_index().values.tolist()  # type: ignore[index]
     policy_df = _get_stats_df(rolling_df[rolling_df["x86_64"]], POLICIES)
     len_ = len(POLICIES)
-    out["highest_policy"]["keys"] = []
-    out["lowest_policy"]["keys"] = []
+    out["highest_policy"]["keys"] = []  # type: ignore[index]
+    out["lowest_policy"]["keys"] = []  # type: ignore[index]
     for i in range(len_):
         name = POLICIES[i].replace("ml", "manylinux")
-        out["highest_policy"]["keys"].append(name)
-        out["highest_policy"][name] = _get_stats(
+        out["highest_policy"]["keys"].append(name)  # type: ignore[index]
+        out["highest_policy"][name] = _get_stats(  # type: ignore[index]
             policy_df, key=[True] + [False] * (len_ - i - 1), level=POLICIES[i:]
         )
-        out["lowest_policy"]["keys"].append(name)
-        out["lowest_policy"][name] = _get_stats(
+        out["lowest_policy"]["keys"].append(name)  # type: ignore[index]
+        out["lowest_policy"][name] = _get_stats(  # type: ignore[index]
             policy_df, key=[False] * i + [True], level=POLICIES[: i + 1]
         )
 
     arch_df = _get_stats_df(rolling_df, ARCHITECTURES)
-    out["architecture"]["keys"] = []
+    out["architecture"]["keys"] = []  # type: ignore[index]
     for arch in ARCHITECTURES:
-        out["architecture"]["keys"].append(arch)
-        out["architecture"][arch] = _get_stats(arch_df, key=[True], level=[arch])
+        out["architecture"]["keys"].append(arch)  # type: ignore[index]
+        out["architecture"][arch] = _get_stats(  # type: ignore[index]
+            arch_df, key=[True], level=[arch]
+        )
 
     impl_df = _get_stats_df(rolling_df, IMPLEMENTATIONS)
-    out["implementation"]["keys"] = []
+    out["implementation"]["keys"] = []  # type: ignore[index]
     for impl in IMPLEMENTATIONS:
-        out["implementation"]["keys"].append(impl)
-        out["implementation"][impl] = _get_stats(impl_df, key=[True], level=[impl])
+        out["implementation"]["keys"].append(impl)  # type: ignore[index]
+        out["implementation"][impl] = _get_stats(  # type: ignore[index]
+            impl_df, key=[True], level=[impl]
+        )
 
     with open(utils.PRODUCER_DATA_PATH, "w") as f:
         json.dump(out, f, separators=(",", ":"))

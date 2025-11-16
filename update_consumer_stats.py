@@ -3,9 +3,10 @@ import functools
 import json
 import logging
 import multiprocessing
+from collections.abc import Generator
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Union, cast
+from typing import Any, Final, Union, cast
 
 import pandas as pd
 from packaging.utils import canonicalize_name
@@ -16,7 +17,7 @@ import utils
 
 _LOGGER = logging.getLogger(__name__)
 
-PYTHON_EOL = {
+PYTHON_EOL: Final[dict[str, pd.Timestamp]] = {
     "3.6": pd.to_datetime("2021-12-23"),
     "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-07"),
@@ -31,7 +32,7 @@ PYTHON_EOL = {
 
 # combine some glibc versions to remove some of the less used ones
 # but still accounting for the smaller one
-GLIBC_GROUPS = [
+GLIBC_GROUPS: Final[tuple[tuple[str, ...], ...]] = (
     tuple(f"2.{minor}" for minor in range(5, 12)),
     tuple(f"2.{minor}" for minor in range(12, 17)),
     tuple(f"2.{minor}" for minor in range(17, 26)),
@@ -44,8 +45,8 @@ GLIBC_GROUPS = [
     ("2.36", "2.37", "2.38"),
     ("2.39", "2.40"),
     ("2.41", "2.42"),
-]
-GLIBC_REMAP = {
+)
+GLIBC_REMAP: Final[dict[str, str]] = {
     glibc_version: glibc_versions[0]
     for glibc_versions in GLIBC_GROUPS
     for glibc_version in glibc_versions
@@ -53,10 +54,10 @@ GLIBC_REMAP = {
 
 # don't rewrite glibc_version on newer glibc, this doesn't help with
 # reading the graphs without much added information
-GLIBC_NSW_MAX_VERSION = Version("2.31")
+GLIBC_NSW_MAX_VERSION: Final[Version] = Version("2.31")
 
 
-def _get_major_minor(x):
+def _get_major_minor(x: Any) -> str:
     try:
         version = Version(x)
     except InvalidVersion:
@@ -93,8 +94,9 @@ def _load_df(
     # check if the package is supported or not for a given python version
     if "project" in usecols:
 
-        def _get_supported_wheel(row, *, src_column: str) -> str:
+        def _get_supported_wheel(row: Any, *, src_column: str) -> str:
             value = row[src_column]
+            assert isinstance(value, str)
             if (
                 src_column == "glibc_version"
                 and Version(value) >= GLIBC_NSW_MAX_VERSION
@@ -234,7 +236,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                 previous_date, result[package][key]
             )
 
-    removed_packages = {
+    removed_packages: Final[dict[str, date]] = {
         "aiohappyeyeball": date(2025, 10, 27),
         "bitemporal-timeseries": date(2025, 8, 20),
         "clogsec": date(2025, 11, 12),
@@ -298,7 +300,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     return result
 
 
-def date_iterator(start: date, end: date):
+def date_iterator(start: date, end: date) -> Generator[date]:
     date_ = start
     while date_ <= end:
         yield date_
@@ -512,13 +514,15 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
         if not key.endswith("-nsw"):
             continue
         if all(value == 0.0 for value in python_version[key]):
-            python_version["keys"].remove(key)  # type: ignore
+            python_version["keys"].remove(key)  # type: ignore[arg-type]
             python_version.pop(key)
             glibc_readiness_ver = glibc_readiness[key.rstrip("-nsw")]
             for glibc_key in list(glibc_readiness_ver["keys"]):
                 assert isinstance(glibc_key, str)
                 if glibc_key.endswith("-nsw"):
-                    glibc_readiness_ver["keys"].remove(glibc_key)  # type: ignore
+                    glibc_readiness_ver["keys"].remove(
+                        glibc_key  # type: ignore[arg-type]
+                    )
                     glibc_readiness_ver.pop(glibc_key)
 
     for key in list(python_version_non_eol["keys"]):
@@ -526,7 +530,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
         if not key.endswith("-nsw"):
             continue
         if all(value == 0.0 for value in python_version_non_eol[key]):
-            python_version_non_eol["keys"].remove(key)  # type: ignore
+            python_version_non_eol["keys"].remove(key)  # type: ignore[arg-type]
             python_version_non_eol.pop(key)
 
     out["python_version"] = python_version

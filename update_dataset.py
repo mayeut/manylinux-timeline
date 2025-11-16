@@ -2,6 +2,7 @@ import json
 import logging
 import re
 from datetime import date
+from typing import Any, Final
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
@@ -9,10 +10,10 @@ from packaging.version import InvalidVersion, Version
 import utils
 
 _LOGGER = logging.getLogger(__name__)
-_FREE_THREADED_ABI = re.compile(r"cp3(1[3-9]|[2-9][0-9])t")
+_FREE_THREADED_ABI: Final[re.Pattern[str]] = re.compile(r"cp3(1[3-9]|[2-9][0-9])t")
 
 
-def _filter_versions(package: str, info: dict) -> list[str]:
+def _filter_versions(package: str, info: dict[str, Any]) -> list[str]:
     candidate_versions = []
     for version in info["releases"].keys():
         try:

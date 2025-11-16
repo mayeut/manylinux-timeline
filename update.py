@@ -16,7 +16,7 @@ import utils
 _LOGGER = logging.getLogger(__name__)
 
 
-def check_file(value) -> Path | None:
+def check_file(value: str | os.PathLike[str] | None) -> Path | None:
     if value is None:
         return None
     result = Path(value)
@@ -60,8 +60,8 @@ def main() -> None:
     args = parser.parse_args()
 
     logging.basicConfig(level=30 - 10 * min(args.verbosity or 0, 2))
-    start = args.start
-    end = args.end
+    start: date = args.start
+    end: date = args.end
     if end > default_end:
         end = default_end
         _LOGGER.warning(

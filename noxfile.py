@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
+from typing import Final
 
 import nox
 
-HERE = Path(__file__).resolve(strict=True).parent
-PYTHON_VERSION = HERE.joinpath(".python-version").read_text().strip()
+HERE: Final[Path] = Path(__file__).resolve(strict=True).parent
+PYTHON_VERSION: Final[str] = HERE.joinpath(".python-version").read_text().strip()
 
 nox.options.pythons = [PYTHON_VERSION]
 nox.options.sessions = ["run"]
