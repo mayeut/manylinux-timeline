@@ -1,9 +1,12 @@
+import dataclasses
 import itertools
 import json
 import logging
+import typing
 from collections.abc import Iterable
 from datetime import UTC, date, datetime, timedelta
-from typing import Final
+from pathlib import Path
+from typing import Final, Literal
 
 import numpy as np
 import pandas as pd
@@ -33,15 +36,11 @@ POLICIES: Final[tuple[str, ...]] = (
     "ml_2_40",
     "ml_2_41",
 )
-ARCHITECTURES: Final[tuple[str, ...]] = (
-    "x86_64",
-    "i686",
-    "aarch64",
-    "ppc64le",
-    "s390x",
-    "armv7l",
-    "riscv64",
-)
+ArchitectureName = Literal["x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l", "riscv64"]
+ARCHITECTURES: Final[tuple[ArchitectureName, ...]] = typing.get_args(ArchitectureName)
+
+PackageStatsName = Literal["total", "analysis"]
+
 # python implementations are a bit more complicated...
 IMPL_CP3_FIRST: Final[int] = 6
 IMPL_CP3_LAST: Final[int] = 15
@@ -145,65 +144,89 @@ def _get_total_packages(
     return [int(value) for value in ts.sort_index().values]
 
 
+@dataclasses.dataclass
+class ProducerStats:
+    last_update: str = datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z")
+    package_count: int = 0
+    index: list[str] = dataclasses.field(default_factory=list)
+    lowest_policy: dict[str, list[float]] = dataclasses.field(default_factory=dict)
+    highest_policy: dict[str, list[float]] = dataclasses.field(default_factory=dict)
+    implementation: dict[str, list[float]] = dataclasses.field(default_factory=dict)
+    architecture: dict[ArchitectureName, list[float]] = dataclasses.field(default_factory=dict)
+    package: dict[PackageStatsName, list[int]] = dataclasses.field(default_factory=dict)
+
+    def to_json(self, path: Path) -> None:
+        assert len(self.lowest_policy) == len(POLICIES)
+        assert all(len(value) == len(self.index) for value in self.lowest_policy.values())
+        assert self.highest_policy.keys() == self.lowest_policy.keys()
+        assert all(len(value) == len(self.index) for value in self.highest_policy.values())
+        assert self.implementation.keys() == set(IMPLEMENTATIONS)
+        assert all(len(value) == len(self.index) for value in self.implementation.values())
+        assert self.architecture.keys() == set(ARCHITECTURES)
+        assert all(len(value) == len(self.index) for value in self.architecture.values())
+        assert len(self.package) == len(typing.get_args(PackageStatsName))
+        assert all(len(value) == len(self.index) for value in self.package.values())
+        with path.open("w") as f:
+            json.dump(
+                {
+                    "last_update": self.last_update,
+                    "package_count": self.package_count,
+                    "index": self.index,
+                    "lowest_policy": {
+                        "keys": list(self.lowest_policy.keys()),
+                        **self.lowest_policy,
+                    },
+                    "highest_policy": {
+                        "keys": list(self.highest_policy.keys()),
+                        **self.highest_policy,
+                    },
+                    "implementation": {
+                        "keys": list(self.implementation.keys()),
+                        **self.implementation,
+                    },
+                    "architecture": {"keys": list(self.architecture.keys()), **self.architecture},
+                    "package": {"keys": list(self.package.keys()), **self.package},
+                },
+                f,
+                separators=(",", ":"),
+            )
+
+
 def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
-    out = {
-        "last_update": datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
-        "package_count": 0,
-        "index": [],
-        "lowest_policy": {},
-        "highest_policy": {},
-        "implementation": {},
-        "architecture": {},
-        "package": {"keys": ["total", "analysis"]},
-    }
+    out = ProducerStats()
     pd.set_option("display.max_columns", None)
     end_date = pd.to_datetime(end)  # start at end
     start_date = pd.to_datetime(start)
     _LOGGER.info("create main data frame")
     df = pd.DataFrame.from_records(rows, columns=utils.Row._fields)
     df["day"] = pd.to_datetime(df["day"])
-    out["package"]["total"] = _get_total_packages(  # type: ignore[index]
-        df, start_date, end_date
-    )
+    out.package["total"] = _get_total_packages(df, start_date, end_date)
     df = _get_range_dataframe(df, start_date, end_date)
-    out["package_count"] = int(df[["package"]].drop_duplicates().agg("count")["package"])
+    out.package_count = int(df[["package"]].drop_duplicates().agg("count")["package"])
     _LOGGER.info("update dataframe using a %d days sliding window", utils.PRODUCER_WINDOW_SIZE.days)
-    out["index"], rolling_df = _get_rolling_dataframe(df, start_date, end_date)
+    out.index, rolling_df = _get_rolling_dataframe(df, start_date, end_date)
 
     _LOGGER.info("compute statistics")
     ts = rolling_df.value_counts(subset=["day"], sort=False)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    out["package"]["analysis"] = ts.sort_index().values.tolist()  # type: ignore[index]
+    out.package["analysis"] = ts.sort_index().values.tolist()
     policy_df = _get_stats_df(rolling_df[rolling_df["x86_64"]], POLICIES)
     len_ = len(POLICIES)
-    out["highest_policy"]["keys"] = []  # type: ignore[index]
-    out["lowest_policy"]["keys"] = []  # type: ignore[index]
     for i in range(len_):
         name = POLICIES[i].replace("ml", "manylinux")
-        out["highest_policy"]["keys"].append(name)  # type: ignore[index]
-        out["highest_policy"][name] = _get_stats(  # type: ignore[index]
+        out.highest_policy[name] = _get_stats(
             policy_df, key=[True] + [False] * (len_ - i - 1), level=POLICIES[i:]
         )
-        out["lowest_policy"]["keys"].append(name)  # type: ignore[index]
-        out["lowest_policy"][name] = _get_stats(  # type: ignore[index]
+        out.lowest_policy[name] = _get_stats(
             policy_df, key=[False] * i + [True], level=POLICIES[: i + 1]
         )
 
     arch_df = _get_stats_df(rolling_df, ARCHITECTURES)
-    out["architecture"]["keys"] = []  # type: ignore[index]
     for arch in ARCHITECTURES:
-        out["architecture"]["keys"].append(arch)  # type: ignore[index]
-        out["architecture"][arch] = _get_stats(  # type: ignore[index]
-            arch_df, key=[True], level=[arch]
-        )
+        out.architecture[arch] = _get_stats(arch_df, key=[True], level=[arch])
 
     impl_df = _get_stats_df(rolling_df, IMPLEMENTATIONS)
-    out["implementation"]["keys"] = []  # type: ignore[index]
     for impl in IMPLEMENTATIONS:
-        out["implementation"]["keys"].append(impl)  # type: ignore[index]
-        out["implementation"][impl] = _get_stats(  # type: ignore[index]
-            impl_df, key=[True], level=[impl]
-        )
+        out.implementation[impl] = _get_stats(impl_df, key=[True], level=[impl])
 
-    with utils.PRODUCER_DATA_PATH.open("w") as f:
-        json.dump(out, f, separators=(",", ":"))
+    out.to_json(utils.PRODUCER_DATA_PATH)
