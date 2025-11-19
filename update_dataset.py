@@ -64,7 +64,9 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             except InvalidSpecifier:
                 specifier_set = file["requires_python"]
                 _LOGGER.warning(
-                    'invalid requires_python "%s" for wheel "%s"', specifier_set, filename
+                    'invalid requires_python "%s" for wheel "%s"',
+                    specifier_set,
+                    filename,
                 )
         metadata = utils.WheelMetadata(*parsed_filename.groups()[1:])
         for python_ in metadata.implementation.replace(",", ".").split("."):
@@ -88,7 +90,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "voxec-0.4.1-cp$mm-",
                         "pyarmor_mini-2.0-",
                         "simplex_solver-3.1.0-39-",
-                    )
+                    ),
                 ):
                     _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
@@ -103,7 +105,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "pyomexmeta-1.2.3-",
                         "pyswEOS-0",
                         "simplex_solver-3.0.",
-                    )
+                    ),
                 ):
                     _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
@@ -111,7 +113,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             if python == "py3":
                 if metadata.abi != "none":
                     if not filename.startswith(
-                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
+                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2."),
                     ):
                         _LOGGER.warning("unsupported abi %r for wheel %r", metadata.abi, filename)
                     continue
@@ -126,7 +128,9 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     specifier_set = file["requires_python"]
                     if not filename.startswith(("kaldi_active_grammar-0", "pyswEOS-")):
                         _LOGGER.warning(
-                            "unresolved requires_python %r for wheel %r", specifier_set, filename
+                            "unresolved requires_python %r for wheel %r",
+                            specifier_set,
+                            filename,
                         )
                     continue
             pythons.add(python)
@@ -134,10 +138,12 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             if metadata.abi == "abi3":
                 if not python.startswith("cp3"):
                     if not filename.startswith(
-                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2.")
+                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2."),
                     ):
                         _LOGGER.warning(
-                            'ignoring python "%s-abi3" for wheel "%s"', python, filename
+                            'ignoring python "%s-abi3" for wheel "%s"',
+                            python,
+                            filename,
                         )
                     continue
                 # Add abi3 to know that cp3? > {python} are supported

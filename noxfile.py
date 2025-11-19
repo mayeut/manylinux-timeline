@@ -61,4 +61,4 @@ def timestamp(session: nox.Session) -> None:  # noqa: ARG001
     """Get timestamp for PyPI package cache on GHA"""
     from datetime import UTC, datetime  # noqa: PLC0415
 
-    print(datetime.now(UTC).isoformat())
+    print(datetime.now(UTC).isoformat())  # noqa: T201

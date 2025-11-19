@@ -13,47 +13,16 @@ warn_unreachable = true
 [tool.ruff]
 target-version = "py313"
 line-length = 100
-
-[tool.ruff.lint]
-extend-select = [
-  "A",           # flake8-builtins
-  "B",           # flake8-bugbear
-  "I",           # isort
-  "ARG",         # flake8-unused-arguments
-  "C4",          # flake8-comprehensions
-  "EM",          # flake8-errmsg
-  "ICN",         # flake8-import-conventions
-  "ISC",         # flake8-implicit-str-concat
-  "G",           # flake8-logging-format
-  "PGH",         # pygrep-hooks
-  "PIE",         # flake8-pie
-  "PL",          # pylint
-  "PTH",         # flake8-use-pathlib
-  "RET",         # flake8-return
-  "RUF",         # Ruff-specific
-  "SIM",         # flake8-simplify
-  "TID251",      # flake8-tidy-imports.banned-api
-  "UP",          # pyupgrade
-  "YTT",         # flake8-2020
-  "EXE",         # flake8-executable
-  "PYI",         # flake8-pyi
-  "PERF101", "PERF102", "PERF401", "PERF402", "PERF403",  # A selection of perflint codes
-  "DTZ",         # flake8-datetimez
-  "FA",          # flake8-future-annotations
-  "FLY",         # flynt
-  "FURB",        # refurb
-  "LOG",         # flake8-logging
-  "Q",           # flake8-quotes
-  "SLOT",        # flake8-slots
-  "T10",         # flake8-debugger
-  "TC",          # flake8-type-checking
-  "ANN",         # flake8-annotations
-  "NPY",         # NumPy-specific rules
-  # "PD",          # pandas-vet
-  "N",          # pep8-naming
+lint.select = [ "ALL" ]
+lint.ignore = [
+    "ANN401",  # any-type
+    "C901",    # Complexity
+    "D",       # Doc
+    "S101",    # Use of `assert` detected
+    "PD002",   # TODO `inplace=True` should be avoided; it has inconsistent behavior
+    "PD010",   # TODO `.pivot_table` is preferred to `.pivot` or `.unstack`; provides same functionality
+    "PD011",   # TODO Use `.to_numpy()` instead of `.values`
+    "PD013",   # TODO `.melt` is preferred to `.stack`; provides same functionality
+    "PLR",     # Design related pylint codes
+    "S113",    # TODO Probable use of `requests` call without timeout
 ]
-ignore = [
-  "PLR",     # Design related pylint codes
-  "ANN401",  # any-type
-]
-flake8-unused-arguments.ignore-variadic-names = true

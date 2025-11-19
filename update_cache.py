@@ -49,7 +49,10 @@ def _check_cache_valid(info: Any) -> bool:
 
 
 def _package_update(
-    etag_cache: dict[str, tuple[str, bool]], package: str, handle_moved: bool = False
+    etag_cache: dict[str, tuple[str, bool]],
+    package: str,
+    *,
+    handle_moved: bool = False,
 ) -> PackageStatus:
     _LOGGER.info('"%s": begin update', package)
     headers = {"User-Agent": utils.USER_AGENT}
@@ -61,7 +64,7 @@ def _package_update(
     try:
         response = requests.get(_build_url(package), headers=headers)
     except requests.exceptions.RequestException as e:
-        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)
+        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)  # noqa: TRY400
         return PackageStatus(package, Status.ERROR)
 
     try:
@@ -70,7 +73,7 @@ def _package_update(
         if response.status_code == 404:
             _LOGGER.warning('"%s": not available on PyPI anymore', package)
             return PackageStatus(package, Status.REMOVED)
-        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)
+        _LOGGER.error('"%s": error "%s" when retrieving info', package, e)  # noqa: TRY400
         return PackageStatus(package, Status.ERROR)
     for response_prev in response.history[::-1]:
         if response_prev.status_code == 301:
@@ -117,7 +120,7 @@ def _package_update(
                     "filename": filename,
                     "upload_time": upload_date.isoformat(),
                     "requires_python": requires_python,
-                }
+                },
             )
 
         if len(new_files) > 0:
@@ -136,11 +139,14 @@ def _package_update(
         with cache_file.open("w") as f:
             json.dump(info, f)
     return PackageStatus(
-        package_new_name, Status.PROCESSED, info["etag"], len(info["releases"]) > 0
+        package_new_name,
+        Status.PROCESSED,
+        info["etag"],
+        len(info["releases"]) > 0,
     )
 
 
-def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
+def update(packages: list[str], *, all_pypi_packages: bool = False) -> list[str]:
     utils.RELEASE_INFO_PATH.mkdir(exist_ok=True)
     etag_cache_path = utils.CACHE_PATH / "etag_cache.json"
 
@@ -181,7 +187,9 @@ def update(packages: list[str], all_pypi_packages: bool) -> list[str]:
     try:
         with ThreadPool(32) as pool:
             for package_status in pool.imap(
-                _package_update_imap, sorted(packages_set), chunksize=1
+                _package_update_imap,
+                sorted(packages_set),
+                chunksize=1,
             ):
                 if package_status.etag is not None:
                     new_etag_cache[package_status.name] = (

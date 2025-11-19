@@ -12,15 +12,17 @@ from google.api_core.exceptions import Forbidden, GoogleAPIError
 from google.cloud import bigquery
 
 _LOGGER = logging.getLogger(__name__)
-BIGQUERY_TOKEN = "BIGQUERY_TOKEN"
+BIGQUERY_TOKEN = "BIGQUERY_TOKEN"  # noqa:S105
 
 
 def _update_consumer_data(
-    packages: list[str], path: Path, bigquery_credentials: Path | None
+    packages: list[str],
+    path: Path,
+    bigquery_credentials: Path | None,
 ) -> None:
     today = datetime.fromisocalendar(*datetime.now(UTC).isocalendar())
     table_suffix = (today - timedelta(days=1)).strftime("%Y-%m-%d")
-    # table_suffix = "2025-07-12"
+    # table_suffix = "2025-07-12"  # noqa:ERA001
     folder = path / table_suffix[0:4] / table_suffix[5:7]
     folder.mkdir(parents=True, exist_ok=True)
     file = folder / f"{table_suffix[8:10]}.csv.xz"
@@ -67,7 +69,7 @@ details.distro.libc.lib = "glibc" AND
 REGEXP_CONTAINS(file.filename, r"(?:-|\.)manylinux[^-\.]+\.(?:[^-\.]+\.)*whl$")
 GROUP BY python_version, glibc_version, details.cpu, project
 ORDER BY num_downloads DESC) AS t0;
-"""
+"""  # noqa:S608
         query_job = client.query(query, job_config)
         try:
             rows = query_job.result()

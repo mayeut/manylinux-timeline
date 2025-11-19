@@ -58,7 +58,7 @@ IMPLEMENTATIONS: Final[tuple[str, ...]] = tuple(
             key=lambda x: (int(x[3:]), x[:3]),
         ),
         ["abi3", "free-threaded"],
-    )
+    ),
 )
 
 
@@ -97,7 +97,9 @@ def _get_range_dataframe(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestam
 
 
 def _get_rolling_dataframe(
-    df: pd.DataFrame, start_date: pd.Timestamp, end_date: pd.Timestamp
+    df: pd.DataFrame,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
 ) -> tuple[list[str], pd.DataFrame]:
     current = end_date
     step = timedelta(days=1)
@@ -131,7 +133,9 @@ def _get_stats(df: pd.DataFrame, key: Iterable[bool], level: Iterable[str]) -> l
 
 
 def _get_total_packages(
-    df: pd.DataFrame, start_date: pd.Timestamp, end_date: pd.Timestamp
+    df: pd.DataFrame,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
 ) -> list[int]:
     ts = df.sort_values("day").drop_duplicates("package").value_counts(subset=["day"], sort=False)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
@@ -215,10 +219,14 @@ def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
     for i in range(len_):
         name = POLICIES[i].replace("ml", "manylinux")
         out.highest_policy[name] = _get_stats(
-            policy_df, key=[True] + [False] * (len_ - i - 1), level=POLICIES[i:]
+            policy_df,
+            key=[True] + [False] * (len_ - i - 1),
+            level=POLICIES[i:],
         )
         out.lowest_policy[name] = _get_stats(
-            policy_df, key=[False] * i + [True], level=POLICIES[: i + 1]
+            policy_df,
+            key=[False] * i + [True],
+            level=POLICIES[: i + 1],
         )
 
     arch_df = _get_stats_df(rolling_df, ARCHITECTURES)

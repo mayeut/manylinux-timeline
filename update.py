@@ -47,7 +47,11 @@ def main() -> None:
         help="start date",
     )
     parser.add_argument(
-        "-e", "--end", default=default_end, type=date.fromisoformat, help="end date"
+        "-e",
+        "--end",
+        default=default_end,
+        type=date.fromisoformat,
+        help="end date",
     )
     parser.add_argument("--skip-cache", action="store_true", help="skip cache update")
     parser.add_argument(
@@ -86,12 +90,14 @@ def main() -> None:
 
     _LOGGER.debug("updating consumer data")
     update_consumer_data.update(
-        packages, utils.ROOT_PATH / "consumer_data", args.bigquery_credentials
+        packages,
+        utils.ROOT_PATH / "consumer_data",
+        args.bigquery_credentials,
     )
     update_consumer_stats.update(packages, utils.ROOT_PATH / "consumer_data", start, end)
 
     if not args.skip_cache:
-        packages = update_cache.update(packages, args.all_pypi_packages)
+        packages = update_cache.update(packages, all_pypi_packages=args.all_pypi_packages)
 
     packages, rows = update_dataset.update(packages)
     with utils.ROOT_PATH.joinpath("packages.json").open("w") as f:

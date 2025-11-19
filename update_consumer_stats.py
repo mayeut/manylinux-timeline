@@ -68,7 +68,9 @@ def _get_major_minor(x: Any) -> str:
 
 
 def _load_df(
-    wheel_support_map: dict[str, dict[str, date]], path: Path, date_: date
+    wheel_support_map: dict[str, dict[str, date]],
+    path: Path,
+    date_: date,
 ) -> pd.DataFrame | None:
     folder = path / date_.strftime("%Y") / date_.strftime("%m")
     file = folder / f"{date_.strftime('%d')}.csv"
@@ -215,7 +217,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                     filter(
                         lambda x: x > package_result[key].supported,
                         package_result[key].not_supported,
-                    )
+                    ),
                 )
             result[package][key] = previous_date = max(previous_date, result[package][key])
 
@@ -307,7 +309,8 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
     _LOGGER.info("computing statistics")
 
     df = df.groupby(
-        ["day", "python_version", "python_version2", "glibc_version"], as_index=False
+        ["day", "python_version", "python_version2", "glibc_version"],
+        as_index=False,
     ).aggregate("sum")
 
     # apply rolling window
@@ -324,7 +327,8 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
     df.rename(columns={0: "num_downloads"}, inplace=True)
     df = df[(df["num_downloads"] > 0) & (df["day"] >= pd.to_datetime(start))]
     df = df.groupby(
-        ["day", "python_version", "python_version2", "glibc_version"], as_index=False
+        ["day", "python_version", "python_version2", "glibc_version"],
+        as_index=False,
     ).aggregate("sum")
 
     # non EOL dataframe
@@ -396,15 +400,16 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
             for day in out["index"]:
                 try:
                     value = float(
-                        df_glibc_stats.loc[(pd.to_datetime(day), version_suffix), "num_downloads"]
+                        df_glibc_stats.loc[(pd.to_datetime(day), version_suffix), "num_downloads"],
                     )
                 except KeyError:
                     value = 0.0
                 try:
                     value_non_eol = float(
                         df_glibc_non_eol_stats.loc[
-                            (pd.to_datetime(day), version_suffix), "num_downloads"
-                        ]
+                            (pd.to_datetime(day), version_suffix),
+                            "num_downloads",
+                        ],
                     )
                 except KeyError:
                     value_non_eol = 0.0
@@ -440,7 +445,10 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
             for day in out["index"]:
                 try:
                     value = float(
-                        df_python_non_eol_stats.loc[(pd.to_datetime(day), version), "num_downloads"]
+                        df_python_non_eol_stats.loc[
+                            (pd.to_datetime(day), version),
+                            "num_downloads",
+                        ],
                     )
                 except KeyError:
                     value = 0.0
@@ -473,7 +481,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
                             df_glibc_stats.loc[
                                 (pd.to_datetime(day), version_suffix),
                                 "num_downloads",
-                            ]
+                            ],
                         )
                     except KeyError:
                         value = 0.0
@@ -492,7 +500,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
                 assert isinstance(glibc_key, str)
                 if glibc_key.endswith("-nsw"):
                     glibc_readiness_ver["keys"].remove(
-                        glibc_key  # type: ignore[arg-type]
+                        glibc_key,  # type: ignore[arg-type]
                     )
                     glibc_readiness_ver.pop(glibc_key)
 
