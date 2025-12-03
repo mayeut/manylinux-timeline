@@ -15,9 +15,13 @@ jobs:
   build-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # need to commit
     steps:
     - name: Check out
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - name: Install Python
       uses: actions/setup-python@v5
     - name: Install Nox
