@@ -41,7 +41,7 @@ jobs:
       run: nox -s run -- -v
     - name: Auto-commit packages.json
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v7
       with:
         commit_message: "[bot] Update packages.json / consumer_data on ${{ steps.timestamp.outputs.timestamp }}"
         file_pattern: packages.json consumer_data/**/*.csv*
