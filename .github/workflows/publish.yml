@@ -30,7 +30,7 @@ jobs:
       id: timestamp
       run: echo "timestamp=$(nox -s timestamp 2>/dev/null)" >> $GITHUB_OUTPUT
     - name: Setup cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: cache/*
         key: pypi-cache-${{ steps.timestamp.outputs.timestamp }}
