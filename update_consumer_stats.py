@@ -223,6 +223,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
 
     removed_packages: Final[dict[str, date]] = {
         "aiohappyeyeball": date(2025, 10, 27),
+        "alkindi": date(2025, 11, 27),
         "bitemporal-timeseries": date(2025, 8, 20),
         "clogsec": date(2025, 11, 12),
         "colorinal": date(2025, 7, 27),
@@ -230,13 +231,14 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "feature-engineering-rs": date(2025, 11, 15),
         "flowty": date(2025, 10, 7),
         "entityframe": date(2025, 8, 30),
-        "gage-cli": date(2025, 11, 25),
         "gamspy-conopt4": date(2025, 9, 4),
         "gamspy-sbb": date(2025, 10, 7),
         "genimtools": date(2025, 9, 19),
         "grapapy": date(2025, 10, 2),  # single release, source only
+        "graphbench": date(2025, 12, 2),  # single release, pure python
         "kring": date(2025, 7, 19),
         "jasminum": date(2025, 11, 22),
+        "json-repair-rust": date(2025, 11, 21),
         "libintx-cu128": date(2025, 10, 20),
         "libmemmod": date(2025, 9, 9),
         "libp2p-pyrust": date(2025, 10, 2),
@@ -255,15 +257,18 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "phoneshift": date(2025, 9, 4),
         "pisalt": date(2025, 8, 4),
         "pivtools-cli": date(2025, 11, 11),
+        "pse-core": date(2025, 12, 3),
         "pycoatl": date(2025, 7, 22),
         "pygments-richstyle": date(2025, 11, 15),
         "pyorbbec": date(2025, 9, 15),
         "qlip-algorithms": date(2025, 10, 15),
         "qlip-core": date(2025, 10, 15),
         "qlip-serve-generator": date(2025, 9, 9),
+        "quasar-rs": date(2025, 12, 4),
         "rs-catch-22": date(2025, 11, 15),
         "rustmodels": date(2025, 11, 26),
         "rustivig": date(2025, 10, 8),
+        "rusty-di-runner": date(2025, 12, 9),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "synaptik-core-beta": date(2025, 10, 16),
         "tesseractpkg": date(2025, 11, 11),  # single release, pure wheel only
@@ -272,9 +277,11 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "thestage-license": date(2025, 10, 15),
         "torcharrow": date(2025, 9, 6),
         "tzuping-algo": date(2025, 8, 28),
+        "unicode-segmentation-py": date(2025, 11, 27),
         "usb-monitor-utils-lib": date(2025, 9, 11),
         "uuid32-utils": date(2025, 7, 25),
         "uuid64-utils": date(2025, 7, 25),
+        "vc6-cuda12": date(2025, 12, 3),
         "whisper-cpp-python-smr": date(2025, 7, 31),
         "zlgcan-driver": date(2025, 8, 4),
     }
