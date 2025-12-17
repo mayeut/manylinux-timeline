@@ -272,6 +272,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "rustivig": date(2025, 10, 8),
         "rusty-di-runner": date(2025, 12, 9),
         "silentpy": date(2025, 9, 19),  # single release, source only
+        "swgo-background-library": date(2025, 12, 16),
         "synaptik-core-beta": date(2025, 10, 16),
         "tesseractpkg": date(2025, 11, 11),  # single release, pure wheel only
         "testtesttest000001": date(2025, 11, 15),
