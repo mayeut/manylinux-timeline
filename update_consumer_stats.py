@@ -224,9 +224,11 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
             result[package][key] = previous_date = max(previous_date, result[package][key])
 
     removed_packages: Final[dict[str, date]] = {
+        "adaptive-router-core": date(2025, 12, 21),
+        "adaptive-router-core-cu12": date(2025, 12, 21),
         "aiohappyeyeball": date(2025, 10, 27),
-        "alkindi": date(2025, 11, 27),
         "bitemporal-timeseries": date(2025, 8, 20),
+        "blitz-vec": date(2025, 12, 21),
         "clogsec": date(2025, 11, 12),
         "colorinal": date(2025, 7, 27),
         "cryalg": date(2025, 9, 24),
@@ -238,9 +240,13 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "genimtools": date(2025, 9, 19),
         "grapapy": date(2025, 10, 2),  # single release, source only
         "graphbench": date(2025, 12, 2),  # single release, pure python
+        "greener-reporter": date(2025, 12, 24),  # single release, pure python
+        "greener-servermock": date(2025, 12, 24),
+        "hikyuu-noarrow": date(2025, 12, 24),  # windows only
         "kring": date(2025, 7, 19),
         "jasminum": date(2025, 11, 22),
         "json-repair-rust": date(2025, 11, 21),
+        "leanvec": date(2025, 12, 23),
         "libintx-cu128": date(2025, 10, 20),
         "libmemmod": date(2025, 9, 9),
         "libp2p-pyrust": date(2025, 10, 2),
@@ -259,7 +265,9 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "phoneshift": date(2025, 9, 4),
         "pisalt": date(2025, 8, 4),
         "pivtools-cli": date(2025, 11, 11),
+        "protectionstnd": date(2025, 12, 18),
         "pse-core": date(2025, 12, 3),
+        "pybinwalk-rust": date(2025, 12, 17),
         "pycoatl": date(2025, 7, 22),
         "pygments-richstyle": date(2025, 11, 15),
         "pyorbbec": date(2025, 9, 15),
@@ -286,6 +294,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "uuid64-utils": date(2025, 7, 25),
         "vc6-cuda12": date(2025, 12, 3),
         "whisper-cpp-python-smr": date(2025, 7, 31),
+        "zenith-ai": date(2025, 12, 18),
         "zlgcan-driver": date(2025, 8, 4),
     }
     for package, removed_date in removed_packages.items():

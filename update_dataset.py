@@ -89,6 +89,8 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "simplex_solver-3.0.18-37-",
                         "voxec-0.4.1-cp$mm-",
                         "pyarmor_mini-2.0-",
+                        "pyvoy-0.2.0-cp314t-cp314t-",
+                        "pyvoy-0.2.1-cp314t-cp314t-",
                         "simplex_solver-3.1.0-39-",
                     ),
                 ):
@@ -102,6 +104,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "mxlite_sdk-0.2.3-",
                         "mesh_to_depth-0.1.1-",
                         "pyarmor.mini-1.",
+                        "pyarmor_mini-3.0-cp3-",
                         "pyomexmeta-1.2.3-",
                         "pyswEOS-0",
                         "simplex_solver-3.0.",
