@@ -225,6 +225,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "adaptive-router-core": date(2025, 12, 21),
         "adaptive-router-core-cu12": date(2025, 12, 21),
         "aiohappyeyeball": date(2025, 10, 27),
+        "audaspace": date(2025, 12, 31),
         "baml-cc": date(2025, 12, 27),
         "baml-cc-py": date(2025, 12, 27),
         "baml-claude-code": date(2025, 12, 27),
