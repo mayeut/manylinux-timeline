@@ -255,6 +255,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "lib-ppca": date(2025, 9, 24),
         "llama-summarizer": date(2025, 7, 31),
         "mchp-gpio-ctl": date(2025, 10, 14),
+        "memfabric-hybrid": date(2026, 1, 4),
         "mosec-tiinfer": date(2025, 9, 2),
         "mrapids": date(2025, 9, 4),
         "nobodywhopython": date(2025, 10, 27),  # single release, windows only
