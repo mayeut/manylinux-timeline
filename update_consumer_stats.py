@@ -245,7 +245,9 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "greener-reporter": date(2025, 12, 24),  # single release, pure python
         "greener-servermock": date(2025, 12, 24),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
+        "isagedb": date(2026, 1, 5),
         "kring": date(2025, 7, 19),
+        "kryptoon": date(2026, 1, 7),
         "jasminum": date(2025, 11, 22),
         "json-repair-rust": date(2025, 11, 21),
         "leanvec": date(2025, 12, 23),
@@ -253,6 +255,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "libmemmod": date(2025, 9, 9),
         "libp2p-pyrust": date(2025, 10, 2),
         "lib-ppca": date(2025, 9, 24),
+        "lindera-py": date(2026, 1, 9),
         "llama-summarizer": date(2025, 7, 31),
         "mchp-gpio-ctl": date(2025, 10, 14),
         "memfabric-hybrid": date(2026, 1, 4),
@@ -274,6 +277,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "pycoatl": date(2025, 7, 22),
         "pygments-richstyle": date(2025, 11, 15),
         "pyorbbec": date(2025, 9, 15),
+        "python-nss-ng": date(2026, 1, 8),
         "qlip-algorithms": date(2025, 10, 15),
         "qlip-core": date(2025, 10, 15),
         "qlip-serve-generator": date(2025, 9, 9),
