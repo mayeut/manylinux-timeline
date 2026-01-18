@@ -277,12 +277,14 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "qlip-core": date(2025, 10, 15),
         "qlip-serve-generator": date(2025, 9, 9),
         "quasar-rs": date(2025, 12, 4),
+        "riyadhai-blingfire": date(2026, 1, 15),
         "rs-catch-22": date(2025, 11, 15),
         "rustmodels": date(2025, 11, 26),
         "rustivig": date(2025, 10, 8),
         "rusty-di-runner": date(2025, 12, 9),
         "secval": date(2025, 12, 26),
         "silentpy": date(2025, 9, 19),  # single release, source only
+        "superai-langchain": date(2026, 1, 16),  # quarantine
         "swgo-background-library": date(2025, 12, 16),
         "synaptik-core-beta": date(2025, 10, 16),
         "tesseractpkg": date(2025, 11, 11),  # single release, pure wheel only
