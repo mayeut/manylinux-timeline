@@ -236,6 +236,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "copilot-bin-edge": date(2026, 1, 18),
         "cryalg": date(2025, 9, 24),
         "dbmate-bin-edge": date(2026, 1, 18),
+        "degirum-face": date(2026, 1, 21),
         "dive-bin-edge": date(2026, 1, 18),
         "entityframe": date(2025, 8, 30),
         "fastfetch-bin-edge": date(2026, 1, 18),
@@ -255,6 +256,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "jasminum": date(2025, 11, 22),
         "json-repair-rust": date(2025, 11, 21),
         "just-bin-edge": date(2026, 1, 18),
+        "lattifai-core": date(2026, 1, 21),
         "lazydocker-bin-edge": date(2026, 1, 18),
         "libintx-cu128": date(2025, 10, 20),
         "libmemmod": date(2025, 9, 9),
@@ -269,6 +271,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "nobodywhopython": date(2025, 10, 27),  # single release, windows only
         "obtest": date(2025, 9, 26),
         "ompl-genesis": date(2025, 11, 11),
+        "orchestral-ai": date(2026, 1, 21),
         "oven-mlir": date(2025, 9, 21),
         "pairwisenamecomparator": date(2025, 11, 22),
         "perforatedai-freemium": date(2025, 9, 18),
@@ -297,6 +300,8 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "secval": date(2025, 12, 26),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "superai-langchain": date(2026, 1, 16),  # quarantine
+        "superai-llms": date(2026, 1, 20),
+        "superai-ragas": date(2026, 1, 21),
         "swgo-background-library": date(2025, 12, 16),
         "synaptik-core-beta": date(2025, 10, 16),
         "tesseractpkg": date(2025, 11, 11),  # single release, pure wheel only
