@@ -242,6 +242,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "fastfetch-bin-edge": date(2026, 1, 18),
         "feature-engineering-rs": date(2025, 11, 15),
         "flowty": date(2025, 10, 7),
+        "furiosa-model-compressor-impl": date(2026, 1, 24),
         "gamspy-conopt4": date(2025, 9, 4),
         "gamspy-sbb": date(2025, 10, 7),
         "genimtools": date(2025, 9, 19),
