@@ -254,7 +254,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "greener-servermock": date(2025, 12, 24),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
         "isagedb": date(2026, 1, 5),
-        "koava": date(2026, 1, 26),
         "kring": date(2025, 7, 19),
         "jasminum": date(2025, 11, 22),
         "json-repair-rust": date(2025, 11, 21),
@@ -317,7 +316,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "traefik-bin-edge": date(2026, 1, 18),
         "tzuping-algo": date(2025, 8, 28),
         "unicode-segmentation-py": date(2025, 11, 27),
-        "url-handle": date(2026, 1, 27),
         "usb-monitor-utils-lib": date(2025, 9, 11),
         "usql-bin-edge": date(2026, 1, 18),
         "uuid32-utils": date(2025, 7, 25),

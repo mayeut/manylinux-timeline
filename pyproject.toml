@@ -1,6 +1,6 @@
 # No build-system here, used for tool configuration only
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 files = ["*.py"]
 warn_unused_configs = true
 
