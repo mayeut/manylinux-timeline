@@ -266,6 +266,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "libp2p-pyrust": date(2025, 10, 2),
         "lib-ppca": date(2025, 9, 24),
         "lindera-py": date(2026, 1, 9),
+        "livekit-plugins-ai-coustics": date(2026, 1, 28),
         "llama-summarizer": date(2025, 7, 31),
         "mchp-gpio-ctl": date(2025, 10, 14),
         "minify-bin-edge": date(2026, 1, 18),
