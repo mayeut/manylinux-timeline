@@ -45,6 +45,7 @@ GLIBC_GROUPS: Final[tuple[tuple[str, ...], ...]] = (
     ("2.36", "2.37", "2.38"),
     ("2.39", "2.40"),
     ("2.41", "2.42"),
+    ("2.43",),
 )
 GLIBC_REMAP: Final[dict[str, str]] = {
     glibc_version: glibc_versions[0]
@@ -225,6 +226,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "adaptive-router-core": date(2025, 12, 21),
         "adaptive-router-core-cu12": date(2025, 12, 21),
         "aiohappyeyeball": date(2025, 10, 27),
+        "archaea-core": date(2026, 1, 29),
         "baml-cc": date(2025, 12, 27),
         "baml-cc-py": date(2025, 12, 27),
         "baml-claude-code": date(2025, 12, 27),
