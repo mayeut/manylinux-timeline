@@ -38,6 +38,7 @@ POLICIES: Final[tuple[str, ...]] = (
     "ml_2_39",
     "ml_2_40",
     "ml_2_41",
+    "ml_2_42",
 )
 ArchitectureName = Literal["x86_64", "i686", "aarch64", "ppc64le", "s390x", "armv7l", "riscv64"]
 ARCHITECTURES: Final[tuple[ArchitectureName, ...]] = typing.get_args(ArchitectureName)
