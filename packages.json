@@ -11691,6 +11691,7 @@
 "pylibfranka",
 "pylibfst",
 "pylibgeohash",
+"pylibheif",
 "pylibjpeg-libjpeg",
 "pylibjpeg-openjpeg",
 "pylibjpeg-rle",
