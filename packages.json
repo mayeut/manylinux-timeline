@@ -15270,6 +15270,7 @@
 "sqlite-regex",
 "sqlite-rembed",
 "sqlite-robotstxt",
+"sqlite-scanner",
 "sqlite-sqlean",
 "sqlite-tg",
 "sqlite-ulid",
