@@ -255,6 +255,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "greener-reporter": date(2025, 12, 24),  # single release, pure python
         "greener-servermock": date(2025, 12, 24),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
+        "hivemind-p2p": date(2026, 1, 30),
         "isagedb": date(2026, 1, 5),
         "kring": date(2025, 7, 19),
         "jasminum": date(2025, 11, 22),
@@ -291,6 +292,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "pycoatl": date(2025, 7, 22),
         "pygments-richstyle": date(2025, 11, 15),
         "pyorbbec": date(2025, 9, 15),
+        "pyradiance-py313": date(2026, 2, 3),
         "pytechnicalindicators": date(2026, 1, 18),
         "qlip-algorithms": date(2025, 10, 15),
         "qlip-core": date(2025, 10, 15),
@@ -304,6 +306,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "rusty-di-runner": date(2025, 12, 9),
         "scc-bin-edge": date(2026, 1, 18),
         "secval": date(2025, 12, 26),
+        "sgl-kernel-cpu": date(2026, 2, 3),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
@@ -319,15 +322,19 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "traefik-bin-edge": date(2026, 1, 18),
         "tzuping-algo": date(2025, 8, 28),
         "unicode-segmentation-py": date(2025, 11, 27),
+        "url-handle": date(2026, 2, 1),
         "usb-monitor-utils-lib": date(2025, 9, 11),
         "usql-bin-edge": date(2026, 1, 18),
         "uuid32-utils": date(2025, 7, 25),
         "uuid64-utils": date(2025, 7, 25),
         "vatra-py": date(2025, 12, 26),
         "vc6-cuda12": date(2025, 12, 3),
+        "visaionserver": date(2026, 2, 3),
         "whisper-cpp-python-smr": date(2025, 7, 31),
         "zenith-ai": date(2025, 12, 18),
+        "zephyr-mcumgr": date(2026, 2, 3),
         "zlgcan-driver": date(2025, 8, 4),
+        "zoosyncmp": date(2026, 2, 2),
     }
     for package, removed_date in removed_packages.items():
         if package in result:
