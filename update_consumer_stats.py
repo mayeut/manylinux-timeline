@@ -331,6 +331,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "vc6-cuda12": date(2025, 12, 3),
         "visaionserver": date(2026, 2, 3),
         "whisper-cpp-python-smr": date(2025, 7, 31),
+        "yamcot": date(2026, 2, 4),
         "zenith-ai": date(2025, 12, 18),
         "zephyr-mcumgr": date(2026, 2, 3),
         "zlgcan-driver": date(2025, 8, 4),
