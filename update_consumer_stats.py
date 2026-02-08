@@ -225,6 +225,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     removed_packages: Final[dict[str, date]] = {
         "adaptive-router-core": date(2025, 12, 21),
         "adaptive-router-core-cu12": date(2025, 12, 21),
+        "ai-optix": date(2026, 2, 6),
         "aiohappyeyeball": date(2025, 10, 27),
         "archaea-core": date(2026, 1, 29),
         "baml-cc": date(2025, 12, 27),
@@ -257,6 +258,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "greener-servermock": date(2025, 12, 24),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
         "hivemind-p2p": date(2026, 1, 30),
+        "ingestar": date(2026, 2, 6),
         "isagedb": date(2026, 1, 5),
         "kring": date(2025, 7, 19),
         "jasminum": date(2025, 11, 22),
@@ -272,6 +274,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "lindera-py": date(2026, 1, 9),
         "livekit-plugins-ai-coustics": date(2026, 1, 28),
         "llama-summarizer": date(2025, 7, 31),
+        "lumyn-sdk": date(2026, 2, 7),
         "mchp-gpio-ctl": date(2025, 10, 14),
         "minify-bin-edge": date(2026, 1, 18),
         "mosec-tiinfer": date(2025, 9, 2),
@@ -292,6 +295,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "pse-core": date(2025, 12, 3),
         "pybinwalk-rust": date(2025, 12, 17),
         "pycoatl": date(2025, 7, 22),
+        "pydnp3-stepfunc": date(2026, 2, 7),
         "pygments-richstyle": date(2025, 11, 15),
         "pyorbbec": date(2025, 9, 15),
         "pyradiance-py313": date(2026, 2, 3),
