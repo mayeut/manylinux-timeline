@@ -314,6 +314,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "scc-bin-edge": date(2026, 1, 18),
         "secval": date(2025, 12, 26),
         "sgl-kernel-cpu": date(2026, 2, 3),
+        "sglang-kernel": date(2026, 2, 8),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
