@@ -85,7 +85,7 @@ def _load_df(
     df = pd.read_csv(
         file,
         converters={
-            "python_version": lambda x: _get_major_minor(x),
+            "python_version": _get_major_minor,
             "glibc_version": lambda x: GLIBC_REMAP.get(_get_major_minor(x), "0.0"),
             "project": lambda x: str(canonicalize_name(x)),
         },
