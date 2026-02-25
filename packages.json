@@ -233,6 +233,7 @@
 "aiohttp",
 "aiohttp-edit",
 "aiokafka",
+"aiolibsql",
 "aionix-sdk-python",
 "aiooui",
 "aioquic",
