@@ -247,6 +247,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "dbmate-bin-edge": date(2026, 1, 18),
         "degirum-face": date(2026, 1, 21),
         "dive-bin-edge": date(2026, 1, 18),
+        "docling-metrics-teds": date(2026, 2, 25),
         "entityframe": date(2025, 8, 30),
         "fastfetch-bin-edge": date(2026, 1, 18),
         "fastlap": date(2026, 2, 5),
