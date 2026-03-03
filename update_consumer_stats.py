@@ -331,7 +331,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "sgl-kernel-cpu": date(2026, 2, 3),
         "sglang-kernel": date(2026, 2, 8),
         "silentpy": date(2025, 9, 19),  # single release, source only
-        "simgen-vla": date(2026, 2, 19),
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
         "superai-ragas": date(2026, 1, 21),
