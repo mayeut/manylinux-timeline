@@ -246,6 +246,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "cutters": date(2026, 2, 21),
         "dbmate-bin-edge": date(2026, 1, 18),
         "degirum-face": date(2026, 1, 21),
+        "despina": date(2026, 3, 9),
         "dive-bin-edge": date(2026, 1, 18),
         "docling-metrics-teds": date(2026, 2, 25),
         "dvt-core": date(2026, 3, 6),
@@ -260,12 +261,13 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "gamspy-conopt4": date(2025, 9, 4),
         "gamspy-sbb": date(2025, 10, 7),
         "genimtools": date(2025, 9, 19),
+        "getgrip": date(2026, 3, 9),
         "gh-bin-edge": date(2026, 1, 18),
         "grapapy": date(2025, 10, 2),  # single release, source only
         "graphbench": date(2025, 12, 2),  # single release, pure python
         "greener-reporter": date(2025, 12, 24),  # single release, pure python
         "greener-servermock": date(2025, 12, 24),
-        "hermax": date(2026, 3, 6),
+        "halimede": date(2026, 3, 9),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
         "hivemind-p2p": date(2026, 1, 30),
         "ingestar": date(2026, 2, 6),
@@ -342,7 +344,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "sheet-excavator": date(2026, 3, 7),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "simai": date(2026, 3, 6),
-        "simgen-vla": date(2026, 3, 6),
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
         "superai-ragas": date(2026, 1, 21),
