@@ -346,6 +346,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "sheet-excavator": date(2026, 3, 7),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "simai": date(2026, 3, 6),
+        "striq": date(2026, 3, 11),
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
         "superai-ragas": date(2026, 1, 21),
