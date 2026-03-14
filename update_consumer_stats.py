@@ -271,6 +271,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "halimede": date(2026, 3, 9),
         "hikyuu-noarrow": date(2025, 12, 24),  # windows only
         "hivemind-p2p": date(2026, 1, 30),
+        "hwcomponents-cacti": date(2026, 3, 12),
         "ingestar": date(2026, 2, 6),
         "inspectre-sim": date(2026, 2, 20),
         "isagedb": date(2026, 1, 5),
@@ -298,10 +299,12 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "mytorch-cnn": date(2026, 2, 10),
         "mytorch-rnn": date(2026, 2, 10),
         "nanopy": date(2026, 3, 3),
+        "neural-q-forge": date(2026, 3, 12),
         "nobodywhopython": date(2025, 10, 27),  # single release, windows only
         "numringbuf": date(2026, 2, 28),
         "obtest": date(2025, 9, 26),
         "ompl-genesis": date(2025, 11, 11),
+        "openedx-didkit": date(2026, 3, 12),
         "orchestral-ai": date(2026, 2, 18),
         "oscofo": date(2026, 2, 26),
         "oven-mlir": date(2025, 9, 21),
