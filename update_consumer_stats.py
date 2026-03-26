@@ -225,10 +225,10 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     removed_packages: Final[dict[str, date]] = {
         "adaptive-router-core": date(2025, 12, 21),
         "adaptive-router-core-cu12": date(2025, 12, 21),
-        "agenticraft-proxy": date(2026, 3, 24),
         "ai-optix": date(2026, 2, 6),
         "aiohappyeyeball": date(2025, 10, 27),
         "archaea-core": date(2026, 1, 29),
+        "arqondb": date(2026, 3, 25),
         "baml-cc": date(2025, 12, 27),
         "baml-cc-py": date(2025, 12, 27),
         "baml-claude-code": date(2025, 12, 27),
