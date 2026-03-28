@@ -295,6 +295,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "lib-ppca": date(2025, 9, 24),
         "lindera-py": date(2026, 1, 9),
         "llama-summarizer": date(2025, 7, 31),
+        "logcrypt": date(2026, 3, 26),
         "mary-elizabeth-utils": date(2026, 3, 18),
         "mchp-gpio-ctl": date(2025, 10, 14),
         "minify-bin-edge": date(2026, 1, 18),
@@ -333,6 +334,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "pycoatl": date(2025, 7, 22),
         "pydnp3-stepfunc": date(2026, 2, 7),
         "pygments-richstyle": date(2025, 11, 15),
+        "pynastran95": date(2026, 3, 27),
         "pyorbbec": date(2025, 9, 15),
         "pyradiance-py313": date(2026, 2, 3),
         "pytechnicalindicators": date(2026, 1, 18),
@@ -359,6 +361,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "sigilyx": date(2026, 3, 20),
         "silentpy": date(2025, 9, 19),  # single release, source only
         "simai": date(2026, 3, 6),
+        "skytext": date(2026, 3, 26),
         "striq": date(2026, 3, 11),
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
