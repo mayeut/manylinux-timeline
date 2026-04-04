@@ -79,7 +79,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
             try:
                 int(python[2:])
             except ValueError:
-                if not filename.startswith(
+                skip_warning = filename.startswith(
                     (
                         "pyswEOS-0",
                         "coremltools-0",
@@ -89,17 +89,21 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "simplex_solver-3.0.18-37-",
                         "voxec-0.4.1-cp$mm-",
                         "pyarmor_mini-2.0-",
-                        "pyvoy-0.2.0-cp314t-cp314t-",
-                        "pyvoy-0.2.1-cp314t-cp314t-",
                         "simplex_solver-3.1.0-39-",
                     ),
-                ):
+                )
+                # free-threading in python rather than abi
+                skip_warning = skip_warning or (
+                    python in {"cp313t", "cp314t", "cp315t"}
+                    and filename.startswith(("picobuild", "pyvoy", "turboapi"))
+                )
+                if not skip_warning:
                     _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
 
             if python.startswith(("cp", "pp", "gp", "pt")) and len(python) < 4:
                 # minor is missing
-                if not filename.startswith(
+                skip_warning = filename.startswith(
                     (
                         "mxlite_sdk-0.2.3-",
                         "mesh_to_depth-0.1.1-",
@@ -107,17 +111,26 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                         "pyarmor_mini-3.0-cp3-",
                         "pyomexmeta-1.2.3-",
                         "pyswEOS-0",
+                        "matxscript-1.8.0a0-cp3-",
                         "simplex_solver-3.0.",
                     ),
-                ):
+                )
+                if not skip_warning:
                     _LOGGER.warning('ignoring python "%s" for wheel "%s"', python, filename)
                 continue
 
             if python == "py3":
                 if metadata.abi != "none":
-                    if not filename.startswith(
-                        ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2."),
-                    ):
+                    skip_warning = filename.startswith(
+                        (
+                            "enzyme_jax-0.0.4-",
+                            "kring-0.0.1-",
+                            "pyffmpeg-2.2.",
+                            "pymusiclibrary-0.0.1-",
+                            "pymusiclibrary-0.0.2-",
+                        ),
+                    )
+                    if not skip_warning:
                         _LOGGER.warning("unsupported abi %r for wheel %r", metadata.abi, filename)
                     continue
                 if requires_python is None:
@@ -140,9 +153,10 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
 
             if metadata.abi == "abi3":
                 if not python.startswith("cp3"):
-                    if not filename.startswith(
+                    skip_warning = filename.startswith(
                         ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2."),
-                    ):
+                    )
+                    if not skip_warning:
                         _LOGGER.warning(
                             'ignoring python "%s-abi3" for wheel "%s"',
                             python,
