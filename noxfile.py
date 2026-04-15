@@ -7,6 +7,8 @@ import nox
 HERE: Final[Path] = Path(__file__).resolve(strict=True).parent
 PYTHON_VERSION: Final[str] = HERE.joinpath(".python-version").read_text().strip()
 
+nox.needs_version = ">=2025.11.12"
+nox.options.default_venv_backend = "uv|virtualenv"
 nox.options.pythons = [PYTHON_VERSION]
 nox.options.sessions = ["run"]
 nox.options.reuse_existing_virtualenvs = True
