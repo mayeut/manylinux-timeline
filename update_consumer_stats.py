@@ -407,7 +407,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "toondb-client": date(2026, 1, 13),
         "torch-abi": date(2026, 4, 23),
         "torcharrow": date(2025, 9, 6),
-        "torchvision-abi" : date(2026, 4, 23),
+        "torchvision-abi": date(2026, 4, 23),
         "traefik-bin-edge": date(2026, 1, 18),
         "turbo-ops": date(2026, 4, 18),
         "tzuping-algo": date(2025, 8, 28),
