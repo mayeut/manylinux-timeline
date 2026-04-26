@@ -18219,6 +18219,8 @@
 "synlink",
 "synphot",
 "synta",
+"synta-krb5",
+"synta-mtc",
 "syntaqlite",
 "syntax-checker",
 "syntax-workout-sdk",
