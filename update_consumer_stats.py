@@ -236,6 +236,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "bandito": date(2026, 3, 30),
         "bitemporal-timeseries": date(2025, 8, 20),
         "blitz-vec": date(2025, 12, 21),
+        "browser-act-cli-lite": date(2026, 4, 28),
         "caddy-bin-edge": date(2026, 1, 18),
         "cas-python-sdk": date(2026, 3, 22),
         "cisco-radkit-client": date(2026, 2, 10),
@@ -324,7 +325,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "msgspec-arise": date(2026, 4, 9),
         "mytorch-cnn": date(2026, 2, 10),
         "mytorch-rnn": date(2026, 2, 10),
-        "nanopy": date(2026, 3, 3),
         "neural-q-forge": date(2026, 3, 12),
         "nobodywhopython": date(2025, 10, 27),  # single release, windows only
         "numringbuf": date(2026, 2, 28),
@@ -350,7 +350,6 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "pmtvs-statistics": date(2026, 3, 22),
         "pool-manager-rs": date(2026, 4, 24),
         "protectionstnd": date(2025, 12, 18),
-        "proteon-connector": date(2026, 4, 22),
         "pse-core": date(2025, 12, 3),
         "py10x-core": date(2026, 2, 12),
         "pybinwalk-rust": date(2025, 12, 17),
