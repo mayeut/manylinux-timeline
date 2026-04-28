@@ -159,7 +159,7 @@
 "aerofs",
 "aerolattice",
 "aerospike",
-"aerospike-client-python-async",
+"aerospike-async",
 "aerospike-py",
 "aes-dfa",
 "aesim-simba",
