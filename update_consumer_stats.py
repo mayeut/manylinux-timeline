@@ -223,6 +223,8 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
             result[package][key] = previous_date = max(previous_date, result[package][key])
 
     removed_packages: Final[dict[str, date]] = {
+        "abasepy11": date(2026, 4, 28),
+        "abasepyplatforms": date(2026, 4, 28),
         "adaptive-router-core": date(2025, 12, 21),
         "adaptive-router-core-cu12": date(2025, 12, 21),
         "agenticraft-proxy": date(2026, 3, 30),
@@ -260,6 +262,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "despina": date(2026, 3, 9),
         "dive-bin-edge": date(2026, 1, 18),
         "docling-metrics-teds": date(2026, 2, 25),
+        "dvpl-converter": date(2026, 4, 30),
         "ebbiforge": date(2026, 4, 23),
         "eddadb": date(2026, 4, 7),
         "emailgen-rs": date(2026, 4, 1),
@@ -390,6 +393,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "sindre": date(2026, 4, 24),
         "skytext": date(2026, 3, 26),
         "staff-cli": date(2026, 4, 2),
+        "starlings": date(2026, 4, 30),
         "striq": date(2026, 3, 11),
         "superai-langchain": date(2026, 1, 16),  # quarantine
         "superai-llms": date(2026, 1, 20),
