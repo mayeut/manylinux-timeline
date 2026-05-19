@@ -457,6 +457,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "whalesharkboost": date(2026, 3, 3),
         "whatpack-backend": date(2026, 4, 20),
         "whisper-cpp-python-smr": date(2025, 7, 31),
+        "xxjson": date(2026, 5, 18),
         "yamcot": date(2026, 2, 4),
         "zenith-ai": date(2025, 12, 18),
         "zephyr-mcumgr": date(2026, 2, 3),
