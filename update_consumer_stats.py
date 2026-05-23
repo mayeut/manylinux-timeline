@@ -4,11 +4,7 @@ import json
 import logging
 import multiprocessing
 from datetime import UTC, date, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Final, cast
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
-    from pathlib import Path
+from typing import Any, Final, cast
 
 import pandas as pd
 from packaging.utils import canonicalize_name
@@ -16,6 +12,11 @@ from packaging.version import InvalidVersion, Version
 
 import update_dataset
 import utils
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from pathlib import Path
 
 _LOGGER = logging.getLogger(__name__)
 

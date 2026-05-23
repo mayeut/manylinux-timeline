@@ -26,3 +26,6 @@ lint.ignore = [
     "PLR",     # Design related pylint codes
     "S113",    # TODO Probable use of `requests` call without timeout
 ]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"typing.TYPE_CHECKING".msg = "Use TYPE_CHECKING=False instead"
