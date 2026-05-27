@@ -304,6 +304,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "ids-toolkit": date(2026, 3, 18),
         "ingestar": date(2026, 2, 6),
         "initvenv": date(2026, 4, 5),
+        "inset": date(2026, 5, 26),
         "inspectre-sim": date(2026, 2, 20),
         "ironrace": date(2026, 4, 5),
         "isagedb": date(2026, 1, 5),
@@ -343,6 +344,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "mytorch-cnn": date(2026, 2, 10),
         "mytorch-rnn": date(2026, 2, 10),
         "navpipe": date(2026, 5, 24),
+        "neots": date(2026, 5, 26),
         "neural-q-forge": date(2026, 3, 12),
         "nobodywhopython": date(2025, 10, 27),  # single release, windows only
         "nomeda": date(2026, 5, 4),
@@ -453,6 +455,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
         "traefik-bin-edge": date(2026, 1, 18),
         "turbo-ops": date(2026, 4, 18),
         "tzuping-algo": date(2025, 8, 28),
+        "umap-rs": date(2026, 5, 26),
         "unicode-segmentation-py": date(2025, 11, 27),
         "unicrawler": date(2026, 4, 10),
         "uoon": date(2026, 3, 27),
