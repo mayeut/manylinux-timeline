@@ -25,14 +25,18 @@ def lint(session: nox.Session) -> None:
 @nox.session(python=PYTHON_VERSION)
 def update_requirements(session: nox.Session) -> None:
     """Update requirements.txt."""
-    session.install("-U", "pip-tools")
+
+    if session.venv_backend != "uv":
+        session.install("uv>=0.9")
+
     env = os.environ.copy()
-    # CUSTOM_COMPILE_COMMAND is a pip-compile option that tells users how to
+    # UV_CUSTOM_COMPILE_COMMAND is an uv option that tells users how to
     # regenerate the constraints files
-    env["CUSTOM_COMPILE_COMMAND"] = f"nox -s {session.name}"
+    env["UV_CUSTOM_COMPILE_COMMAND"] = f"nox -s {session.name}"
     session.run(
-        "pip-compile",
-        "--allow-unsafe",
+        "uv",
+        "pip",
+        "compile",
         "--upgrade",
         "--generate-hashes",
         "requirements.in",
