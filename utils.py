@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import date, timedelta
 from pathlib import Path
@@ -40,3 +41,17 @@ class WheelMetadata(NamedTuple):
 
 def get_release_cache_path(package: str) -> Path:
     return RELEASE_INFO_PATH / f"{package}.json"
+
+
+def load_removed_packages() -> dict[str, date]:
+    json_data = json.loads(ROOT_PATH.joinpath("removed_packages.json").read_text())
+    return {package: date.fromisoformat(date_str) for package, date_str in json_data.items()}
+
+
+def save_removed_packages(removed_packages: dict[str, date]) -> None:
+    removed_packages_json = {}
+    for package in sorted(removed_packages.keys()):
+        removed_packages_json[package] = removed_packages[package].isoformat()
+    with ROOT_PATH.joinpath("removed_packages.json").open("w") as f:
+        json.dump(removed_packages_json, f, indent=0)
+        f.write("\n")

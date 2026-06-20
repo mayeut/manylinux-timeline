@@ -3,7 +3,7 @@ import json
 import logging
 import urllib.parse
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from enum import Enum
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
@@ -225,4 +225,14 @@ def update(packages: list[str], *, all_pypi_packages: bool = False) -> list[str]
 
     to_remove.update(name for name in new_etag_cache if not new_etag_cache[name][1])
 
-    return sorted((packages_set - to_remove) | to_add)
+    result = sorted((packages_set - to_remove) | to_add)
+
+    removed_packages = utils.load_removed_packages()
+    for package in set(packages) - set(result):
+        removed_packages.setdefault(package, datetime.now(tz=UTC).date())
+    for package in result:
+        if package in removed_packages:
+            removed_packages.pop(package)
+    utils.save_removed_packages(removed_packages)
+
+    return result
