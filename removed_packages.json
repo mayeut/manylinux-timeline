@@ -75,6 +75,8 @@
 "ftp-core-bindings-pyo3": "2026-02-10",
 "funcrypt": "2026-03-03",
 "furiosa-model-compressor-impl": "2026-01-24",
+"fvtk": "2026-07-06",
+"fvtk-sdk": "2026-07-06",
 "galahad-temporal": "2026-05-20",
 "gamspy-conopt4": "2025-09-04",
 "gamspy-sbb": "2025-10-07",
