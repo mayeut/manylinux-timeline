@@ -16,6 +16,7 @@
 "baml-cc": "2025-12-27",
 "baml-cc-py": "2025-12-27",
 "baml-claude-code": "2025-12-27",
+"baml-core-ffi": "2026-07-08",
 "bandito": "2026-03-30",
 "bitemporal-timeseries": "2025-08-20",
 "bittensor-burn-monitor": "2026-06-08",
