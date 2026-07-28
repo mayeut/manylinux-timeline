@@ -10884,6 +10884,7 @@
 "mcp-assert",
 "mcp-compressor",
 "mcp-context-pipe",
+"mcp-file-tools",
 "mcp-grafana",
 "mcp-liner",
 "mcp-memory-engine",
