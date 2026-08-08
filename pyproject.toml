@@ -17,6 +17,7 @@ lint.select = [ "ALL" ]
 lint.ignore = [
     "ANN401",  # any-type
     "C901",    # Complexity
+    "CPY001",  # Missing copyright notice at top of file
     "D",       # Doc
     "S101",    # Use of `assert` detected
     "PD002",   # TODO `inplace=True` should be avoided; it has inconsistent behavior
