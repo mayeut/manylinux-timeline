@@ -46,7 +46,7 @@ GLIBC_GROUPS: Final[tuple[tuple[str, ...], ...]] = (
     ("2.36", "2.37", "2.38"),
     ("2.39", "2.40"),
     ("2.41", "2.42"),
-    ("2.43",),
+    ("2.43", "2.44"),
 )
 GLIBC_REMAP: Final[dict[str, str]] = {
     glibc_version: glibc_versions[0]
