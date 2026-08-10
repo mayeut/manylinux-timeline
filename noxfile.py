@@ -39,6 +39,7 @@ def update_requirements(session: nox.Session) -> None:
         "compile",
         "--upgrade",
         "--generate-hashes",
+        "--output-file=requirements.txt",
         "requirements.in",
         env=env,
     )
