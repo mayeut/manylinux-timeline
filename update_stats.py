@@ -61,7 +61,7 @@ IMPLEMENTATIONS: Final[tuple[str, ...]] = tuple(
             ),
             key=lambda x: (int(x[3:]), x[:3]),
         ),
-        ["abi3", "free-threaded"],
+        ["abi3", "abi3t", "free-threaded"],
     ),
 )
 
@@ -71,7 +71,7 @@ def _get_range_dataframe(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestam
         df[policy] = df.manylinux.str.contains(f"{policy}_x86_64")
     for arch in ARCHITECTURES:
         df[arch] = df.manylinux.str.contains(arch)
-    for version in ["abi3", "py3", "free-threaded"]:
+    for version in ["abi3", "abi3t", "py3", "free-threaded"]:
         df[version] = df.python.str.contains(version)
     df["py32"] = df.python.str.contains("py32")
     df["cp32"] = df.python.str.contains("cp32")
@@ -82,7 +82,10 @@ def _get_range_dataframe(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestam
         cp_version = f"cp3{i}"
         df[py_version] = df.python.str.contains(py_version) | df[py_version_prev]
         df[cp_version] = (
-            df.python.str.contains(cp_version) | df[py_version] | (df["abi3"] & df[cp_version_prev])
+            df.python.str.contains(cp_version)
+            | df[py_version]
+            | (df["abi3"] & df[cp_version_prev])
+            | (df["abi3t"] & df[cp_version_prev])
         )
         py_version_prev = py_version
         cp_version_prev = cp_version

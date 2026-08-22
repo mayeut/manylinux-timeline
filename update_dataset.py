@@ -151,20 +151,39 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
                     continue
             pythons.add(python)
 
-            if metadata.abi == "abi3":
+            if metadata.abi in {"abi3", "abi3.abi3t"}:
                 if not python.startswith("cp3"):
                     skip_warning = filename.startswith(
                         ("enzyme_jax-0.0.4-", "kring-0.0.1-", "pyffmpeg-2.2."),
                     )
                     if not skip_warning:
                         _LOGGER.warning(
-                            'ignoring python "%s-abi3" for wheel "%s"',
+                            'ignoring python "%s-%s" for wheel "%s"',
                             python,
+                            metadata.abi,
                             filename,
                         )
                     continue
                 # Add abi3 to know that cp3? > {python} are supported
                 pythons.add("ab3")
+                if metadata.abi == "abi3.abi3t":
+                    pythons.add("at3")
+                    pythons.add("ft3")
+            elif metadata.abi == "abi3t":
+                if not python.startswith("cp3"):
+                    skip_warning = False
+                    if not skip_warning:
+                        _LOGGER.warning(
+                            'ignoring python "%s-%s" for wheel "%s"',
+                            python,
+                            metadata.abi,
+                            filename,
+                        )
+                    continue
+                # Add abi3 to know that cp3? > {python} are supported
+                pythons.add("ab3")
+                pythons.add("at3")
+                pythons.add("ft3")
             elif _FREE_THREADED_ABI.match(metadata.abi) or python.startswith("py3"):
                 pythons.add("ft3")
 
@@ -174,6 +193,7 @@ def parse_version(files: list[dict[str, str]]) -> tuple[date, str, str]:
     python_list.sort(key=lambda x: (int(x[2:]), x[0:2]))
     python_str = ".".join(python_list)
     python_str = python_str.replace("ab3", "abi3")
+    python_str = python_str.replace("at3", "abi3t")
     python_str = python_str.replace("ft3", "free-threaded")
     manylinux_str = ".".join(sorted(manylinux)).replace("anylinux", "l")
     return date.fromisoformat(upload_date), python_str, manylinux_str

@@ -173,7 +173,7 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
             pythons = list(filter(lambda x: not x.startswith("py2"), pythons))
             if not pythons:
                 continue
-            if pythons[0] == "abi3":
+            if pythons[0] in {"abi3", "abi3t"}:
                 del pythons[0]  # remove the tag & replace with supported versions
                 cp3_start = next(python for python in pythons if python.startswith("cp3"))
                 start_minor = int(cp3_start[3:])
@@ -181,6 +181,8 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                     key_minor = int(key[2:])
                     if key_minor > start_minor:
                         pythons.append(f"cp3{key_minor}")
+                if pythons and pythons[0] == "abi3t":
+                    del pythons[0]
             if any(python.startswith("py3") for python in pythons):
                 py3_start = next(python for python in pythons if python.startswith("py3"))
                 start_minor = int(py3_start[3:])
