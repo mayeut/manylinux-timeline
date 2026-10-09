@@ -49,7 +49,7 @@ PackageStatsName = Literal["total", "analysis"]
 IMPL_CP3_FIRST: Final[int] = 7
 IMPL_CP3_LAST: Final[int] = 15
 IMPL_PP3_FIRST: Final[int] = 8
-IMPL_PP3_LAST: Final[int] = 11
+IMPL_PP3_LAST: Final[int] = 12
 # that's what is ultimately displayed
 IMPLEMENTATIONS: Final[tuple[str, ...]] = tuple(
     itertools.chain(
