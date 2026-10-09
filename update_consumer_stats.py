@@ -24,12 +24,13 @@ PYTHON_EOL: Final[dict[str, pd.Timestamp]] = {
     "3.7": pd.to_datetime("2023-06-27"),
     "3.8": pd.to_datetime("2024-10-07"),
     "3.9": pd.to_datetime("2025-10-31"),
-    "3.10": pd.to_datetime("2026-10-31"),
+    "3.10": pd.to_datetime("2026-10-01"),
     "3.11": pd.to_datetime("2027-10-31"),
     "3.12": pd.to_datetime("2028-10-31"),
     "3.13": pd.to_datetime("2029-10-31"),
     "3.14": pd.to_datetime("2030-10-31"),
     "3.15": pd.to_datetime("2031-10-31"),
+    "3.16": pd.to_datetime("2032-10-31"),
 }
 
 # combine some glibc versions to remove some of the less used ones
