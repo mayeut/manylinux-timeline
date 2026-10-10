@@ -1,17 +1,17 @@
 import dataclasses
-import functools
-import json
 import logging
-import multiprocessing
-from datetime import UTC, date, datetime, timedelta
-from typing import Any, Final, cast
+lazy import functools
+lazy import json
+lazy import multiprocessing
+lazy from datetime import UTC, date, datetime, timedelta
+lazy from typing import Any, Final, cast
 
 import pandas as pd
-from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
+lazy from packaging.utils import canonicalize_name
 
-import update_dataset
-import utils
+lazy import update_dataset
+lazy import utils
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:

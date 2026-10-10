@@ -1,13 +1,13 @@
-import json
 import logging
 import re
-from datetime import date
-from typing import Any, Final
+lazy import json
+lazy from datetime import date
+lazy from typing import Any, Final
 
-from packaging.specifiers import InvalidSpecifier, SpecifierSet
-from packaging.version import InvalidVersion, Version
+lazy from packaging.specifiers import InvalidSpecifier, SpecifierSet
+lazy from packaging.version import InvalidVersion, Version
 
-import utils
+lazy import utils
 
 _LOGGER = logging.getLogger(__name__)
 _FREE_THREADED_ABI: Final[re.Pattern[str]] = re.compile(r"cp3(1[3-9]|[2-9][0-9])t")

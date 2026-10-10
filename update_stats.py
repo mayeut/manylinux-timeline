@@ -1,15 +1,15 @@
 import dataclasses
 import itertools
-import json
 import logging
 import typing
-from datetime import UTC, date, datetime, timedelta
 from typing import Final, Literal
+lazy import json
+lazy from datetime import UTC, date, datetime, timedelta
 
-import numpy as np
-import pandas as pd
+lazy import numpy as np
+lazy import pandas as pd
 
-import utils
+lazy import utils
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:

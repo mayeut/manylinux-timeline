@@ -1,8 +1,8 @@
-import json
 import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import NamedTuple
+lazy import json
 
 ROOT_PATH = Path(__file__).resolve().parent
 BUILD_PATH = ROOT_PATH / "build"

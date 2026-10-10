@@ -1,17 +1,17 @@
-import argparse
-import json
 import logging
 import os
-from datetime import UTC, date, datetime, timedelta
-from pathlib import Path
-from shutil import copy, rmtree
+lazy import argparse
+lazy import json
+lazy from datetime import UTC, date, datetime, timedelta
+lazy from pathlib import Path
+lazy from shutil import copy, rmtree
 
-import update_cache
-import update_consumer_data
-import update_consumer_stats
-import update_dataset
-import update_stats
-import utils
+lazy import update_cache
+lazy import update_consumer_data
+lazy import update_consumer_stats
+lazy import update_dataset
+lazy import update_stats
+lazy import utils
 
 _LOGGER = logging.getLogger(__name__)
 

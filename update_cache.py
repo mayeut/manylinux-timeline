@@ -1,18 +1,18 @@
-import functools
-import json
 import logging
-import urllib.parse
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
 from enum import Enum
-from multiprocessing.pool import ThreadPool
-from pathlib import Path
-from typing import Any
+lazy import functools
+lazy import json
+lazy import urllib.parse
+lazy from datetime import UTC, date, datetime
+lazy from multiprocessing.pool import ThreadPool
+lazy from pathlib import Path
+lazy from typing import Any
 
-import requests
-from packaging.utils import canonicalize_name
+lazy import requests
+lazy from packaging.utils import canonicalize_name
 
-import utils
+lazy import utils
 
 _LOGGER = logging.getLogger(__name__)
 

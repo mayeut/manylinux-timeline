@@ -1,15 +1,15 @@
-import csv
-import json
 import logging
-import lzma
 import os
-from datetime import UTC, datetime, timedelta
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from typing import Any
+lazy import csv
+lazy import json
+lazy import lzma
+lazy from datetime import UTC, datetime, timedelta
+lazy from pathlib import Path
+lazy from tempfile import TemporaryDirectory
+lazy from typing import Any
 
-from google.api_core.exceptions import Forbidden, GoogleAPIError
-from google.cloud import bigquery
+lazy from google.api_core.exceptions import Forbidden, GoogleAPIError
+lazy from google.cloud import bigquery
 
 _LOGGER = logging.getLogger(__name__)
 BIGQUERY_TOKEN = "BIGQUERY_TOKEN"  # noqa:S105
