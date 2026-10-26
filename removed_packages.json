@@ -266,6 +266,8 @@
 "pgn-extract-wg": "2025-09-04",
 "phoneshift": "2025-09-04",
 "pi-recipe-check": "2026-10-22",
+"piot-fixture-zzz-python": "2026-10-26",
+"piot-fixture-zzz-python-maturin": "2026-10-26",
 "pisalt": "2025-08-04",
 "pivtools-cli": "2025-11-11",
 "pkpython": "2026-08-30",
