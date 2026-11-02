@@ -1,9 +1,9 @@
 import dataclasses
+import datetime as dt
 import logging
 lazy import functools
 lazy import json
 lazy import multiprocessing
-lazy from datetime import UTC, date, datetime, timedelta
 lazy from typing import Any, Final, cast
 
 import pandas as pd
@@ -71,9 +71,9 @@ def _get_major_minor(x: Any) -> str:
 
 
 def _load_df(
-    wheel_support_map: dict[str, dict[str, date]],
+    wheel_support_map: dict[str, dict[str, dt.date]],
     path: Path,
-    date_: date,
+    date_: dt.date,
 ) -> pd.DataFrame | None:
     folder = path / date_.strftime("%Y") / date_.strftime("%m")
     file = folder / f"{date_.strftime('%d')}.csv"
@@ -133,17 +133,17 @@ def _load_df(
 
 @dataclasses.dataclass
 class SupportDates:
-    supported: date = date.min
-    not_supported: list[date] = dataclasses.field(default_factory=list)
+    supported: dt.date = dt.date.min
+    not_supported: list[dt.date] = dataclasses.field(default_factory=list)
 
 
-def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
+def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, dt.date]]:
     _LOGGER.info("building wheel support map")
-    result: dict[str, dict[str, date]] = {}
+    result: dict[str, dict[str, dt.date]] = {}
     for package in packages:
         cache_file = utils.get_release_cache_path(package)
         if not cache_file.exists():
-            result[package] = dict.fromkeys(PYTHON_EOL, date.max)
+            result[package] = dict.fromkeys(PYTHON_EOL, dt.date.max)
             continue
         info = json.loads(cache_file.read_text())
         package_result: dict[str, SupportDates] = {
@@ -198,9 +198,9 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                 else:
                     package_result[key].not_supported.append(upload_date)
         result[package] = {}
-        previous_date = date.min
+        previous_date = dt.date.min
         for key in PYTHON_EOL:
-            if package_result[key].supported == date.min:
+            if package_result[key].supported == dt.date.min:
                 if len(package_result[key].not_supported) == 0:
                     if package not in {
                         "carbonara-pyvex",
@@ -213,11 +213,11 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
                         "tesseract-python",
                     }:
                         _LOGGER.warning("%r: assume python %s supported", package, key)
-                    result[package][key] = date.max
+                    result[package][key] = dt.date.max
                 else:
                     result[package][key] = min(package_result[key].not_supported)
             else:
-                package_result[key].not_supported.append(date.max)
+                package_result[key].not_supported.append(dt.date.max)
                 result[package][key] = min(
                     filter(
                         lambda x: x > package_result[key].supported,
@@ -238,14 +238,14 @@ def _build_wheel_support_map(packages: list[str]) -> dict[str, dict[str, date]]:
     return result
 
 
-def date_iterator(start: date, end: date) -> Generator[date]:
+def date_iterator(start: dt.date, end: dt.date) -> Generator[dt.date]:
     date_ = start
     while date_ <= end:
         yield date_
-        date_ = date_ + timedelta(days=1)
+        date_ = date_ + dt.timedelta(days=1)
 
 
-def update(packages: list[str], path: Path, start: date, end: date) -> None:
+def update(packages: list[str], path: Path, start: dt.date, end: dt.date) -> None:
     wheel_support_map = _build_wheel_support_map(packages)
 
     _LOGGER.info("loading data")
@@ -329,7 +329,7 @@ def update(packages: list[str], path: Path, start: date, end: date) -> None:
     df_glibc_non_eol_stats = df_glibc_non_eol / df_glibc_non_eol_all
 
     out: dict[str, Any] = {
-        "last_update": datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
+        "last_update": dt.datetime.now(dt.UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z"),
         "index": [d.date().isoformat() for d in df_python_all.index],
     }
 
