@@ -1,10 +1,10 @@
 import dataclasses
+import datetime as dt
 import itertools
 import logging
 import typing
 from typing import Final, Literal
 lazy import json
-lazy from datetime import UTC, date, datetime, timedelta
 
 lazy import numpy as np
 lazy import pandas as pd
@@ -109,7 +109,7 @@ def _get_rolling_dataframe(
     end_date: pd.Timestamp,
 ) -> tuple[list[str], pd.DataFrame]:
     current = end_date
-    step = timedelta(days=1)
+    step = dt.timedelta(days=1)
     index = []
     rolling_dfs = []
     while current >= start_date:
@@ -146,7 +146,7 @@ def _get_total_packages(
 ) -> list[int]:
     ts = df.sort_values("day").drop_duplicates("package").value_counts(subset=["day"], sort=False)
     ts.index = pd.DatetimeIndex(ts.index.get_level_values(0).values, name="day")
-    offset = timedelta(days=1)
+    offset = dt.timedelta(days=1)
     stop = max(pd.to_datetime(ts.index.values[-1]), end_date) + offset
     ts[stop] = 0
     ts = ts.cumsum().resample("1d").ffill()
@@ -157,7 +157,7 @@ def _get_total_packages(
 
 @dataclasses.dataclass
 class ProducerStats:
-    last_update: str = datetime.now(UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z")
+    last_update: str = dt.datetime.now(dt.UTC).strftime("%A, %d %B %Y, %H:%M:%S %Z")
     package_count: int = 0
     index: list[str] = dataclasses.field(default_factory=list)
     lowest_policy: dict[str, list[float]] = dataclasses.field(default_factory=dict)
@@ -203,7 +203,7 @@ class ProducerStats:
             )
 
 
-def update(rows: Iterable[utils.Row], start: date, end: date) -> None:
+def update(rows: Iterable[utils.Row], start: dt.date, end: dt.date) -> None:
     out = ProducerStats()
     pd.set_option("display.max_columns", None)
     end_date = pd.to_datetime(end)  # start at end
